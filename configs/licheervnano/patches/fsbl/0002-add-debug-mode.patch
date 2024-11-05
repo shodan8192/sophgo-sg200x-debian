@@ -7,7 +7,7 @@ Subject: [PATCH] add debug mode
  plat/sg200x/bl2/bl2_opt.c | 15 +++++++++++++++
  1 file changed, 15 insertions(+)
 
-diff --git a/plat/sg200x/bl2/bl2_opt.c b/plat/sg200x/bl2/bl2_opt.c
+diff --git a/plat/cv181x/bl2/bl2_opt.c b/plat/cv181x/bl2/bl2_opt.c
 index c73fa55..013d5de 100644
 --- a/plat/sg200x/bl2/bl2_opt.c
 +++ b/plat/sg200x/bl2/bl2_opt.c
