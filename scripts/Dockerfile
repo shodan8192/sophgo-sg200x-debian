@@ -1,4 +1,4 @@
-FROM debian:sid as builder
+FROM ubuntu:noble as builder
 
 ARG DEBIAN_FRONTEND=noninteractive
 

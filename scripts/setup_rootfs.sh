@@ -148,7 +148,7 @@ rm -rf /etc/apt/sources.list.d/multistrap-debian.list
 cp /tmp/install/public-key.asc /etc/apt/trusted.gpg.d/sophgo-myho-st.gpg
 
 cat > /etc/apt/sources.list <<EOF
-deb http://deb.debian.org/debian sid main non-free-firmware
+deb http://ports.ubuntu.com/ubuntu-ports noble main restricted universe multiverse
 deb https://sophgo.my-ho.st:8443/ debian sophgo
 EOF
 
