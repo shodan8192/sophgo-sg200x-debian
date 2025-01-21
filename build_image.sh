@@ -1,2 +1,2 @@
 #!/bin/sh
-docker run --privileged -it --rm -v ./configs/:/configs -v ./image:/output builder make BOARD=licheervnano image
+docker run --privileged -it --rm -v `pwd`/configs/:/configs -v `pwd`/image:/output builder make BOARD=licheervnano image
