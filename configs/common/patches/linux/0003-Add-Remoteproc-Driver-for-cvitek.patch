@@ -30,7 +30,7 @@ index d99548fb5dde..0bb9fcbde9d0 100644
 +
  config STM32_RPROC
  	tristate "STM32 remoteproc support"
- 	depends on ARCH_STM32
+ 	depends on ARCH_STM32 || COMPILE_TEST
 diff --git a/drivers/remoteproc/Makefile b/drivers/remoteproc/Makefile
 index da2ace4ec86c..047fbfa8b72d 100644
 --- a/drivers/remoteproc/Makefile
