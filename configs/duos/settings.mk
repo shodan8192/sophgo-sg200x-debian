@@ -10,6 +10,9 @@ PARTITION_FILE=partition_$(STORAGE_TYPE).xml
 
 PACKAGES += " duo-pinmux wireless-regdb wpasupplicant cvi-pinmux-cv181x bluez"
 
+IMAGE_ADDITIONS += "device-key"
+IMAGE_ADDITIONS += "ethernet-builtin"
+IMAGE_ADDITIONS += "load-systemko"
 IMAGE_ADDITIONS += "aic8800-firmware"
 IMAGE_ADDITIONS += "ethernet-leds"
 IMAGE_ADDITIONS += "usb-switch"
