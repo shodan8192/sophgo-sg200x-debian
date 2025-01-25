@@ -295,6 +295,7 @@ $(BUILDDIR)/image-prepare-stamp:
 	@touch $@
 
 $(BUILDDIR)/image-addons-stamp: $(BUILDDIR)/image-prepare-stamp $(BUILDDIR)/fsbl-package-stamp $(BUILDDIR)/linux-compile-stamp $(BUILDDIR)/osdrv-compile-stamp $(BUILDDIR)/middleware-compile-stamp $(addon-targets)
+	@ln -s busybox /rootfs/usr/bin/devmem
 	@echo "$(COLOUR_GREEN)Copying Middleware files for installation on $(BOARD)$(END_COLOUR)"
 	@mkdir -pv /rootfs/mnt/system/
 	@rsync -avpPxH $(BUILDDIR)/middleware/install/system/ /rootfs/mnt/system/
