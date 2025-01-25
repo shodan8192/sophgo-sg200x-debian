@@ -124,6 +124,11 @@ fi
 
 cat /boot/extlinux/extlinux.conf
 
+if [ "$BOARD" != "licheervnano" ]; then
+  touch /boot/epsilon
+  echo $BOARD > /boot/hostname.prefix
+fi
+
 # Set hostname
 cat /tmp/install/hostname > /etc/hostname
 
