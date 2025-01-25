@@ -1,0 +1,14 @@
+[Unit]
+Description=Store Device Key
+After=load-systemko.service
+Before=ifup@end0.service
+Before=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=oneshot
+ExecStart=sh /etc/init.d/S02devicekey start
+ExecStart=sh /etc/init.d/S10uuid start
+
+[Install]
+WantedBy=multi-user.target
