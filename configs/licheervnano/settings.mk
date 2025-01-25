@@ -9,6 +9,7 @@ STORAGE_TYPE=sd
 
 PACKAGES += " wireless-regdb wpasupplicant cvi-pinmux-cv181x"
 
+IMAGE_ADDITIONS += "device-config"
 IMAGE_ADDITIONS += "device-key"
 IMAGE_ADDITIONS += "ethernet-builtin"
 IMAGE_ADDITIONS += "load-systemko"
