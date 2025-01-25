@@ -1,15 +1,28 @@
 /dts-v1/;
-#include "cv181x_base_riscv.dtsi"
-#include "cv181x_asic_qfn.dtsi"
-#include "cv181x_asic_sd.dtsi"
-#include "cv181x_default_memmap.dtsi"
+#include "soph_base_riscv.dtsi"
+#include "soph_asic_qfn.dtsi"
+#include "soph_asic_sd.dtsi"
+#include "soph_default_memmap.dtsi"
 
 #include <dt-bindings/input/linux-event-codes.h>
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/leds/common.h>
-#ifndef __UBOOT__
-#include <dt-bindings/mailbox/cvitek-mailbox.h>
-#endif
+
+&i2c0 {
+        status = "okay";
+        /delete-property/ scl-pinmux;
+        /delete-property/ sda-pinmux;
+        /delete-property/ scl-gpios;
+        /delete-property/ sda-gpios;
+};
+
+&i2c1 {
+        status = "okay";
+        /delete-property/ scl-pinmux;
+        /delete-property/ sda-pinmux;
+        /delete-property/ scl-gpios;
+        /delete-property/ sda-gpios;
+};
 
 &sd {
         min-frequency = <400000>; // 400Khz
@@ -19,23 +32,141 @@
         //max-frequency = <5000000>; // 5Mhz
 };
 
+&cvi_vo {
+#ifndef __UBOOT__
+	/delete-property/ reset-gpio;
+	/delete-property/ pwm-gpio;
+#else
+	// for uboot
+        reset-gpio = <&porte 0 1>;
+        pwm-gpio = <&porte 2 1>;
+#endif
+        /delete-property/ power-ct-gpio;
 
-&uart1 {
+};
+
+&mipi_tx {
+#ifndef __UBOOT__
+	// for linux kernel
+        reset-gpio = <&porte 0 1>;
+        pwm-gpio = <&porte 2 1>;
+#else
+        /delete-property/ reset-gpio;
+        /delete-property/ pwm-gpio;
+#endif
+        /delete-property/ power-ct-gpio;
         status = "okay";
 };
 
+&uart0 {
+	clocks = <&clk CV181X_CLK_UART0>;
+	/delete-property/ clock-frequency;
+};
+
+&uart1 {
+        clocks = <&clk CV181X_CLK_UART1>;
+        /delete-property/ clock-frequency;
+        status = "okay";
+};
+
+&uart2 {
+        clocks = <&clk CV181X_CLK_UART2>;
+        /delete-property/ clock-frequency;
+        status = "okay";
+};
+
+&uart3 {
+        clocks = <&clk CV181X_CLK_UART3>;
+        /delete-property/ clock-frequency;
+	status = "okay";
+};
+
+&pwm0 {
+        status = "okay";
+};
+
+&pwm1 {
+      status = "okay";
+};
+
+&pwm2 {
+      status = "okay";
+};
+
+&i2c2 {
+        status = "disabled";
+        /delete-property/ scl-pinmux;
+        /delete-property/ sda-pinmux;
+        /delete-property/ scl-gpios;
+        /delete-property/ sda-gpios;
+};
+
+&i2c3 {
+        status = "okay";
+        /delete-property/ scl-pinmux;
+        /delete-property/ sda-pinmux;
+        /delete-property/ scl-gpios;
+        /delete-property/ sda-gpios;
+};
 
 &i2c4 {
-        statuc = "okay";
+        status = "okay";
         gt9xx: gt9xx@14 {
-                compatible = "goodix,gt911";
+                compatible = "goodix,gt9xx";
                 reg = <0x14>;
-		interrupts = <3 0 IRQ_TYPE_EDGE_FALLING>;
-		interrupt-parent = <&porte>;
-                irq-gpios= <&porte 3 0>;
-                reset-gpios = <&porte 4 0>;
+                goodix,irq-gpio = <&porte 3 0>;
+                goodix,rst-gpio = <&porte 4 0>;
                 status = "okay";
         };
+        hynitron: hynitron@5a {
+                compatible = "hynitron,hyn_ts", "hyn,7xx";
+                reg = <0x5a>;
+                irq-gpio = <&porte 3 0>;
+                hynitron,irq-gpio = <&porte 3 0>;
+                reset-gpio = <&porte 4 0>;
+                hynitron,reset-gpio = <&porte 4 0>;
+                max-touch-number = <5>;
+                hynitron,max-touch-number = <5>;
+                display-coords = <0 0 480 640>;
+                hynitron,display-coords = <368 552>;
+                pos-swap = <0>;
+                posx-reverse = <1>;
+                posy-reverse = <1>;
+                status = "okay";
+        };
+};
+
+&spi0 {
+	status = "okay";
+};
+
+&spi1 {
+	status = "okay";
+};
+
+&spi2 {
+	status = "okay";
+
+        // /delete-node/ spidev@0;
+        st7789: st7789@0{
+		compatible = "sitronix,st7789";
+		reg = <0>;
+		status = "disabled";
+		spi-max-frequency = <80000000>;
+		spi-cpol;
+		spi-cpha;
+		rotate = <0>;
+		fps = <60>;
+		rgb;
+		buswidth = <8>;
+		dc = <&porte 20 GPIO_ACTIVE_HIGH>;
+		reset = <&porta 14 GPIO_ACTIVE_LOW>;
+		debug = <0>;
+	};
+};
+
+&spi3 {
+	status = "okay";
 };
 
 &dac {
@@ -43,15 +174,27 @@
         /delete-property/ mute-gpio-r;
 };
 
+&fb_reserved {
+        status = "okay";
+};
+
+&cvi_fb {
+        status = "okay";
+};
+
+&mipi_rx {
+        snsr-reset = <&porte 1 GPIO_ACTIVE_LOW>;
+};
+
 &soc_thermal_0 {
 	cooling-maps {
 		map0 {
 			trip = <&soc_thermal_trip_0>;
-			cooling-device = <&cv181x_cooling THERMAL_NO_LIMIT 1>;
+			cooling-device = <&cooling THERMAL_NO_LIMIT 1>;
 		};
 		map1 {
 			trip = <&soc_thermal_trip_1>;
-			cooling-device = <&cv181x_cooling THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
+			cooling-device = <&cooling THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
 		};
 	};
 };
@@ -59,8 +202,28 @@
 / {
         model = "LicheeRv Nano";
 
-	/delete-node/ wifi_pin;
-	/delete-node/ bt_pin;
+	spi4: spi4@gpio {
+		compatible = "spi-gpio";
+		sck-gpio = <&porta 22 0>;
+		miso-gpio = <&porta 23 0>;
+		mosi-gpio = <&porta 25 0>;
+		cs-gpio = <&porta 24 GPIO_ACTIVE_LOW>;
+		num-chipselects = <1>;
+		status = "okay";
+
+		spidev@0 {
+			compatible = "spidev";
+			reg = <0>;
+		};
+	};
+
+	i2c5: i2c5@gpio {
+		compatible = "i2c-gpio";
+                scl-gpios = <&porta 15 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+                sda-gpios = <&porta 27 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+                i2c-gpio,delay-us = <5>;
+                status = "okay";
+	};
 
         gpio-keys {
                 compatible = "gpio-keys";
@@ -71,6 +234,26 @@
                         gpios = <&porta 30 1>;
                 };
         };
+
+	leds {
+		compatible = "gpio-leds";
+
+		led-user {
+			gpios = <&porta 14 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "activity";
+		};
+	};
+
+	// buggy pwm driver, not working, please use userspace pwm api
+	/*
+	lcd0_backlight: pwm-backlight@0 {
+		compatible = "pwm-backlight";
+		pwm-names = "backlight";
+		pwms = <&pwm2 2 50000000>; // 20Khz
+		brightness-levels = <0 2 4 8 16 32 64 128 255>;
+		default-brightness-level = <4>;
+	};
+	*/
 
         wifisd:wifi-sd@4320000 {
                 compatible = "cvitek,cv181x-sdio";
@@ -100,38 +283,4 @@
                 interrupts = <38 IRQ_TYPE_LEVEL_HIGH>;
                 interrupt-parent = <&plic0>;
         };
-
-        leds {
-        	compatible = "gpio-leds";
-	        led0 {
-		        gpios = <&porta 14 GPIO_ACTIVE_LOW>;
-		        linux,default-trigger = "heartbeat";
-		        function = LED_FUNCTION_HEARTBEAT;
-	        };
-        };
-#ifndef __UBOOT__        
-        mbox: mbox@0x01900000 {
-                compatible = "cvitek,sg200x-mailbox";
-		reg = <0x0 0x01900000 0x0 0x1000>;
-		reg-names = "mailbox";
-                interrupts	= <101 IRQ_TYPE_LEVEL_HIGH>;
-                interrupt-parent = <&plic0>;
-                status = "okay";
-                #mbox-cells = <4>;
-        };
-
-        cv181x-c906_1 {
-		compatible	= "cvitek,cv181x-c906_1";
-		memory-region	= <&fast_image &vdev0vring0 &vdev0vring1 &vdev0buffer>;
-                firmware        = "c906-mcu.elf";
-                resets		= <&rst RST_C906_1>;
-		reset-names	= "sw_reset";
-                clocks		= <&clk CV181X_CLK_C906_1>;
-                clock-names     = "clk_c906_1";
-                mboxes		= <&mbox 0 CVITEK_MBOX_DIRECTION_TX CVITEK_MBOX_C906_1 1>, <&mbox 1 CVITEK_MBOX_DIRECTION_RX CVITEK_MBOX_C906_1 1>;
-	        mbox-names	= "vq_tx", "vq_rx";
-                status		= "okay";
-	};
-#endif
 };
-
