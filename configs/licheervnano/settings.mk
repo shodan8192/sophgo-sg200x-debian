@@ -10,4 +10,5 @@ STORAGE_TYPE=sd
 PACKAGES += " wireless-regdb wpasupplicant cvi-pinmux-cv181x"
 
 IMAGE_ADDITIONS += "ethernet-builtin"
+IMAGE_ADDITIONS += "load-systemko"
 IMAGE_ADDITIONS += "aic8800-firmware"
