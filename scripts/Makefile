@@ -190,6 +190,7 @@ $(BUILDDIR)/middleware-prepare-checkout-stamp:
 
 $(BUILDDIR)/middleware-prepare-patch-stamp: $(BUILDDIR)/middleware-prepare-checkout-stamp $(BUILDDIR)/osdrv-compile-stamp
 	@echo "$(COLOUR_GREEN)Patching Middleware for $(BOARD)$(END_COLOUR)"
+	@cd / && /builder/fix-thead-glibc-toolchain.sh
 	mkdir -pv $(BUILDDIR)/kernel/riscv/usr/include/linux/
 	$(call copy_header_action, $(BUILDDIR)/kernel/riscv/usr/include)
 	@$(foreach file, $(wildcard /configs/common/patches/middleware/*.patch), cd $(BUILDDIR)/middleware && git apply --ignore-whitespace $(file);)
