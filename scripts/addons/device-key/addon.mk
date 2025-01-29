@@ -6,6 +6,8 @@ $(BUILDDIR)/device-key-stamp:
 	@cp -a addons/device-key/S10uuid /rootfs/etc/init.d/
 	@chmod +x /rootfs/etc/init.d/S10uuid
 	@cp -a addons/device-key/device-key*.service /rootfs/etc/systemd/system/
+	@cp -a addons/device-key/device-uuid*.service /rootfs/etc/systemd/system/
 	@mkdir -p /rootfs/tmp/install/
 	@echo " device-key" >> /rootfs/tmp/install/systemd-enable
+	@echo " device-uuid" >> /rootfs/tmp/install/systemd-enable
 	@touch $@

@@ -1,15 +1,16 @@
 [Unit]
-Description=Store Device Key
+Description=Set MAC address
 After=load-systemko.service
-After=device-config.service
-Before=usb-device.service
+After=device-key.service
+After=usb-device.service
+Before=kvm-hwd.service
 Before=ifup@end0.service
 Before=network.target
 StartLimitIntervalSec=0
 
 [Service]
 Type=oneshot
-ExecStart=sh /etc/init.d/S02devicekey start
+ExecStart=sh /etc/init.d/S10uuid start
 
 [Install]
 WantedBy=multi-user.target
