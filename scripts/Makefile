@@ -38,6 +38,15 @@ CONFIG_SENSOR_LONTIUM_LT6911=y
 
 MIDDLEWARE_ENV = $(OSDRV_ENV) $(SENSOR_ENV)
 
+BR_BOARD = cvitek_CV181X_$(SDK_VER)
+BR_DEFCONFIG = $(BR_BOARD)_defconfig
+BR_DIR = $(BUILDDIR)/buildroot
+BR_OUTPUT_DIR = $(BR_DIR)/output/$(BR_BOARD)
+
+BUILDROOT_ENV = CROSS_COMPILE_KERNEL=$(patsubst "%",%,$(SDK_CROSS_COMPILE_PREFIX)) \
+CROSS_COMPILE_SDK=$(patsubst "%",%,$(SDK_CROSS_COMPILE_PREFIX)) \
+TARGET_OUTPUT_DIR=$(BR_OUTPUT_DIR)
+
 KO_DIRS = drivers/i2c \
 drivers/input/touchscreen \
 drivers/media/usb/gspca \
@@ -70,6 +79,7 @@ _PACKAGES = $(patsubst "%,%,$(patsubst %",%,$(PACKAGES)))
 
 
 $(info $(blue)Board: $(BOARD)$(reset))
+$(info $(blue)Variant: $(VARIANT)$(reset))
 $(info $(blue)Storage: $(STORAGE_TYPE)$(reset))
 $(info $(blue)Image Addons: $(IMAGE_ADDITIONS)$(reset))
 $(info $(blue)Packages: $(_PACKAGES)$(reset))
@@ -230,6 +240,52 @@ middleware: $(BUILDDIR)/middleware-package-stamp
 middleware-clean:
 	@rm -rf $(BUILDDIR)/middleware
 	@rm -f $(BUILDDIR)/middleware-*-stamp
+
+
+$(BUILDDIR)/buildroot-prepare-checkout-stamp:
+	@echo "$(COLOUR_GREEN)Checking out Buildroot for $(BOARD)$(END_COLOUR)"
+	@mkdir -p $(BUILDDIR)
+	@git clone -b nanokvm-2024.05 --depth 7 --recursive https://github.com/scpcom/buildroot.git /build/buildroot
+	@cd $(BR_DIR) && git checkout deb8930
+	@touch $@
+
+$(BUILDDIR)/buildroot-prepare-patch-stamp: $(BUILDDIR)/buildroot-prepare-checkout-stamp $(BUILDDIR)/middleware-compile-stamp
+	@echo "$(COLOUR_GREEN)Patching Buildroot for $(BOARD)$(END_COLOUR)"
+	@$(foreach file, $(wildcard /configs/common/patches/buildroot/*.patch), cd $(BR_DIR) && git apply --ignore-whitespace $(file);)
+	@$(foreach file, $(wildcard /configs/$(BOARD)/patches/buildroot/*.patch), cd $(BR_DIR) && git apply --ignore-whitespace $(file);)
+	@cp /configs/common/buildroot/defconfig $(BR_DIR)/configs/$(BR_DEFCONFIG)
+	@echo 'BR2_TOOLCHAIN_EXTERNAL_PATH="'$(SDK_CROSS_COMPILE_PATH)'"' >> $(BR_DIR)/configs/$(BR_DEFCONFIG)
+	@mkdir -pv /build/buildroot/board/cvitek/CV181X/overlay/usr/share/fw_vcodec
+	@mkdir -pv /build/ramdisk/tools/cvi_pinmux
+	@touch $@
+
+$(BUILDDIR)/buildroot-prepare-configure-stamp: $(BUILDDIR)/buildroot-prepare-patch-stamp
+	@echo "$(COLOUR_GREEN)Configuring Buildroot for $(BOARD)$(END_COLOUR)"
+	@cd $(BR_DIR) && $(BUILDROOT_ENV) $(MAKE) $(BR_DEFCONFIG) BR2_TOOLCHAIN_EXTERNAL_PATH=$(SDK_CROSS_COMPILE_PATH)
+	@touch $@
+
+$(BUILDDIR)/buildroot-compile-stamp: $(BUILDDIR)/buildroot-prepare-configure-stamp
+	@echo "$(COLOUR_GREEN)Building Buildroot for $(BOARD)$(END_COLOUR)"
+	@cd $(BR_DIR) && $(BUILDROOT_ENV) $(MAKE) -j$(NPROCS) source
+	@cd $(BR_DIR) && $(BUILDROOT_ENV) $(MAKE) -j$(NPROCS)
+	@touch $@
+
+$(BUILDDIR)/buildroot-package-stamp: $(BUILDDIR)/buildroot-compile-stamp
+	@echo "$(COLOUR_GREEN)Packaging Buildroot for $(BOARD)$(END_COLOUR)"
+	if [ -e $(BR_OUTPUT_DIR)/target/kvmapp/server/NanoKVM-Server ]; then \
+		rm -f /output/nanokvm-latest.zip ; \
+		cd $(BR_OUTPUT_DIR)/target ; \
+		ln -s kvmapp latest ; \
+		zip -r --symlinks /output/nanokvm-latest.zip latest/* ; \
+		rm latest ; \
+	fi
+	@touch $@
+
+buildroot: $(BUILDDIR)/buildroot-package-stamp
+
+buildroot-clean:
+	@rm -rf $(BUILDDIR)/buildroot
+	@rm -f $(BUILDDIR)/buildroot-*-stamp
 
 
 $(BUILDDIR)/uboot-prepare-checkout-stamp:

@@ -6,6 +6,7 @@ ARCH=riscv
 DDR_CFG=ddr3_1866_x16
 PARTITION_FILE=partition_sd.xml
 STORAGE_TYPE=sd
+VARIANT?=e
 
 PACKAGES += " wireless-regdb wpasupplicant cvi-pinmux-cv181x"
 
@@ -13,4 +14,7 @@ IMAGE_ADDITIONS += "device-config"
 IMAGE_ADDITIONS += "device-key"
 IMAGE_ADDITIONS += "ethernet-builtin"
 IMAGE_ADDITIONS += "load-systemko"
+ifneq ("$(findstring nanokvm,$(VARIANT))","")
+IMAGE_ADDITIONS += "nanokvm"
+endif
 IMAGE_ADDITIONS += "aic8800-firmware"

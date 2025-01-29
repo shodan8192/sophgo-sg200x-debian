@@ -1,0 +1,14 @@
+[Unit]
+Description=USB Device
+After=load-systemko.service
+After=device-key.service
+Before=device-uuid.service
+Before=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=oneshot
+ExecStart=sh /etc/init.d/S03usbdev start
+
+[Install]
+WantedBy=multi-user.target

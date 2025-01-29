@@ -6,6 +6,7 @@ ARCH=riscv
 DDR_CFG=ddr3_1866_x16
 PARTITION_FILE=partition_sd.xml
 STORAGE_TYPE=sd
+VARIANT?=e
 
 PACKAGES += " duo-pinmux"
 
