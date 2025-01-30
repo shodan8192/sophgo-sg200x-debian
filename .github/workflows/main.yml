@@ -60,7 +60,7 @@ jobs:
         storage: [sd]
         include: 
           - boards: licheervnano
-            variant: nanokvm
+            variant: kvm
             storage: sd
           - boards: duos
             variant: e
