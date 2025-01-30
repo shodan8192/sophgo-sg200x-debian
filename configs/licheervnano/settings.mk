@@ -14,7 +14,7 @@ IMAGE_ADDITIONS += "device-config"
 IMAGE_ADDITIONS += "device-key"
 IMAGE_ADDITIONS += "ethernet-builtin"
 IMAGE_ADDITIONS += "load-systemko"
-ifneq ("$(findstring nanokvm,$(VARIANT))","")
+ifneq ("$(findstring kvm,$(VARIANT))","")
 IMAGE_ADDITIONS += "nanokvm"
 endif
 IMAGE_ADDITIONS += "aic8800-firmware"

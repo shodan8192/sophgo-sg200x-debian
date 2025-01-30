@@ -6,7 +6,7 @@ $(BUILDDIR)/usb-gadget-stamp:
 	@cp -a addons/usb-gadget/usb-gadget*.service /rootfs/etc/systemd/system/
 	@cp -a addons/usb-gadget/usb0 /rootfs/etc/network/interfaces.d/
 	@mkdir -p /rootfs/tmp/install/
-	@if [ "X$(findstring nanokvm,$(VARIANT))" = "X" ]; then \
+	@if [ "X$(findstring kvm,$(VARIANT))" = "X" ]; then \
 		echo " usb-gadget-rndis usb-gadget-rndis-usb0" >> /rootfs/tmp/install/systemd-enable ; \
 	fi
 	@touch $@
