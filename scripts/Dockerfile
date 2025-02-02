@@ -12,7 +12,7 @@ RUN apt-get update \
         build-essential cpio curl sudo \
         dosfstools e2fsprogs fdisk flex gawk  \
         git gperf kmod libexpat-dev \
-        libgmp-dev libmpc-dev libmpfr-dev libncurses-dev libssl-dev \
+        libgmp-dev liblzma-dev libmpc-dev libmpfr-dev libncurses-dev libssl-dev \
         libtool mmdebstrap openssl parted \
         patchutils python3 python3-dev  \
         python-is-python3 python3-jinja2 pkg-config xxd \
