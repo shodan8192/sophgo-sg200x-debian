@@ -165,6 +165,7 @@ $(BUILDDIR)/osdrv-compile-stamp: $(BUILDDIR)/osdrv-prepare-configure-stamp
 
 $(BUILDDIR)/osdrv-package-stamp: $(BUILDDIR)/osdrv-compile-stamp
 	@echo "$(COLOUR_GREEN)Packaging OSdrv for $(BOARD)$(END_COLOUR)"
+	@$(eval LV=$(shell cd $(BUILDDIR)/kernel && git log -1 --format="%at" | xargs -I{} date -d @{} +-%Y%m%d-${KERNELREV}))
 	@mkdir -p $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(OSDRVVERSION)
 	@cp -r /builder/deb/cvitek-osdrv/* $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(OSDRVVERSION)/
 	@mkdir -pv /$(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(OSDRVVERSION)/mnt/system/ko/
@@ -176,10 +177,10 @@ $(BUILDDIR)/osdrv-package-stamp: $(BUILDDIR)/osdrv-compile-stamp
 	@rm -f /$(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(OSDRVVERSION)/mnt/system/ko/soph_wdt.ko
 	@mkdir -pv /$(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(OSDRVVERSION)/mnt/system/ko/3rd/
 	@cp -p $(BUILDDIR)/osdrv/ko/3rd/*.ko /$(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(OSDRVVERSION)/mnt/system/ko/3rd/
-	@sed -i 's/Version: 1.0.0/Version: $(OSDRVVERSION)/' $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(OSDRVVERSION)/DEBIAN/control
+	@sed -i 's/Version: 1.0.0/Version: $(OSDRVVERSION)$(LV)/' $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(OSDRVVERSION)/DEBIAN/control
 	@sed -i 's/Package: cvitek-osdrv/Package: cvitek-osdrv-$(BOARD)/' $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(OSDRVVERSION)/DEBIAN/control
-	@cd $(BUILDDIR)/package/ && dpkg-deb --build cvitek-osdrv-$(BOARD)-$(OSDRVVERSION)
-	@cp $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(OSDRVVERSION).deb /output/
+	@cd $(BUILDDIR)/package/ && dpkg-deb --build cvitek-osdrv-$(BOARD)-$(OSDRVVERSION) cvitek-osdrv-$(BOARD)_$(OSDRVVERSION)$(LV).deb
+	@cp $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)_$(OSDRVVERSION)$(LV).deb /output/
 	@touch $@
 
 osdrv: $(BUILDDIR)/osdrv-package-stamp
@@ -223,14 +224,15 @@ $(BUILDDIR)/middleware-compile-stamp: $(BUILDDIR)/middleware-prepare-configure-s
 
 $(BUILDDIR)/middleware-package-stamp: $(BUILDDIR)/middleware-compile-stamp
 	@echo "$(COLOUR_GREEN)Packaging Middleware for $(BOARD)$(END_COLOUR)"
+	@$(eval MV=$(shell cd $(BUILDDIR)/middleware && git log -1 --format="%at" | xargs -I{} date -d @{} +-%Y%m%d-${KERNELREV}))
 	@mkdir -p $(BUILDDIR)/package/cvitek-middleware-$(BOARD)-$(MIDDLEWAREVERSION)
 	@cp -r /builder/deb/cvitek-middleware/* $(BUILDDIR)/package/cvitek-middleware-$(BOARD)-$(MIDDLEWAREVERSION)/
 	@mkdir -pv /$(BUILDDIR)/package/cvitek-middleware-$(BOARD)-$(MIDDLEWAREVERSION)/mnt/system/
 	@rsync -avpPxH $(BUILDDIR)/middleware/install/system/ /$(BUILDDIR)/package/cvitek-middleware-$(BOARD)-$(MIDDLEWAREVERSION)/mnt/system/
-	@sed -i 's/Version: 1.0.0/Version: $(MIDDLEWAREVERSION)/' $(BUILDDIR)/package/cvitek-middleware-$(BOARD)-$(MIDDLEWAREVERSION)/DEBIAN/control
+	@sed -i 's/Version: 1.0.0/Version: $(MIDDLEWAREVERSION)$(MV)/' $(BUILDDIR)/package/cvitek-middleware-$(BOARD)-$(MIDDLEWAREVERSION)/DEBIAN/control
 	@sed -i 's/Package: cvitek-middleware/Package: cvitek-middleware-$(BOARD)/' $(BUILDDIR)/package/cvitek-middleware-$(BOARD)-$(MIDDLEWAREVERSION)/DEBIAN/control
-	@cd $(BUILDDIR)/package/ && dpkg-deb --build cvitek-middleware-$(BOARD)-$(MIDDLEWAREVERSION)
-	@cp $(BUILDDIR)/package/cvitek-middleware-$(BOARD)-$(MIDDLEWAREVERSION).deb /output/
+	@cd $(BUILDDIR)/package/ && dpkg-deb --build cvitek-middleware-$(BOARD)-$(MIDDLEWAREVERSION) cvitek-middleware-$(BOARD)_$(MIDDLEWAREVERSION)$(MV).deb
+	@cp $(BUILDDIR)/package/cvitek-middleware-$(BOARD)_$(MIDDLEWAREVERSION)$(MV).deb /output/
 	@touch $@
 
 middleware: $(BUILDDIR)/middleware-package-stamp
@@ -415,8 +417,8 @@ $(BUILDDIR)/image-addons-stamp: $(BUILDDIR)/image-prepare-stamp $(BUILDDIR)/fsbl
 	@[ -e /rootfs/usr/bin/devmem ] || ln -s busybox /rootfs/usr/bin/devmem
 	@echo "$(COLOUR_GREEN)Copying Deb files for installation on $(BOARD)$(END_COLOUR)"
 	@cp /output/cvitek-fsbl-$(BOARD)-*.deb /rootfs/tmp/install/ 
-	@cp /output/cvitek-osdrv-$(BOARD)-*.deb /rootfs/tmp/install/
-	@cp /output/cvitek-middleware-$(BOARD)-*.deb /rootfs/tmp/install/
+	@cp /output/cvitek-osdrv-$(BOARD)_*.deb /rootfs/tmp/install/
+	@cp /output/cvitek-middleware-$(BOARD)_*.deb /rootfs/tmp/install/
 	@cp /output/linux-image-*$(BOARD)*.deb /rootfs/tmp/install/
 	@cp /output/linux-headers-*.deb /rootfs/tmp/install/
 	@cp /output/linux-libc-dev*.deb /rootfs/tmp/install/
