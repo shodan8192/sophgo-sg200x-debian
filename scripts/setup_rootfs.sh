@@ -21,6 +21,12 @@ mount -B dev /dev
 #mount devpts -t devpts /dev/pts
 dpkg --configure -a
 
+for p in libnetplan1 netplan-generator python3-netplan networkd-dispatcher systemd-resolved ; do
+  if dpkg -s $p | grep -q '^Version: ' ; then
+    apt-get remove -y --purge $p
+  fi
+done
+
 unset DEBIAN_FRONTEND DEBCONF_NONINTERACTIVE_SEEN
 
 #
@@ -157,6 +163,9 @@ cat > /etc/apt/sources.list <<EOF
 deb http://ports.ubuntu.com/ubuntu-ports noble main restricted universe multiverse
 deb https://sophgo.my-ho.st:8443/ debian sophgo
 EOF
+
+apt-get update
+apt-get install -y chrony
 
 echo "/boot/uboot.env	0x0000          0x20000" > /etc/fw_env.config
 mkenvimage -s 0x20000 -o /boot/uboot.env /etc/u-boot-initial-env
