@@ -127,10 +127,8 @@ $(BUILDDIR)/linux-prepare-configure-stamp: $(BUILDDIR)/linux-prepare-patch-stamp
 
 $(BUILDDIR)/linux-compile-stamp: $(BUILDDIR)/linux-prepare-configure-stamp
 	@echo "$(COLOUR_GREEN)Building Kernel for $(BOARD)$(END_COLOUR)"
-	@sed -i 's/packagename=linux-image.*/packagename=linux-image-$(BOARD)/' $(BUILDDIR)/kernel/scripts/package/mkdebian
-	@sed -i 's/packagename=linux-image-$$version/packagename=linux-image-$(BOARD)-$$version/' $(BUILDDIR)/kernel/scripts/package/builddeb
-	@cd $(BUILDDIR)/kernel && KCFLAGS=-Wno-attribute-alias ARCH=riscv CROSS_COMPILE="$(SDK_CROSS_COMPILE_PATH)/bin/$(SDK_CROSS_COMPILE_PREFIX)" KDEB_SOURCENAME=linux-$(BOARD) $(MAKE) -j$(NPROCS) O=$(BUILDDIR)/kernel/ bindeb-pkg
-	@cd $(BUILDDIR)/kernel && KCFLAGS=-Wno-attribute-alias ARCH=riscv CROSS_COMPILE="$(SDK_CROSS_COMPILE_PATH)/bin/$(SDK_CROSS_COMPILE_PREFIX)" KDEB_SOURCENAME=linux-$(BOARD) $(MAKE) -j$(NPROCS) O=$(BUILDDIR)/kernel/ modules_install INSTALL_MOD_PATH=$(BUILDDIR)/kernel/modules headers_install INSTALL_HDR_PATH=$(BUILDDIR)/kernel/riscv/usr
+	@cd $(BUILDDIR)/kernel && KCFLAGS=-Wno-attribute-alias ARCH=riscv CROSS_COMPILE="$(SDK_CROSS_COMPILE_PATH)/bin/$(SDK_CROSS_COMPILE_PREFIX)" KDEB_SOURCENAME=linux-$(BOARD) LOCALVERSION=+$(BOARD) $(MAKE) -j$(NPROCS) O=$(BUILDDIR)/kernel/ bindeb-pkg
+	@cd $(BUILDDIR)/kernel && KCFLAGS=-Wno-attribute-alias ARCH=riscv CROSS_COMPILE="$(SDK_CROSS_COMPILE_PATH)/bin/$(SDK_CROSS_COMPILE_PREFIX)" KDEB_SOURCENAME=linux-$(BOARD) LOCALVERSION=+$(BOARD) $(MAKE) -j$(NPROCS) O=$(BUILDDIR)/kernel/ modules_install INSTALL_MOD_PATH=$(BUILDDIR)/kernel/modules headers_install INSTALL_HDR_PATH=$(BUILDDIR)/kernel/riscv/usr
 	@cp $(BUILDDIR)/*.deb /output/
 	@touch $@
 
@@ -419,7 +417,7 @@ $(BUILDDIR)/image-addons-stamp: $(BUILDDIR)/image-prepare-stamp $(BUILDDIR)/fsbl
 	@cp /output/cvitek-fsbl-$(BOARD)-*.deb /rootfs/tmp/install/ 
 	@cp /output/cvitek-osdrv-$(BOARD)-*.deb /rootfs/tmp/install/
 	@cp /output/cvitek-middleware-$(BOARD)-*.deb /rootfs/tmp/install/
-	@cp /output/linux-image-$(BOARD)-*.deb /rootfs/tmp/install/
+	@cp /output/linux-image-*$(BOARD)*.deb /rootfs/tmp/install/
 	@cp /output/linux-headers-*.deb /rootfs/tmp/install/
 	@cp /output/linux-libc-dev*.deb /rootfs/tmp/install/
 	@touch $@

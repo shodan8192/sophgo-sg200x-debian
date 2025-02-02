@@ -118,12 +118,12 @@ fi
 
 sed -i -e 's|#U_BOOT_SYNC_DTBS=".*"|U_BOOT_SYNC_DTBS="true"|' /etc/default/u-boot
 #doing this dance, as in the chroot, / and /boot are same filesystem, so u-boot-update doesn't setup correctly
-echo "U_BOOT_FDT_DIR=\"/usr/lib/linux-image-$BOARD-\"" >> /etc/default/u-boot
+echo "U_BOOT_FDT_DIR=\"/usr/lib/linux-image-\"" >> /etc/default/u-boot
 u-boot-update
 if [ "$STORAGETYPE" = "sd" ]; then
   sed -i -e 's|fdtdir /usr/lib/|fdtdir /fdt/|' /boot/extlinux/extlinux.conf
   sed -i -e 's|linux /boot/|linux /|' /boot/extlinux/extlinux.conf
-  sed -i -e "s|U_BOOT_FDT_DIR=\".*\"|U_BOOT_FDT_DIR=\"/fdt/linux-image-$BOARD-\"|" /etc/default/u-boot
+  sed -i -e "s|U_BOOT_FDT_DIR=\".*\"|U_BOOT_FDT_DIR=\"/fdt/linux-image-\"|" /etc/default/u-boot
 else 
   sed -i -e 's|fdtdir /usr/lib/|fdtdir /boot/fdt/|' /boot/extlinux/extlinux.conf
 fi
