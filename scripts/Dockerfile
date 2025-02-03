@@ -24,7 +24,8 @@ RUN apt-get update \
     && git clone --depth 1 https://github.com/milkv-duo/host-tools.git /host-tools \
     && rm -rf /host-tools/gcc/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-elf \
     && rm -rf /host-tools/gcc/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu \
-    && rm -rf /host-tools/gcc/gcc-linaro-6.3.1-2017.05-x86_64_arm-linux-gnueabihf 
+    && rm -rf /host-tools/gcc/gcc-linaro-6.3.1-2017.05-x86_64_arm-linux-gnueabihf \
+    && rm -rf /host-tools/gcc/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu
 
 
 
