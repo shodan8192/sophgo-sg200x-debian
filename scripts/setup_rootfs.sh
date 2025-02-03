@@ -164,6 +164,11 @@ deb http://ports.ubuntu.com/ubuntu-ports noble main restricted universe multiver
 deb https://sophgo.my-ho.st:8443/ debian sophgo
 EOF
 
+cat >> /etc/systemd/journald.conf <<EOJ
+RuntimeMaxUse=16M
+RuntimeMaxFileSize=2M
+EOJ
+
 apt-get update
 apt-get install -y chrony
 
