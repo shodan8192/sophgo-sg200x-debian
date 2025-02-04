@@ -12,8 +12,16 @@ $(BUILDDIR)/nanokvm-stamp: $(BUILDDIR)/buildroot-package-stamp
 	@chmod +x /rootfs/etc/init.d/S15kvmhwd
 	@cp -a addons/nanokvm/S95nanokvm /rootfs/etc/init.d/
 	@chmod +x /rootfs/etc/init.d/S95nanokvm
+	@sed -i s/'i2cdetect -ry'/'i2cdetect -r -y'/g /rootfs/etc/init.d/S15kvmhwd
+	@sed -i 's|# cp -r /kvmapp/server|cp -r /kvmapp/server|g' /rootfs/etc/init.d/S95nanokvm
+	@sed -i 's|# /tmp/server/NanoKVM-Server|/tmp/server/NanoKVM-Server|g' /rootfs/etc/init.d/S95nanokvm
 	@sed -i 's|/tmp/server/NanoKVM-Server &|/tmp/server/NanoKVM-Server|g' /rootfs/etc/init.d/S95nanokvm
 	@sed -i /S49ntp/d /rootfs/etc/init.d/S95nanokvm
+	@sed -i s/'i2cdetect -ry'/'i2cdetect -r -y'/g /rootfs/kvmapp/system/init.d/S15kvmhwd
+	@sed -i 's|# cp -r /kvmapp/server|cp -r /kvmapp/server|g' /rootfs/kvmapp/system/init.d/S95nanokvm
+	@sed -i 's|# /tmp/server/NanoKVM-Server|/tmp/server/NanoKVM-Server|g' /rootfs/kvmapp/system/init.d/S95nanokvm
+	@sed -i 's|/tmp/server/NanoKVM-Server &|/tmp/server/NanoKVM-Server|g' /rootfs/kvmapp/system/init.d/S95nanokvm
+	@sed -i /S49ntp/d /rootfs/kvmapp/system/init.d/S95nanokvm
 	@cp -a addons/nanokvm/kvm-hwd*.service /rootfs/etc/systemd/system/
 	@cp -a addons/nanokvm/nanokvm*.service /rootfs/etc/systemd/system/
 	@cp -a addons/nanokvm/usb-device*.service /rootfs/etc/systemd/system/
