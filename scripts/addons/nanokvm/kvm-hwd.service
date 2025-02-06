@@ -9,7 +9,7 @@ StartLimitIntervalSec=0
 
 [Service]
 Type=oneshot
-ExecStart=sh /etc/init.d/S15kvmhwd start
+ExecStart=busybox sh /etc/init.d/S15kvmhwd start
 
 [Install]
 WantedBy=multi-user.target

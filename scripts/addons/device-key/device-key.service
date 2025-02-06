@@ -9,7 +9,7 @@ StartLimitIntervalSec=0
 
 [Service]
 Type=oneshot
-ExecStart=sh /etc/init.d/S02devicekey start
+ExecStart=busybox sh /etc/init.d/S02devicekey start
 
 [Install]
 WantedBy=multi-user.target

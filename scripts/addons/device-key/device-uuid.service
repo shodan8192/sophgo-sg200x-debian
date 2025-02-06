@@ -10,7 +10,7 @@ StartLimitIntervalSec=0
 
 [Service]
 Type=oneshot
-ExecStart=sh /etc/init.d/S10uuid start
+ExecStart=busybox sh /etc/init.d/S10uuid start
 
 [Install]
 WantedBy=multi-user.target

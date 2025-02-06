@@ -7,7 +7,7 @@ StartLimitIntervalSec=0
 
 [Service]
 Type=oneshot
-ExecStart=sh /etc/init.d/S02config start
+ExecStart=busybox sh /etc/init.d/S02config start
 
 [Install]
 WantedBy=multi-user.target

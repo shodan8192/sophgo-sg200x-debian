@@ -5,7 +5,7 @@ StartLimitIntervalSec=0
 
 [Service]
 Type=oneshot
-ExecStart=sh /etc/init.d/S00kmod start
+ExecStart=busybox sh /etc/init.d/S00kmod start
 
 [Install]
 WantedBy=multi-user.target
