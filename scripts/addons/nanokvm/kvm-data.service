@@ -1,0 +1,14 @@
+[Unit]
+Description=KVM Data
+After=load-systemko.service
+After=finalize-image.service
+Before=device-config.service
+Before=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=oneshot
+ExecStart=sh /etc/init.d/S01fs start
+
+[Install]
+WantedBy=multi-user.target

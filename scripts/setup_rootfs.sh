@@ -3,6 +3,7 @@
 set -ex
 
 BOARD=$(cat /tmp/install/board)
+VARIANT=$(cat /tmp/install/variant)
 HOSTNAME=$(cat /tmp/install/hostname)
 STORAGETYPE=$(cat /tmp/install/storage)
 
@@ -80,6 +81,9 @@ EOF
 
 if [ "$STORAGETYPE" = "emmc" ]; then
 sed -i -e 's|ExecStartPre=-/usr/sbin/parted -s -f /dev/mmcblk0 resizepart 2 100%|ExecStartPre=-/usr/sbin/parted -s -f /dev/mmcblk0 resizepart 1 100%|' /etc/systemd/system/finalize-image.service
+fi
+if echo "$VARIANT" | grep -q "kvm" ; then
+sed -i 's|resizepart 2 100%|resizepart 2 25%|g' /etc/systemd/system/finalize-image.service
 fi
 
 cat /etc/systemd/system/finalize-image.service

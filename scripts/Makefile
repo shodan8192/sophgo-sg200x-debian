@@ -430,6 +430,7 @@ $(BUILDDIR)/image-customize-stamp: $(BUILDDIR)/image-addons-stamp $(BUILDDIR)/li
 	@mkdir -p /rootfs/tmp/install/
 	@echo $(BOARD) > /rootfs/tmp/install/hostname
 	@echo $(BOARD) > /rootfs/tmp/install/board
+	@echo $(VARIANT) > /rootfs/tmp/install/variant
 	@echo $(STORAGE_TYPE) > /rootfs/tmp/install/storage
 	@cp -v /usr/bin/qemu-riscv64-static /rootfs/tmp/install/
 	@cp -v /builder/setup_rootfs.sh /rootfs/tmp/install/
