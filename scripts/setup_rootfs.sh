@@ -107,9 +107,9 @@ fi
 kernel_image=${lib_dir##*/}
 
 # set default dtb file, please verify your board version
-mkdir -p /boot/fdt/${kernel_image}
+mkdir -p /boot/fdt/${kernel_image}/cvitek
 
-cp ${lib_dir}/cvitek/*.dtb /boot/fdt/${kernel_image}/
+cp ${lib_dir}/cvitek/*.dtb /boot/fdt/${kernel_image}/cvitek/
 
 
 cat /boot/extlinux/extlinux.conf
