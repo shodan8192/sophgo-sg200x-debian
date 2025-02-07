@@ -422,7 +422,7 @@ $(BUILDDIR)/image-addons-stamp: $(BUILDDIR)/image-prepare-stamp $(BUILDDIR)/fsbl
 	@cp /output/linux-image-*$(BOARD)*.deb /rootfs/tmp/install/
 	@cp /output/linux-headers-*.deb /rootfs/tmp/install/
 	@cp /output/linux-libc-dev*.deb /rootfs/tmp/install/
-	@[ "X$(findstring kvm,$(VARIANT))" != "X" ] && cp /output/nanokvm-$(BOARD)_*.deb /rootfs/tmp/install/
+	@[ "X$(findstring kvm,$(VARIANT))" = "X" ] || cp /output/nanokvm-$(BOARD)_*.deb /rootfs/tmp/install/
 	@touch $@
 
 
