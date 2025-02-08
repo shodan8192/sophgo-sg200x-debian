@@ -1,0 +1,13 @@
+diff --git a/sample/test_mmf/maix_mmf/sophgo_middleware.c b/sample/test_mmf/maix_mmf/sophgo_middleware.c
+index 97e1db7..8f3c1b5 100644
+--- a/sample/test_mmf/maix_mmf/sophgo_middleware.c
++++ b/sample/test_mmf/maix_mmf/sophgo_middleware.c
+@@ -214,7 +214,7 @@ static void priv_param_init(void)
+ 	priv.vb_conf.u32MaxPoolCnt ++;
+ 
+ 	if (priv.vb_max_pool_cnt < priv.vb_conf.u32MaxPoolCnt) {
+-		priv.vb_max_pool_cnt = 7;
++		priv.vb_max_pool_cnt = 4;
+ 	}
+ 
+ 	g_priv.enc_h26x_enable = (priv.vb_max_pool_cnt > priv.vb_conf.u32MaxPoolCnt) ? 1 : 0;
