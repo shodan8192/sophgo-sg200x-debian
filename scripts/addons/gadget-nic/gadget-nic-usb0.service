@@ -1,0 +1,15 @@
+[Unit]
+Description=USB NIC DHCP Gadget Support
+After=gadget-nic.service
+After=ifup@usb0.service
+ConditionPathExists=/etc/udhcpd.usb0.conf
+StartLimitIntervalSec=0
+
+[Service]
+Type=exec
+Restart=on-failure
+ExecStart=/usr/sbin/udhcpd -f -S /etc/udhcpd.usb0.conf
+
+
+[Install]
+WantedBy=sys-subsystem-net-devices-usb0.device

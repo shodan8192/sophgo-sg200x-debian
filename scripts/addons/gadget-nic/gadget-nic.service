@@ -1,0 +1,16 @@
+[Unit]
+Description=Start Gadget NIC
+After=load-systemko.service
+After=device-key.service
+After=load-wifimod.service
+Before=nanokvm.service
+Before=ifup@usb0.service
+Before=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=oneshot
+ExecStart=busybox sh /etc/init.d/S30gadget_nic start
+
+[Install]
+WantedBy=multi-user.target
