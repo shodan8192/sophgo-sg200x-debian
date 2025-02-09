@@ -16,5 +16,7 @@ IMAGE_ADDITIONS += "ethernet-builtin"
 IMAGE_ADDITIONS += "load-systemko"
 ifneq ("$(findstring kvm,$(VARIANT))","")
 IMAGE_ADDITIONS += "nanokvm"
+else
+IMAGE_ADDITIONS += "usb-device"
 endif
 IMAGE_ADDITIONS += "aic8800-firmware"
