@@ -19,4 +19,5 @@ IMAGE_ADDITIONS += "nanokvm"
 else
 IMAGE_ADDITIONS += "usb-device"
 endif
+IMAGE_ADDITIONS += "wifi-builtin"
 IMAGE_ADDITIONS += "aic8800-firmware"
