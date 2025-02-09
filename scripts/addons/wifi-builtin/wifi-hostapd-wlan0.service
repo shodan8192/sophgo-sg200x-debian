@@ -1,0 +1,16 @@
+[Unit]
+Description=WiFi AP Support
+After=wifi-builtin.service
+After=ifup@wlan0.service
+Before=wifi-builtin-wlan0.service
+ConditionPathExists=/etc/hostapd.conf
+StartLimitIntervalSec=0
+
+[Service]
+Type=exec
+Restart=on-failure
+ExecStart=/usr/sbin/hostapd -B -i wlan0 /etc/hostapd.conf
+
+
+[Install]
+WantedBy=sys-subsystem-net-devices-wlan0.device

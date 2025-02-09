@@ -1,0 +1,16 @@
+[Unit]
+Description=WiFi DHCP AP Support
+After=wifi-builtin.service
+After=ifup@wlan0.service
+After=wifi-hostapd-wlan0.service
+ConditionPathExists=/etc/udhcpd.wlan0.conf
+StartLimitIntervalSec=0
+
+[Service]
+Type=exec
+Restart=on-failure
+ExecStart=/usr/sbin/udhcpd -f -S /etc/udhcpd.wlan0.conf
+
+
+[Install]
+WantedBy=sys-subsystem-net-devices-wlan0.device
