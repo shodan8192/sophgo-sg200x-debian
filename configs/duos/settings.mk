@@ -8,7 +8,7 @@ ARCH=riscv
 DDR_CFG=ddr3_1866_x16
 PARTITION_FILE=partition_$(STORAGE_TYPE).xml
 
-PACKAGES += " duo-pinmux wireless-regdb wpasupplicant cvi-pinmux-cv181x bluez"
+PACKAGES += " duo-pinmux hostapd udhcpd wireless-regdb wpasupplicant cvi-pinmux-cv181x bluez"
 
 IMAGE_ADDITIONS += "device-config"
 IMAGE_ADDITIONS += "device-key"
