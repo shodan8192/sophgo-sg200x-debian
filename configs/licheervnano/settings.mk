@@ -8,7 +8,7 @@ PARTITION_FILE=partition_sd.xml
 STORAGE_TYPE=sd
 VARIANT?=e
 
-PACKAGES += " wireless-regdb wpasupplicant cvi-pinmux-cv181x"
+PACKAGES += " hostapd udhcpd wireless-regdb wpasupplicant cvi-pinmux-cv181x"
 
 IMAGE_ADDITIONS += "device-config"
 IMAGE_ADDITIONS += "device-key"
