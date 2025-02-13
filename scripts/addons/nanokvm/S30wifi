@@ -67,6 +67,9 @@ start() {
         echo -e "\twpa-essid $ssid" >> /etc/network/interfaces.d/wlan0
         echo -e "\twpa-psk $pass" >> /etc/network/interfaces.d/wlan0
         echo -e "\twpa-scan-ssid 1" >> /etc/network/interfaces.d/wlan0
+        if [ -e /tmp/server/NanoKVM-Server ]; then
+            systemctl restart networking.service
+        fi
     else
         echo "allow-hotplug wlan0" > /etc/network/interfaces.d/wlan0
         echo "iface wlan0 inet manual" >> /etc/network/interfaces.d/wlan0
@@ -123,9 +126,17 @@ ap_start() {
     #udhcpd -S /etc/udhcpd.wlan0.conf
     systemctl enable wifi-builtin-wlan0.service
     systemctl enable wifi-hostapd-wlan0.service
+    if [ -e /tmp/server/NanoKVM-Server ]; then
+        systemctl start wifi-hostapd-wlan0.service
+        systemctl start wifi-builtin-wlan0.service
+    fi
 }
 
 stop() {
+	if [ -e /tmp/server/NanoKVM-Server ]; then
+		systemctl stop wifi-builtin-wlan0.service
+		systemctl stop wifi-hostapd-wlan0.service
+	fi
 	ps -ef|grep hostapd|grep -v grep|awk '{print $1}'|xargs kill -2 || true
 	ps -ef|grep "udhcpd -S /etc/udhcpd.wlan0.conf" |grep -v grep|awk '{print $1}'|xargs kill -2 || true
 	killall wpa_supplicant || true
