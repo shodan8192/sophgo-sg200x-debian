@@ -1,6 +1,7 @@
 $(BUILDDIR)/nanokvm-stamp: $(BUILDDIR)/buildroot-package-stamp
 	@echo "$(COLOUR_GREEN)Installing nanokvm for $(BOARD)$(END_COLOUR)"
 	@mkdir -pv /rootfs/boot/
+	@touch /rootfs/boot/usb.dev
 	@touch /rootfs/boot/usb.disk0
 	@touch /rootfs/boot/usb.rndis0
 	@echo "$(COLOUR_GREEN)Packaging NanoKVM for $(BOARD)$(END_COLOUR)"
