@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/busybox sh
 # kvmhwd Rev2.3
 
 Alpha_OLED_RST_Pin=371
