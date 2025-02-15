@@ -246,7 +246,7 @@ $(BUILDDIR)/buildroot-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out Buildroot for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
 	@git clone -b nanokvm-2024.05 --depth 7 --recursive https://github.com/scpcom/buildroot.git /build/buildroot
-	@cd $(BR_DIR) && git checkout 430d547
+	@cd $(BR_DIR) && git checkout 3371e4a
 	@touch $@
 
 $(BUILDDIR)/buildroot-prepare-patch-stamp: $(BUILDDIR)/buildroot-prepare-checkout-stamp $(BUILDDIR)/middleware-compile-stamp
