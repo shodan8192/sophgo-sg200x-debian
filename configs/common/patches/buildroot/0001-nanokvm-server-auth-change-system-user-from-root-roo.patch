@@ -14,7 +14,7 @@ new file mode 100644
 index 0000000000..8226139fc8
 --- /dev/null
 +++ b/package/nanokvm-server/0023-auth-change-system-user-from-root-root-do-debian-rv.patch
-@@ -0,0 +1,611 @@
+@@ -0,0 +1,552 @@
 +From ba7be56a21b53e5c3404995dc2d8ed817f357be9 Mon Sep 17 00:00:00 2001
 +From: scpcom <scpcom@gmx.de>
 +Date: Fri, 7 Feb 2025 03:14:43 +0100
@@ -61,9 +61,9 @@ index 0000000000..8226139fc8
 + 
 +-	// change root password
 ++	// change debian password
-+ 	err = changeRootPassword(account.Password)
++ 	err = changeRootPassword(password)
 + 	if err != nil {
-+ 		_ = utils.DelAccount()
++ 		_ = DelAccount()
 +@@ -71,16 +71,16 @@ func (s *Service) IsPasswordUpdated(c *gin.Context) {
 + func changeRootPassword(password string) error {
 + 	err := passwd(password)
@@ -84,39 +84,6 @@ index 0000000000..8226139fc8
 + 
 + 	stdin, err := cmd.StdinPipe()
 + 	if err != nil {
-+diff --git a/server/service/vm/terminal.go b/server/service/vm/terminal.go
-+index 14775ed..3981b52 100644
-+--- a/server/service/vm/terminal.go
-++++ b/server/service/vm/terminal.go
-+@@ -215,16 +215,16 @@ func (s *SshClient) bridgeWSAndSSH() {
-+ 
-+ func getRootPassword() string {
-+ 	if !utils.IsAccountExist() {
-+-		return "root"
-++		return "rv"
-+ 	}
-+ 
-+ 	account, err := utils.GetAccount()
-+ 	if err != nil {
-+-		return "root"
-++		return "rv"
-+ 	}
-+ 
-+ 	if account == nil || account.Password == "" {
-+-		return "root"
-++		return "rv"
-+ 	}
-+ 
-+ 	return account.Password
-+@@ -233,7 +233,7 @@ func getRootPassword() string {
-+ func (s *Service) Terminal(c *gin.Context) {
-+ 	user := c.Query("u")
-+ 	if user == "" {
-+-		user = "root"
-++		user = "debian"
-+ 	}
-+ 
-+ 	password, _ := utils.Decrypt(c.Query("t"))
 +diff --git a/support/kvm_system/main/lib/system_ctrl/system_ctrl.cpp b/support/kvm_system/main/lib/system_ctrl/system_ctrl.cpp
 +index c367deb..f1a7ecc 100644
 +--- a/support/kvm_system/main/lib/system_ctrl/system_ctrl.cpp
@@ -170,8 +137,8 @@ index 0000000000..8226139fc8
 + 
 + 如果想要开发鉴权相关的功能，需要编译后在 NanoKVM 中进行测试。
 + 
-+-1. 通过 ssh 登录到 NanoKVM：`ssh root@your-nanokvm-ip`（默认密码为 root）；
-++1. 通过 ssh 登录到 NanoKVM：`ssh debian@your-nanokvm-ip`（默认密码为 rv）；
++-1. 通过 SSH 登录到 NanoKVM：`ssh root@your-nanokvm-ip`（默认密码为 root）；
+++1. 通过 SSH 登录到 NanoKVM：`ssh debian@your-nanokvm-ip`（默认密码为 rv）；
 + 2. 修改配置文件 `/etc/kvm/server.yaml`，添加一行 `authentication: disable`。⚠️注意：该选项会禁用所有鉴权功能，生产环境请勿开启该选项！
 + 3. 执行 `/etc/init.d/S95nanokvm restart` 重启服务。
 + 4. 编辑 `.env.development` 文件，将 `VITE_SERVER_IP` 修改为你的 NanoKVM IP 地址。
@@ -597,32 +564,6 @@ index 0000000000..8226139fc8
 +               </li>
 +             </ul>
 +           </div>
-+diff --git a/web/src/pages/terminal/index.tsx b/web/src/pages/terminal/index.tsx
-+index c16fb8a..b83fb07 100644
-+--- a/web/src/pages/terminal/index.tsx
-++++ b/web/src/pages/terminal/index.tsx
-+@@ -8,7 +8,7 @@ import { Xterm } from './xterm.tsx';
-+ 
-+ export const Terminal = () => {
-+   const { t } = useTranslation();
-+-  const [token, setToken] = useState('u=root');
-++  const [token, setToken] = useState('u=debian');
-+ 
-+   return (
-+     <>
-+diff --git a/web/src/pages/terminal/login.tsx b/web/src/pages/terminal/login.tsx
-+index f4ea09e..a6fce96 100644
-+--- a/web/src/pages/terminal/login.tsx
-++++ b/web/src/pages/terminal/login.tsx
-+@@ -28,7 +28,7 @@ export const Login = ({ setToken }: LoginProps) => {
-+ 
-+         <Form
-+           style={{ minWidth: 300, maxWidth: 500 }}
-+-          initialValues={{ username: 'root' }}
-++          initialValues={{ username: 'debian' }}
-+           onFinish={login}
-+         >
-+           <Form.Item
 +-- 
 +2.34.1
 +
