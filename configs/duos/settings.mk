@@ -6,6 +6,7 @@ UBOOT_BOARD=milkv_duos_$(STORAGE_TYPE)
 BOOT_CPU=riscv
 ARCH=riscv
 DDR_CFG=ddr3_1866_x16
+ION_SIZE=74
 PARTITION_FILE=partition_$(STORAGE_TYPE).xml
 
 PACKAGES += " duo-pinmux hostapd udhcpd wireless-regdb wpasupplicant cvi-pinmux-cv181x bluez"
