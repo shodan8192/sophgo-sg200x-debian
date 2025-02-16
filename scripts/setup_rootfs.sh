@@ -2,6 +2,7 @@
 #
 set -ex
 
+GITREF=$(cat /tmp/install/gitref)
 BOARD=$(cat /tmp/install/board)
 VARIANT=$(cat /tmp/install/variant)
 HOSTNAME=$(cat /tmp/install/hostname)
@@ -133,6 +134,8 @@ else
 fi
 
 cat /boot/extlinux/extlinux.conf
+
+echo ${BOARD}-${VARIANT}_${STORAGETYPE}-${GITREF}.img > /boot/ver
 
 if [ "$BOARD" != "licheervnano" ]; then
   touch /boot/epsilon

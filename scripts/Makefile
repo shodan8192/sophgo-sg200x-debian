@@ -7,6 +7,8 @@ red:=$(shell tput setaf 1)
 blue:=$(shell tput setaf 4)
 reset:=$(shell tput sgr0)
 
+GIT_REF ?= develop
+
 BUILDDIR := /build/
 
 CROSS_COMPILE_GLIBC_RISCV64 = riscv64-unknown-linux-gnu-
@@ -429,6 +431,7 @@ $(BUILDDIR)/image-addons-stamp: $(BUILDDIR)/image-prepare-stamp $(BUILDDIR)/fsbl
 $(BUILDDIR)/image-customize-stamp: $(BUILDDIR)/image-addons-stamp $(BUILDDIR)/linux-compile-stamp $(BUILDDIR)/fsbl-package-stamp
 	@echo "$(COLOUR_GREEN)Customizing Image for $(BOARD)$(END_COLOUR)"
 	@mkdir -p /rootfs/tmp/install/
+	@echo $(GIT_REF) > /rootfs/tmp/install/gitref
 	@echo $(BOARD) > /rootfs/tmp/install/hostname
 	@echo $(BOARD) > /rootfs/tmp/install/board
 	@echo $(VARIANT) > /rootfs/tmp/install/variant
