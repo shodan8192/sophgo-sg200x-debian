@@ -1,8 +1,8 @@
 $(BUILDDIR)/gadget-nic-stamp:
 	@echo "$(COLOUR_GREEN)Installing gadget-nic for $(BOARD)$(END_COLOUR)"
 	@if [ "X$(findstring kvm,$(VARIANT))" = "X" ]; then \
-		@mkdir -pv /rootfs/boot/ ; \
-		@touch /rootfs/boot/usb.rndis ; \
+		mkdir -pv /rootfs/boot/ ; \
+		touch /rootfs/boot/usb.rndis ; \
 	fi
 	@mkdir -pv /rootfs/etc/init.d/
 	@cp -a addons/gadget-nic/S30gadget_nic /rootfs/etc/init.d/
