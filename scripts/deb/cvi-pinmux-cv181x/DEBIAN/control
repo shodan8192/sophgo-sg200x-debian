@@ -1,0 +1,12 @@
+Package: cvi-pinmux-cv181x
+Version: 1.0.0-1
+Architecture: riscv64
+Maintainer: Justin Hammond <justin@dynam.ac>
+Installed-Size: 67
+Depends: libc6 (>= 2.34)
+Conflicts: cvi-pinmux-cv180x
+Section: admin
+Priority: optional
+Homepage: https://github.com/sophgo/ramdisk/tree/sg200x-dev/tools/cvi_pinmux
+Description: Pinmux Control for CVITEK cv181x chips
+ Pinmux Control for CVITEK cv181x chips to adjust pin functions
