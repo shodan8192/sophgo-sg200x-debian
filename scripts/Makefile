@@ -155,7 +155,7 @@ $(BUILDDIR)/osdrv-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out OSdrv for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
 	@git clone -b licheervnano-cvisdk --depth 7 https://github.com/scpcom/sophgo-osdrv.git /build/osdrv
-	@cd $(BUILDDIR)/osdrv && git checkout bbb5269
+	@cd $(BUILDDIR)/osdrv && git checkout 0678123
 	@touch $@
 
 $(BUILDDIR)/osdrv-prepare-patch-stamp: $(BUILDDIR)/osdrv-prepare-checkout-stamp $(BUILDDIR)/linux-compile-stamp
