@@ -176,6 +176,8 @@ kvm_hw_detect(){
 
 kvm_hw_init(){
     FIND_FILE="/etc/kvm/hw"
+    rmmod /mnt/system/ko/soph_mipi_rx.ko
+    insmod /mnt/system/ko/soph_mipi_rx.ko lt_int=1
     if [ `grep -c "alpha" $FIND_FILE` -ne '0' ]
     then
         echo "hw = alpha!"
