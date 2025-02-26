@@ -168,7 +168,7 @@ cp /tmp/install/public-key.asc.gpg /etc/apt/trusted.gpg.d/sophgo-myho-st.gpg
 
 cat > /etc/apt/sources.list <<EOF
 deb http://ports.ubuntu.com/ubuntu-ports noble main restricted universe multiverse
-deb https://sophgo.my-ho.st:8443/ debian sophgo
+deb https://scpcom.github.io/deb stable sg200x ${BOARD}-${VARIANT}
 EOF
 
 cat >> /etc/systemd/journald.conf <<EOJ
