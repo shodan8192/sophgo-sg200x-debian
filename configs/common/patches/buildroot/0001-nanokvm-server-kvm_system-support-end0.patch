@@ -1,46 +1,46 @@
-From bf70fa07902d5d9dea409eecfe23492da52604bd Mon Sep 17 00:00:00 2001
+From a63b86060e6fb1258b74c4fab94178193e2b52ed Mon Sep 17 00:00:00 2001
 From: scpcom <scpcom@gmx.de>
-Date: Tue, 4 Feb 2025 20:04:00 +0100
+Date: Wed, 26 Feb 2025 19:24:49 +0100
 Subject: [PATCH] nanokvm-server: kvm_system: support end0
 
 ---
- ...0022-support-kvm_system-support-end0.patch | 106 ++++++++++++++++++
- 1 file changed, 106 insertions(+)
+ ...0022-support-kvm_system-support-end0.patch | 102 ++++++++++++++++++
+ 1 file changed, 102 insertions(+)
  create mode 100644 package/nanokvm-server/0022-support-kvm_system-support-end0.patch
 
 diff --git a/package/nanokvm-server/0022-support-kvm_system-support-end0.patch b/package/nanokvm-server/0022-support-kvm_system-support-end0.patch
 new file mode 100644
-index 0000000000..c1f93d63ad
+index 0000000000..fb544b6e9d
 --- /dev/null
 +++ b/package/nanokvm-server/0022-support-kvm_system-support-end0.patch
-@@ -0,0 +1,106 @@
-+From 395c6cc92256dff9a963bb052a1eb4b92ef89f83 Mon Sep 17 00:00:00 2001
+@@ -0,0 +1,102 @@
++From 60aa4548ade5ce51e8561b95939a040272c062f8 Mon Sep 17 00:00:00 2001
 +From: scpcom <scpcom@gmx.de>
-+Date: Tue, 4 Feb 2025 20:02:13 +0100
++Date: Wed, 26 Feb 2025 19:23:02 +0100
 +Subject: [PATCH] support: kvm_system: support end0
 +
 +---
 + support/kvm_system/main/include/config.h      |  1 +
 + .../main/lib/system_state/system_state.cpp    | 31 ++++++++++++++-----
-+ 2 files changed, 25 insertions(+), 7 deletions(-)
++ 2 files changed, 24 insertions(+), 8 deletions(-)
 +
 +diff --git a/support/kvm_system/main/include/config.h b/support/kvm_system/main/include/config.h
-+index 528c86d..e4a3b93 100644
++index 61aede8..2649332 100644
 +--- a/support/kvm_system/main/include/config.h
 ++++ b/support/kvm_system/main/include/config.h
-+@@ -67,6 +67,7 @@ typedef struct {
-+ 	char wifi_ap_pass[9] = {0};
++@@ -68,6 +68,7 @@ typedef struct {
 +     uint8_t oled_sleep_state = 0;	// 0:wakeup; 1:sleep;
 + 	int8_t reconvery_update = 0;	// 0:Undetected; 1:Needs Update; 2:Update finish; -1:not need to update
++ 	uint8_t ping_allow = 1;
 ++	char eth_intf[16] = {0};
 + } kvm_sys_state_t;
 + 
 + typedef struct {
 +diff --git a/support/kvm_system/main/lib/system_state/system_state.cpp b/support/kvm_system/main/lib/system_state/system_state.cpp
-+index 953a805..c5f8cd1 100644
++index b217fc9..8371550 100644
 +--- a/support/kvm_system/main/lib/system_state/system_state.cpp
 ++++ b/support/kvm_system/main/lib/system_state/system_state.cpp
-+@@ -12,19 +12,29 @@ int get_ip_addr(ip_addr_t ip_type)
++@@ -50,19 +50,29 @@ int get_ip_addr(ip_addr_t ip_type)
 + {
 + 	switch (ip_type){
 + 		case ETH_IP: // eth_addr
@@ -73,7 +73,7 @@ index 0000000000..c1f93d63ad
 + 			return 1;
 + 		case WiFi_IP: // wifi_addr
 + 			if(strcmp(ip_address()["wlan0"].c_str(), (char*)kvm_sys_state.wifi_addr) != 0){
-+@@ -73,7 +83,7 @@ int get_ip_addr(ip_addr_t ip_type)
++@@ -111,7 +121,7 @@ int get_ip_addr(ip_addr_t ip_type)
 + 				memset( kvm_sys_state.eth_route, 0, sizeof( kvm_sys_state.eth_route ) );
 + 				char Cmd[100]={0};
 + 				memset( Cmd, 0, sizeof( Cmd ) );
@@ -82,7 +82,7 @@ index 0000000000..c1f93d63ad
 + 				FILE* fp = popen( Cmd, "r" );
 + 				if ( NULL == fp )
 + 				{
-+@@ -146,8 +156,8 @@ int get_ip_addr(ip_addr_t ip_type)
++@@ -184,8 +194,8 @@ int get_ip_addr(ip_addr_t ip_type)
 + int chack_net_state(ip_addr_t use_ip_type)
 + {
 + 	char Cmd[100]={0};
@@ -93,30 +93,26 @@ index 0000000000..c1f93d63ad
 + 	else return -1;	// 不支持的端口
 + 	if(system(Cmd) == 0){	// 256：不通； = 0：通
 + 		return 1;
-+@@ -169,6 +179,7 @@ int kvm_eth_cable_exist()
-+ 	int file_size;
-+ 	uint8_t RW_Data[10];		
-+ 	fp = fopen("/sys/class/net/eth0/carrier", "r");
-++	if (!fp) fp = fopen("/sys/class/net/end0/carrier", "r");
-+ 	fseek(fp, 0, SEEK_END);
-+ 	file_size = ftell(fp); 
-+ 	fseek(fp, 0, SEEK_SET);
-+@@ -388,8 +399,14 @@ void kvm_update_eth_state(void)
-+ 	eth_cable_state = kvm_eth_cable_exist();
++@@ -350,12 +360,17 @@ void kvm_update_hdmi_res(void)
 + 
-+ 	if(eth_cable_state){
-++		string interface_eth = "eth0";
-++		string ip_address_eth = ip_address()[interface_eth];
-++		if(*(ip_address_eth.c_str()) == 0){
-++			interface_eth = "end0";
-++			ip_address_eth = ip_address()[interface_eth];
-++		}
-+ 		// 获取实时IP
++ void kvm_update_eth_state(void)
++ {	
+++	string interface_eth = "eth0";
++ 	static uint8_t nic_state = 0;
++-	nic_state = get_nic_state("eth0");
+++	nic_state = get_nic_state(interface_eth.c_str());
+++	if(nic_state != NIC_STATE_RUNNING){
+++		interface_eth = "end0";
+++		nic_state = get_nic_state(interface_eth.c_str());
+++	}
++ 
++ 	if(nic_state == NIC_STATE_RUNNING){
++ 		// Get IP
 +-		if(strcmp(ip_address()["eth0"].c_str(), (char*)kvm_sys_state.eth_addr) != 0){
-++		if(strcmp(ip_address_eth.c_str(), (char*)kvm_sys_state.eth_addr) != 0){
-+ 		// if(1){
+++		if(strcmp(ip_address()[interface_eth].c_str(), (char*)kvm_sys_state.eth_addr) != 0){
 + 			if(get_ip_addr(ETH_IP)){
 + 				kvm_sys_state.eth_state = 2;
++ 			} else {
 +-- 
 +2.34.1
 +
