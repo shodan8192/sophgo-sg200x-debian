@@ -8,7 +8,7 @@ $(BUILDDIR)/cvi-pinmux-stamp: $(BUILDDIR)/buildroot-package-stamp
 	@cp -p $(BR_OUTPUT_DIR)/target/usr/bin/cvi-pinmux $(BUILDDIR)/package/cvi-pinmux-cv181x-$(CVIPINMUXVERSION)/usr/bin/cvi_pinmux
 	@sed -i 's/Version: 1.0.0-1/Version: $(CVIPINMUXVERSION)$(BV)/' $(BUILDDIR)/package/cvi-pinmux-cv181x-$(CVIPINMUXVERSION)/DEBIAN/control
 	@sed -i 's/Package: cvi-pinmux-cv181x/Package: cvi-pinmux-cv181x/' $(BUILDDIR)/package/cvi-pinmux-cv181x-$(CVIPINMUXVERSION)/DEBIAN/control
-	@cd $(BUILDDIR)/package/ && dpkg-deb --build cvi-pinmux-cv181x-$(CVIPINMUXVERSION) cvi-pinmux-cv181x_$(CVIPINMUXVERSION)$(BV).deb
-	@cp $(BUILDDIR)/package/cvi-pinmux-cv181x_$(CVIPINMUXVERSION)$(BV).deb /output/
-	@cp /output/cvi-pinmux-cv181x_$(CVIPINMUXVERSION)$(BV).deb /rootfs/tmp/install/
+	@cd $(BUILDDIR)/package/ && dpkg-deb --build cvi-pinmux-cv181x-$(CVIPINMUXVERSION) cvi-pinmux-cv181x_$(CVIPINMUXVERSION)$(BV)_$(DEB_ARCH).deb
+	@cp $(BUILDDIR)/package/cvi-pinmux-cv181x_$(CVIPINMUXVERSION)$(BV)_$(DEB_ARCH).deb /output/
+	@cp /output/cvi-pinmux-cv181x_$(CVIPINMUXVERSION)$(BV)_$(DEB_ARCH).deb /rootfs/tmp/install/
 	@touch $@
