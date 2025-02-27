@@ -145,7 +145,21 @@ $(BUILDDIR)/linux-compile-stamp: $(BUILDDIR)/linux-prepare-configure-stamp
 	@cp $(BUILDDIR)/*.deb /output/
 	@touch $@
 
-linux: $(BUILDDIR)/linux-compile-stamp
+$(BUILDDIR)/linux-package-stamp: $(BUILDDIR)/linux-compile-stamp
+	@echo "$(COLOUR_GREEN)Packaging linux-image-sg200x for $(BOARD)$(END_COLOUR)"
+	@$(eval LINUXMETAVERSION=$(shell basename $(BUILDDIR)/kernel/debian/linux-image/usr/share/doc/linux-image-* | cut -d '-' -f 3-))
+	@mkdir -p $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)
+	@cp -r /builder/deb/linux-image-sg200x/* $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/
+	@mkdir -pv $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/usr/share/doc/linux-image-$(BOARD)-$(VARIANT)/
+	@cp -p $(BUILDDIR)/kernel/debian/linux-image/usr/share/doc/linux-image-*/* $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/usr/share/doc/linux-image-$(BOARD)-$(VARIANT)/
+	@sed -i 's/Version: 1.0.0-1/Version: $(LINUXMETAVERSION)/' $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/DEBIAN/control
+	@sed -i 's/Package: linux-image-sg200x/Package: linux-image-$(BOARD)-$(VARIANT)/' $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/DEBIAN/control
+	@sed -i 's/Depends: linux-image-.*/Depends: linux-image-$(LINUXMETAVERSION)/' $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/DEBIAN/control
+	@cd $(BUILDDIR)/package/ && dpkg-deb --build linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION) linux-image-$(BOARD)-$(VARIANT)_$(LINUXMETAVERSION)_$(DEB_ARCH).deb
+	@cp $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)_$(LINUXMETAVERSION)_$(DEB_ARCH).deb /output/
+	@touch $@
+
+linux: $(BUILDDIR)/linux-package-stamp
 
 linux-clean:
 	@rm -rf $(BUILDDIR)/kernel
@@ -441,7 +455,7 @@ $(BUILDDIR)/image-addons-stamp: $(BUILDDIR)/image-prepare-stamp $(BUILDDIR)/fsbl
 	@touch $@
 
 
-$(BUILDDIR)/image-customize-stamp: $(BUILDDIR)/image-addons-stamp $(BUILDDIR)/linux-compile-stamp $(BUILDDIR)/fsbl-package-stamp
+$(BUILDDIR)/image-customize-stamp: $(BUILDDIR)/image-addons-stamp $(BUILDDIR)/linux-package-stamp $(BUILDDIR)/fsbl-package-stamp
 	@echo "$(COLOUR_GREEN)Customizing Image for $(BOARD)$(END_COLOUR)"
 	@mkdir -p /rootfs/tmp/install/
 	@echo $(GIT_REF) > /rootfs/tmp/install/gitref
