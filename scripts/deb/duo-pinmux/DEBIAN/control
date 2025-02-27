@@ -1,0 +1,12 @@
+Package: duo-pinmux
+Version: 1.0.0-1
+Architecture: riscv64
+Maintainer: Justin Hammond <justin@dynam.ac>
+Installed-Size: 30
+Depends: libc6:riscv64 (>= 2.37), libc6
+Conflicts: cvi-pinmux-cv180x
+Section: admin
+Priority: optional
+Homepage: https://github.com/milkv-duo/milkv-duo-pinmux
+Description: Pinmux Control for MilkV Duo256 board
+ Pinmux Control for MilkV Duo256 to adjust pin functions
