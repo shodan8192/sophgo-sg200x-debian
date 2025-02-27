@@ -308,6 +308,7 @@ $(BUILDDIR)/buildroot-package-stamp: $(BUILDDIR)/buildroot-compile-stamp
 		zip -r --symlinks /output/nanokvm-latest.zip latest/* ; \
 		rm latest ; \
 	fi
+	@rm -rf $(BR_OUTPUT_DIR)/build/*/*/
 	@touch $@
 
 buildroot: $(BUILDDIR)/buildroot-package-stamp
