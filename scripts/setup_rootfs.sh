@@ -89,7 +89,7 @@ fi
 
 cat /etc/systemd/system/finalize-image.service
 
-apt install -y -f /tmp/install/*.deb
+apt install --allow-downgrades -y -f /tmp/install/*.deb
 
 
 # change device tree
