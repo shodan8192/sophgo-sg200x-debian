@@ -40,14 +40,14 @@ case "$1" in
     /tmp/server/NanoKVM-Server &
 
     /etc/init.d/S49ntp restart
-    ;;
+   ;;
 
   stop)
     killall kvm_system
     killall NanoKVM-Server
     rm -r /tmp/kvm_system /tmp/server
     echo "OK"
-    ;;
+   ;;
 
   restart)
     killall kvm_system
@@ -62,10 +62,10 @@ case "$1" in
 
     sync
     echo "OK"
-    ;;
+   ;;
     
   *)
     echo "Usage: $0 {start|stop|restart}"
     exit 1
-    ;;
+  ;;
 esac
