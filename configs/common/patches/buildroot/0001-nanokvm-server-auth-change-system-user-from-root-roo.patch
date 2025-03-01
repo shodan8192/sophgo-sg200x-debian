@@ -22,7 +22,7 @@ index 0000000000..6d11acd0c3
 +
 +---
 + server/service/auth/password.go                         | 8 ++++----
-+ support/kvm_system/main/lib/system_ctrl/system_ctrl.cpp | 6 +++---
++ support/sg2002/kvm_system/main/lib/system_ctrl/system_ctrl.cpp | 6 +++---
 + web/README.md                                           | 2 +-
 + web/README_JA.md                                        | 2 +-
 + web/README_ZH.md                                        | 2 +-
@@ -81,10 +81,10 @@ index 0000000000..6d11acd0c3
 + 
 + 	stdin, err := cmd.StdinPipe()
 + 	if err != nil {
-+diff --git a/support/kvm_system/main/lib/system_ctrl/system_ctrl.cpp b/support/kvm_system/main/lib/system_ctrl/system_ctrl.cpp
++diff --git a/support/sg2002/kvm_system/main/lib/system_ctrl/system_ctrl.cpp b/support/sg2002/kvm_system/main/lib/system_ctrl/system_ctrl.cpp
 +index c367deb..f1a7ecc 100644
-+--- a/support/kvm_system/main/lib/system_ctrl/system_ctrl.cpp
-++++ b/support/kvm_system/main/lib/system_ctrl/system_ctrl.cpp
++--- a/support/sg2002/kvm_system/main/lib/system_ctrl/system_ctrl.cpp
+++++ b/support/sg2002/kvm_system/main/lib/system_ctrl/system_ctrl.cpp
 +@@ -161,11 +161,11 @@ uint8_t kvm_reset_password(void)
 +         return 0;
 +     }

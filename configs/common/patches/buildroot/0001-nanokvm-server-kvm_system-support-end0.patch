@@ -20,14 +20,14 @@ index 0000000000..fb544b6e9d
 +Subject: [PATCH] support: kvm_system: support end0
 +
 +---
-+ support/kvm_system/main/include/config.h      |  1 +
++ support/sg2002/kvm_system/main/include/config.h      |  1 +
 + .../main/lib/system_state/system_state.cpp    | 31 ++++++++++++++-----
 + 2 files changed, 24 insertions(+), 8 deletions(-)
 +
-+diff --git a/support/kvm_system/main/include/config.h b/support/kvm_system/main/include/config.h
++diff --git a/support/sg2002/kvm_system/main/include/config.h b/support/sg2002/kvm_system/main/include/config.h
 +index 61aede8..2649332 100644
-+--- a/support/kvm_system/main/include/config.h
-++++ b/support/kvm_system/main/include/config.h
++--- a/support/sg2002/kvm_system/main/include/config.h
+++++ b/support/sg2002/kvm_system/main/include/config.h
 +@@ -68,6 +68,7 @@ typedef struct {
 +     uint8_t oled_sleep_state = 0;	// 0:wakeup; 1:sleep;
 + 	int8_t reconvery_update = 0;	// 0:Undetected; 1:Needs Update; 2:Update finish; -1:not need to update
@@ -36,10 +36,10 @@ index 0000000000..fb544b6e9d
 + } kvm_sys_state_t;
 + 
 + typedef struct {
-+diff --git a/support/kvm_system/main/lib/system_state/system_state.cpp b/support/kvm_system/main/lib/system_state/system_state.cpp
++diff --git a/support/sg2002/kvm_system/main/lib/system_state/system_state.cpp b/support/sg2002/kvm_system/main/lib/system_state/system_state.cpp
 +index b217fc9..8371550 100644
-+--- a/support/kvm_system/main/lib/system_state/system_state.cpp
-++++ b/support/kvm_system/main/lib/system_state/system_state.cpp
++--- a/support/sg2002/kvm_system/main/lib/system_state/system_state.cpp
+++++ b/support/sg2002/kvm_system/main/lib/system_state/system_state.cpp
 +@@ -50,19 +50,29 @@ int get_ip_addr(ip_addr_t ip_type)
 + {
 + 	switch (ip_type){
