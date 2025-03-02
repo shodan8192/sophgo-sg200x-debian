@@ -1,5 +1,5 @@
 # Debian Images for Sophgo cv181x/sg200x based boards 
-This repository builds debian sid images for Sophgo cv181x/sg200x based boards such as MilkV Duo256/DuoS and Sipeed LicheeRvNano.
+This repository builds debian images for Sophgo cv181x/sg200x based boards such as MilkV Duo256/DuoS and Sipeed LicheeRvNano.
 
 (Note, we don't support the MilkV Duo, as it does not have enough ram to run Debian)
 
@@ -8,9 +8,13 @@ The images aim to be as close to possible to debian best practices as possible
 ## Flashing the Image
 
 ### Duo256, DuoS, and LicheeRVNano
-To flash from linux, either build your own image, or download a image from the releases page, and then run the following command:
+To flash from linux, either build your own image and then run the following command:
 ```
 sudo dd if=image/(board)_sd.img of=/dev/sdX bs=4M status=progress
+```
+... or download a image from the releases page, and then run the following command:
+```
+lz4 -cd (board)_sd.img.lz4 | sudo dd of=/dev/sdX bs=4M status=progress
 ```
 
 From windows, you can use tools such as balena etcher
@@ -39,17 +43,17 @@ Logins: root/rv and debian/rv
 
 ### USB Gadget Support
 by default, a rndis interface is started on the USB port, and the IP address is
-10.42.0.1 - It also starts a DHCP Server on that interface, so your PC should automatically get an IP address in the 10.42.0.x range
+10.x.y.1 - It also starts a DHCP Server on that interface, so your PC should automatically get an IP address in the 10.x.y.z range
 
 To Disable the rndis interface, you can run the following command:
 ```
-systemctl disable usb-gadget-rndis
+rm /boot/usb.rndis
 ```
 
 There is also a option to start a serial port (ACM) interface instead of the rndis interface, to do this, you can run the following command:
 ```
-systemctl disable usb-gadget-rndis
-systemctl enable usb-gadget-acm
+rm /boot/usb.rndis
+touch /boot/usb.GS0
 ```
 
 After executing these commands, you need to reboot.
@@ -65,12 +69,14 @@ and reboot afterwards.
 ### Wifi on DuoS/LicheeRVNano
 For the LicheeRVNano/DuoS board, Wifi is enabled. To connect to your wifi network, execute the following command and select "Activate a connection" and select your wifi network:
 ```
-nmtui
+touch /boot/wifi.sta
+echo "My WiFi" | tee /boot/wifi.ssid
+echo "Pa$$w0rd" /boot/wifi.pass
 ```
 
 ### Ethernet
 For Boards with eithernet, they should automatically get a IP address if your network has a DHCP Server. You can configure the 
-ethernet port in nmtui
+ethernet port in /etc/network/interfaces.d/end0
 
 ### Camera/ISP/Panel Support
 The images are based on the vendor 5.10 kernel, but exclude the following drivers:
@@ -79,22 +85,24 @@ The images are based on the vendor 5.10 kernel, but exclude the following driver
 - TPU Drivers
 - Any of the Video Encoding Drivers
 
-(this is mainly due to compatibility reasons with the glibc version in debian and musl version used in the vendor images)
+The extra drivers are build on a separate package called cvitek-osdrv-(board), they will be installed to /mnt/system/ko
 
-The images, by default, do not allocate any memory for the ION heap, as they are unused in this image, so you get the full memory of each device
+The libs and samples are build on a separate package called cvitek-middleware-(board), they will be installed to /mnt/system/usr
+
+The images, by default, allocate minimum amount of memory for the ION heap to use vi/venc, so you get more memory for the OS
 
 ### Ardunio/Freertos Support
-The images also include the remoteproc and mailbox drivers so you can load up ardunio/freertos images on the small C906 core. 
+Support is disabled on my images because the small C906 core is used by ISP.
 
 ### Additional Packages
-This image also adds the debian repository for https://github.com/Fishwaldo/sophgo-sg200x-packages so you can install additional repositories. The debian repository is hosted at 
-https://sophgo.my-ho.st:8443/ which pulls down the compiled debian packages from the above github repository occasionally.
+This image also adds the debian repository for board-related packages so you can install additional repositories. The debian repository is hosted at 
+https://scpcom.github.io/deb which pulls down the compiled debian packages from the above github repository occasionally.
 
 
 ## Building the Image
 To build a stock image with no modifications:
 ```
-podman run --privileged -it --rm -v ./configs/:/configs -v ./image:/output ghcr.io/fishwaldo/sophgo-sg200x-debian:master make BOARD=licheervnano image
+podman run --privileged -it --rm -v ./configs/:/configs -v ./image:/output ghcr.io/scpcom/sophgo-sg200x-debian:master make BOARD=licheervnano image
 ```
 
 Replace the licheervnano with the board you want to build for:
@@ -104,7 +112,12 @@ Replace the licheervnano with the board you want to build for:
 
 If you want to create a image for the DuoS with EMMC, you can add "STORAGE_TYPE=emmc" to the make command:
 ```
-podman run --privileged -it --rm -v ./configs/:/configs -v ./image:/output ghcr.io/fishwaldo/sophgo-sg200x-debian:master make BOARD=duos STORAGE_TYPE=emmc image
+podman run --privileged -it --rm -v ./configs/:/configs -v ./image:/output ghcr.io/scpcom/sophgo-sg200x-debian:master make BOARD=duos STORAGE_TYPE=emmc image
+```
+
+If you want to create a image for the NanoKVM, you can add "VARIANT=kvm" to the make command:
+```
+podman run --privileged -it --rm -v ./configs/:/configs -v ./image:/output ghcr.io/scpcom/sophgo-sg200x-debian:master make BOARD=licheervnano VARIANT=kvm image
 ```
 
 The Docker image will build the image and place it in the image directory
@@ -132,6 +145,5 @@ inside the container, packages are build in the /builder/ directory, and the roo
 
 # TODO
 - DeviceTree Overlay Support
-- Add support for the MIPI-CSI/DSI drivers (Sample applications would be in the sophgo-sg200x-packages repository if they do not depend upon a musl libc version)
 - Add support for the TPU drivers
 - Possibly mainline kernel support via the sophgo linux for-next repositories
