@@ -164,12 +164,17 @@ rm -rf /etc/apt/sources.list.d/multistrap-debian.list
 
 #apt-key add /tmp/install/public-key.asc
 gpg --dearmor /tmp/install/public-key.asc
-cp /tmp/install/public-key.asc.gpg /etc/apt/trusted.gpg.d/sophgo-myho-st.gpg
+cp /tmp/install/public-key.asc.gpg /etc/apt/trusted.gpg.d/scpcom-packages.gpg
 
 cat > /etc/apt/sources.list <<EOF
 deb http://ports.ubuntu.com/ubuntu-ports noble main restricted universe multiverse
-deb https://scpcom.github.io/deb stable sg200x ${BOARD}-${VARIANT}
 EOF
+
+mkdir -p /etc/apt/sources.list.d
+
+cat > /etc/apt/sources.list.d/scpcom-packages.list <<EOG
+deb https://scpcom.github.io/deb stable sg200x ${BOARD}-${VARIANT}
+EOG
 
 cat >> /etc/systemd/journald.conf <<EOJ
 RuntimeMaxUse=16M
