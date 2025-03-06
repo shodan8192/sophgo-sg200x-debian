@@ -22,7 +22,7 @@ then
         if [ -e /dev/mmcblk0p3 ]
         then
                 mkdir -p /data
-                mount -o uid=debian /dev/mmcblk0p3 /data
+                /usr/bin/mount -o uid=debian /dev/mmcblk0p3 /data
         fi
 
         echo "OK"

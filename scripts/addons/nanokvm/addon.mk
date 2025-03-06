@@ -38,7 +38,7 @@ $(BUILDDIR)/nanokvm-stamp: $(BUILDDIR)/buildroot-package-stamp
 	@sed -i /'mount -t configfs configfs'/d $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/kvmapp/system/init.d/S01fs
 	@sed -i /'mount -t debugfs debugfs'/d $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/kvmapp/system/init.d/S01fs
 	@sed -i s/'mkpart primary 8193MB 100%'/'mkpart primary 25% 100%'/g $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/kvmapp/system/init.d/S01fs
-	@sed -i 's|mount /dev/mmcblk0p3 /data|mount -o uid=debian /dev/mmcblk0p3 /data|g' $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/kvmapp/system/init.d/S01fs
+	@sed -i 's|mount /dev/mmcblk0p3 /data|/usr/bin/mount -o uid=debian /dev/mmcblk0p3 /data|g' $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/kvmapp/system/init.d/S01fs
 	@sed -i 's|#!/bin/sh|#!/bin/busybox sh|g' $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/kvmapp/system/init.d/S03usbdev
 	@sed -i 's|echo -ne .*x34 > functions/hid.GS1/report_length|echo 52 > functions/hid.GS1/report_length|g' $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/kvmapp/system/init.d/S03usbdev
 	@sed -i 's|#!/bin/sh|#!/bin/busybox sh|g' $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/kvmapp/system/init.d/S15kvmhwd
