@@ -15,6 +15,8 @@ $(BUILDDIR)/firmware-vcodec-package-stamp:
 firmware-vcodec: $(BUILDDIR)/firmware-vcodec-package-stamp
 
 $(BUILDDIR)/sensor-config-install-stamp:
+	@mkdir -pv /rootfs/boot/
+	@[ "$(BOARD)" = "licheervnano" ] || touch /rootfs/boot/epsilon
 	@mkdir -pv /rootfs/mnt/cfg/param/
 	@mkdir -pv /rootfs/mnt/data/
 	@if [ "$(BOARD)" = "licheervnano" ]; then \
