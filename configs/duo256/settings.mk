@@ -9,8 +9,9 @@ PARTITION_FILE=partition_sd.xml
 STORAGE_TYPE=sd
 VARIANT?=e
 
-PACKAGES += " duo-pinmux"
+PACKAGES += " cvi-pinmux-cv181x"
 
+IMAGE_ADDITIONS += "duo-pinmux"
 IMAGE_ADDITIONS += "device-config"
 IMAGE_ADDITIONS += "device-key"
 IMAGE_ADDITIONS += "ethernet-builtin"

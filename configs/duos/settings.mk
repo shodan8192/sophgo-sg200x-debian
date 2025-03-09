@@ -9,8 +9,9 @@ DDR_CFG=ddr3_1866_x16
 ION_SIZE=74
 PARTITION_FILE=partition_$(STORAGE_TYPE).xml
 
-PACKAGES += " duo-pinmux hostapd udhcpd wireless-regdb wpasupplicant cvi-pinmux-cv181x bluez"
+PACKAGES += " cvi-pinmux-cv181x hostapd udhcpd wireless-regdb wpasupplicant bluez"
 
+IMAGE_ADDITIONS += "duo-pinmux"
 IMAGE_ADDITIONS += "device-config"
 IMAGE_ADDITIONS += "device-key"
 IMAGE_ADDITIONS += "ethernet-builtin"
