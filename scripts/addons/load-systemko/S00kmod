@@ -2,6 +2,8 @@
 
 if [ "$1" = "start" ]
 then
+	KERNELRELEASE=$(uname -r)
+
 	rmmod hynitron_touch
 	rmmod spi_gpio
 	rmmod spi_bitbang
@@ -10,7 +12,7 @@ then
 
 	. /etc/profile
 	printf "load kernel module: "
-	cd /mnt/system/ko/
+	cd /mnt/system/ko/${KERNELRELEASE}/ || cd /mnt/system/ko/
 	insmod soph_sys.ko
 	insmod soph_base.ko
 	insmod soph_rtos_cmdqu.ko
