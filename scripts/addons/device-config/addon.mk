@@ -25,12 +25,19 @@ $(BUILDDIR)/sensor-config-install-stamp:
 		cp -p addons/device-config/overlay/mnt/cfg/param/cvi_sdr_bin_GC2083 /rootfs/mnt/cfg/param/cvi_sdr_bin && \
 		cp -p addons/device-config/overlay/mnt/data/sensor_cfg_GC2083.ini /rootfs/mnt/data/sensor_cfg.ini ; \
 	fi
+	@mkdir -p /rootfs/tmp/install/
+	@echo " sensor-config" >> /rootfs/tmp/install/systemd-enable
 	@touch $@
 
 $(BUILDDIR)/sensor-config-package-stamp:
 	@echo "$(COLOUR_GREEN)Packaging sensor-config for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)/package/sensor-config-$(BOARD)-$(MIDDLEWAREVERSION)
 	@cp -r /builder/deb/sensor-config/* $(BUILDDIR)/package/sensor-config-$(BOARD)-$(MIDDLEWAREVERSION)/
+	@mkdir -pv $(BUILDDIR)/package/sensor-config-$(BOARD)-$(MIDDLEWAREVERSION)/etc/init.d/
+	@cp -a addons/device-config/S02config $(BUILDDIR)/package/sensor-config-$(BOARD)-$(MIDDLEWAREVERSION)/etc/init.d/
+	@chmod +x $(BUILDDIR)/package/sensor-config-$(BOARD)-$(MIDDLEWAREVERSION)/etc/init.d/S02config
+	@mkdir -pv $(BUILDDIR)/package/sensor-config-$(BOARD)-$(MIDDLEWAREVERSION)/etc/systemd/system/
+	@cp -a addons/device-config/sensor-config*.service $(BUILDDIR)/package/sensor-config-$(BOARD)-$(MIDDLEWAREVERSION)/etc/systemd/system/
 	@mkdir -pv $(BUILDDIR)/package/sensor-config-$(BOARD)-$(MIDDLEWAREVERSION)/mnt/cfg/param/
 	@rsync -avpPxH addons/device-config/overlay/mnt/cfg/param/ $(BUILDDIR)/package/sensor-config-$(BOARD)-$(MIDDLEWAREVERSION)/mnt/cfg/param/
 	@rm -f $(BUILDDIR)/package/sensor-config-$(BOARD)-$(MIDDLEWAREVERSION)/mnt/cfg/param/cvi_sdr_bin
@@ -49,10 +56,4 @@ sensor-config: $(BUILDDIR)/sensor-config-install-stamp $(BUILDDIR)/sensor-config
 
 $(BUILDDIR)/device-config-stamp: firmware-vcodec sensor-config
 	@echo "$(COLOUR_GREEN)Installing device-config for $(BOARD)$(END_COLOUR)"
-	@mkdir -pv /rootfs/etc/init.d/
-	@cp -a addons/device-config/S02config /rootfs/etc/init.d/
-	@chmod +x /rootfs/etc/init.d/S02config
-	@cp -a addons/device-config/device-config*.service /rootfs/etc/systemd/system/
-	@mkdir -p /rootfs/tmp/install/
-	@echo " device-config" >> /rootfs/tmp/install/systemd-enable
 	@touch $@

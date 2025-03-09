@@ -1,5 +1,5 @@
 [Unit]
-Description=Configure Device
+Description=Configure Sensor
 After=load-systemko.service
 Before=device-key.service
 Before=network.target
