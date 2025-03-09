@@ -3,41 +3,7 @@
 if [ "$1" = "start" ]
 then
 	. /etc/profile
-	printf "copy config file from /boot: "
-	if [ -e /boot/sshd_config ]
-	then
-		cp -vf /boot/sshd_config /etc/ssh/sshd_config
-	fi
-	if [ -e /boot/resolv.conf ]
-	then
-		rm -rf /etc/resolv.conf
-		cp -vf /boot/resolv.conf /etc/resolv.conf
-	fi
-	if [ -e /boot/input-event-daemon ]
-	then
-		if [ ! -e /etc/input-event-daemon.conf ]
-		then
-			cp /etc/input-event-daemon.conf.bak /etc/input-event-daemon.conf
-		fi
-	else
-		if [ -e /etc/input-event-daemon.conf ]
-		then
-			cp /etc/input-event-daemon.conf /etc/input-event-daemon.conf.bak
-			rm /etc/input-event-daemon.conf
-		fi
-	fi
-	if [ -e /boot/rc.local ]
-	then
-		cp -vf /boot/rc.local /etc/rc.local
-	fi
-	if [ -e /boot/ttyGS0_handler.sh ]
-	then
-		cp /boot/ttyGS0_handler.sh /etc/ttyGS0_handler.sh
-	fi
-	if [ -e /boot/console_handler.sh ]
-	then
-		cp /boot/console_handler.sh /etc/console_handler.sh
-	fi
+	printf "copy sensor config file: "
 	if [ -e /boot/alpha ]
 	then
 		if [ ! -e /mnt/data/sensor_cfg.ini ]
