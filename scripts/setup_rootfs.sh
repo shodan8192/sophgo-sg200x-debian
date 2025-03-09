@@ -137,10 +137,6 @@ cat /boot/extlinux/extlinux.conf
 
 echo ${BOARD}-${VARIANT}_${STORAGETYPE}-${GITREF}.img > /boot/ver
 
-if [ "$BOARD" != "licheervnano" ]; then
-  echo $BOARD > /boot/hostname.prefix
-fi
-
 # Set hostname
 cat /tmp/install/hostname > /etc/hostname
 

@@ -1,5 +1,7 @@
 $(BUILDDIR)/device-key-stamp:
 	@echo "$(COLOUR_GREEN)Installing device-key for $(BOARD)$(END_COLOUR)"
+	@mkdir -pv /rootfs/boot/
+	@[ "$(BOARD)" = "licheervnano" ] || echo $(BOARD) > /rootfs/boot/hostname.prefix
 	@mkdir -pv /rootfs/etc/init.d/
 	@cp -a addons/device-key/S02devicekey /rootfs/etc/init.d/
 	@chmod +x /rootfs/etc/init.d/S02devicekey
