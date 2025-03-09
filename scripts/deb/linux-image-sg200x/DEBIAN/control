@@ -4,6 +4,7 @@ Architecture: riscv64
 Maintainer: @scpcom
 Installed-Size: 67
 Depends: linux-image-5.10.4-20241014-3+licheervnano
+Recommends: cvitek-osdrv-5.10.4-20241014-3+licheervnano
 Section: admin
 Priority: optional
 Homepage: https://github.com/scpcom/linux/tree/licheervnano-merged-5.10.y

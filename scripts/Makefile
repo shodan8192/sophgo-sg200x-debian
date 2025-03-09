@@ -155,6 +155,7 @@ $(BUILDDIR)/linux-package-stamp: $(BUILDDIR)/linux-compile-stamp
 	@sed -i 's/Version: 1.0.0-1/Version: $(LINUXMETAVERSION)/' $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/DEBIAN/control
 	@sed -i 's/Package: linux-image-sg200x/Package: linux-image-$(BOARD)-$(VARIANT)/' $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/DEBIAN/control
 	@sed -i 's/Depends: linux-image-.*/Depends: linux-image-$(LINUXMETAVERSION)/' $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/DEBIAN/control
+	@sed -i 's/Recommends: cvitek-osdrv-.*/Recommends: cvitek-osdrv-$(LINUXMETAVERSION)/' $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/DEBIAN/control
 	@cd $(BUILDDIR)/package/ && dpkg-deb --build linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION) linux-image-$(BOARD)-$(VARIANT)_$(LINUXMETAVERSION)_$(DEB_ARCH).deb
 	@cp $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)_$(LINUXMETAVERSION)_$(DEB_ARCH).deb /output/
 	@touch $@
@@ -192,22 +193,33 @@ $(BUILDDIR)/osdrv-compile-stamp: $(BUILDDIR)/osdrv-prepare-configure-stamp
 
 $(BUILDDIR)/osdrv-package-stamp: $(BUILDDIR)/osdrv-compile-stamp
 	@echo "$(COLOUR_GREEN)Packaging OSdrv for $(BOARD)$(END_COLOUR)"
-	@$(eval LV=$(shell cd $(BUILDDIR)/kernel && git log -1 --format="%at" | xargs -I{} date -d @{} +-%Y%m%d-${KERNELREV}))
-	@mkdir -p $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(OSDRVVERSION)
-	@cp -r /builder/deb/cvitek-osdrv/* $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(OSDRVVERSION)/
-	@mkdir -pv /$(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(OSDRVVERSION)/mnt/system/ko/
-	@cp -p $(BUILDDIR)/osdrv/ko/*.ko /$(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(OSDRVVERSION)/mnt/system/ko/
-	@rm -f /$(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(OSDRVVERSION)/mnt/system/ko/soph_clock_cooling.ko
-	@rm -f /$(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(OSDRVVERSION)/mnt/system/ko/soph_pwm.ko
-	@rm -f /$(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(OSDRVVERSION)/mnt/system/ko/soph_rtc.ko
-	@rm -f /$(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(OSDRVVERSION)/mnt/system/ko/soph_saradc.ko
-	@rm -f /$(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(OSDRVVERSION)/mnt/system/ko/soph_wdt.ko
-	@mkdir -pv /$(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(OSDRVVERSION)/mnt/system/ko/3rd/
-	@cp -p $(BUILDDIR)/osdrv/ko/3rd/*.ko /$(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(OSDRVVERSION)/mnt/system/ko/3rd/
-	@sed -i 's/Version: 1.0.0/Version: $(OSDRVVERSION)$(LV)/' $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(OSDRVVERSION)/DEBIAN/control
-	@sed -i 's/Package: cvitek-osdrv/Package: cvitek-osdrv-$(BOARD)/' $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(OSDRVVERSION)/DEBIAN/control
-	@cd $(BUILDDIR)/package/ && dpkg-deb --build cvitek-osdrv-$(BOARD)-$(OSDRVVERSION) cvitek-osdrv-$(BOARD)_$(OSDRVVERSION)$(LV)_$(DEB_ARCH).deb
-	@cp $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)_$(OSDRVVERSION)$(LV)_$(DEB_ARCH).deb /output/
+	@$(eval KERNELRELEASE=$(shell basename $(BUILDDIR)/kernel/debian/linux-headers/usr/share/doc/linux-headers-* | cut -d '-' -f 3-))
+	@mkdir -p $(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION)
+	@cp -r /builder/deb/cvitek-osdrv/* $(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION)/
+	@mkdir -pv /$(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION)/mnt/system/ko/$(KERNELRELEASE)/
+	@cp -p $(BUILDDIR)/osdrv/ko/*.ko /$(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION)/mnt/system/ko/$(KERNELRELEASE)/
+	@rm -f /$(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION)/mnt/system/ko/$(KERNELRELEASE)/soph_clock_cooling.ko
+	@rm -f /$(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION)/mnt/system/ko/$(KERNELRELEASE)/soph_pwm.ko
+	@rm -f /$(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION)/mnt/system/ko/$(KERNELRELEASE)/soph_rtc.ko
+	@rm -f /$(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION)/mnt/system/ko/$(KERNELRELEASE)/soph_saradc.ko
+	@rm -f /$(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION)/mnt/system/ko/$(KERNELRELEASE)/soph_wdt.ko
+	@mkdir -pv /$(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION)/mnt/system/ko/$(KERNELRELEASE)/3rd/
+	@cp -p $(BUILDDIR)/osdrv/ko/3rd/*.ko /$(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION)/mnt/system/ko/$(KERNELRELEASE)/3rd/
+	@sed -i 's/Version: 1.0.0/Version: $(OSDRVVERSION)-$(KERNELRELEASE)/' $(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION)/DEBIAN/control
+	@sed -i 's/Package: cvitek-osdrv/Package: cvitek-osdrv-$(KERNELRELEASE)/' $(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION)/DEBIAN/control
+	@cd $(BUILDDIR)/package/ && dpkg-deb --build cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION) cvitek-osdrv-$(KERNELRELEASE)_$(OSDRVVERSION)-$(KERNELRELEASE)_$(DEB_ARCH).deb
+	@cp $(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)_$(OSDRVVERSION)-$(KERNELRELEASE)_$(DEB_ARCH).deb /output/
+	@echo "$(COLOUR_GREEN)Packaging cvitek-osdrv-sg200x for $(BOARD)$(END_COLOUR)"
+	@mkdir -p $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(VARIANT)-$(KERNELRELEASE)
+	@cp -r /builder/deb/linux-image-sg200x/* $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(VARIANT)-$(KERNELRELEASE)/
+	@mkdir -pv $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(VARIANT)-$(KERNELRELEASE)/usr/share/doc/cvitek-osdrv-$(BOARD)-$(VARIANT)/
+	@cp -p $(BUILDDIR)/kernel/debian/linux-image/usr/share/doc/linux-image-*/* $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(VARIANT)-$(KERNELRELEASE)/usr/share/doc/cvitek-osdrv-$(BOARD)-$(VARIANT)/
+	@sed -i 's/Version: 1.0.0-1/Version: $(OSDRVVERSION)-$(KERNELRELEASE)/' $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(VARIANT)-$(KERNELRELEASE)/DEBIAN/control
+	@sed -i 's/Package: linux-image-sg200x/Package: cvitek-osdrv-$(BOARD)-$(VARIANT)/' $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(VARIANT)-$(KERNELRELEASE)/DEBIAN/control
+	@sed -i 's/Depends: linux-image-.*/Depends: cvitek-osdrv-$(KERNELRELEASE)/' $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(VARIANT)-$(KERNELRELEASE)/DEBIAN/control
+	@sed -i 's/Recommends: cvitek-osdrv-.*/Recommends: linux-image-$(KERNELRELEASE)/' $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(VARIANT)-$(KERNELRELEASE)/DEBIAN/control
+	@cd $(BUILDDIR)/package/ && dpkg-deb --build cvitek-osdrv-$(BOARD)-$(VARIANT)-$(KERNELRELEASE) cvitek-osdrv-$(BOARD)-$(VARIANT)_$(OSDRVVERSION)-$(KERNELRELEASE)_$(DEB_ARCH).deb
+	@cp $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(VARIANT)_$(OSDRVVERSION)-$(KERNELRELEASE)_$(DEB_ARCH).deb /output/
 	@touch $@
 
 osdrv: $(BUILDDIR)/osdrv-package-stamp
@@ -443,11 +455,11 @@ $(BUILDDIR)/image-prepare-stamp:
 	@mmdebstrap -v --architectures=riscv64 --include="$(_PACKAGES)" noble "/rootfs/" "deb http://ports.ubuntu.com/ubuntu-ports/ noble main universe" "deb [signed-by=$(BUILDDIR)/public-key.asc] https://scpcom.github.io/deb stable sg200x $(BOARD)-$(VARIANT)"
 	@touch $@
 
-$(BUILDDIR)/image-addons-stamp: $(BUILDDIR)/image-prepare-stamp $(BUILDDIR)/fsbl-package-stamp $(BUILDDIR)/linux-compile-stamp $(BUILDDIR)/osdrv-package-stamp $(BUILDDIR)/middleware-package-stamp $(addon-targets)
+$(BUILDDIR)/image-addons-stamp: $(BUILDDIR)/image-prepare-stamp $(BUILDDIR)/fsbl-package-stamp $(BUILDDIR)/linux-package-stamp $(BUILDDIR)/osdrv-package-stamp $(BUILDDIR)/middleware-package-stamp $(addon-targets)
 	@[ -e /rootfs/usr/bin/devmem ] || ln -s busybox /rootfs/usr/bin/devmem
 	@echo "$(COLOUR_GREEN)Copying Deb files for installation on $(BOARD)$(END_COLOUR)"
 	@cp /output/cvitek-fsbl-$(BOARD)_*.deb /rootfs/tmp/install/
-	@cp /output/cvitek-osdrv-$(BOARD)_*.deb /rootfs/tmp/install/
+	@cp /output/cvitek-osdrv-*$(BOARD)*.deb /rootfs/tmp/install/
 	@cp /output/cvitek-middleware-$(BOARD)_*.deb /rootfs/tmp/install/
 	@cp /output/linux-image-*$(BOARD)*.deb /rootfs/tmp/install/
 	@cp /output/linux-headers-*.deb /rootfs/tmp/install/
