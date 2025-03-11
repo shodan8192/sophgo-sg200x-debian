@@ -8,6 +8,9 @@ $(BUILDDIR)/duo-pinmux-stamp: $(BUILDDIR)/buildroot-package-stamp
 	@cp -p $(BR_OUTPUT_DIR)/target/usr/bin/duo-pinmux $(BUILDDIR)/package/duo-pinmux-$(BOARD)-$(DUOPINMUXVERSION)/usr/bin/duo-pinmux
 	@sed -i 's/Version: 1.0.0-1/Version: $(DUOPINMUXVERSION)$(BV)/' $(BUILDDIR)/package/duo-pinmux-$(BOARD)-$(DUOPINMUXVERSION)/DEBIAN/control
 	@sed -i 's/Package: duo-pinmux/Package: duo-pinmux-$(BOARD)/' $(BUILDDIR)/package/duo-pinmux-$(BOARD)-$(DUOPINMUXVERSION)/DEBIAN/control
+	@if [ "$(BOARD)" = "duos" ]; then \
+		sed -i 's/Duo256/DuoS/' $(BUILDDIR)/package/duo-pinmux-$(BOARD)-$(DUOPINMUXVERSION)/DEBIAN/control ; \
+	fi
 	@cd $(BUILDDIR)/package/ && dpkg-deb --build duo-pinmux-$(BOARD)-$(DUOPINMUXVERSION) duo-pinmux-$(BOARD)_$(DUOPINMUXVERSION)$(BV)_$(DEB_ARCH).deb
 	@cp $(BUILDDIR)/package/duo-pinmux-$(BOARD)_$(DUOPINMUXVERSION)$(BV)_$(DEB_ARCH).deb /output/
 	@cp /output/duo-pinmux-$(BOARD)_$(DUOPINMUXVERSION)$(BV)_$(DEB_ARCH).deb /rootfs/tmp/install/
