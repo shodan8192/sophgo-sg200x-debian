@@ -24,6 +24,9 @@ $(BUILDDIR)/sensor-config-install-stamp:
 	elif [ "$(BOARD)" = "duo256" ]; then \
 		cp -p addons/device-config/overlay/mnt/cfg/param/cvi_sdr_bin_GC2083 /rootfs/mnt/cfg/param/cvi_sdr_bin && \
 		cp -p addons/device-config/overlay/mnt/data/sensor_cfg_GC2083.ini /rootfs/mnt/data/sensor_cfg.ini ; \
+	elif [ "$(BOARD)" = "duos" ]; then \
+		cp -p addons/device-config/overlay/mnt/cfg/param/cvi_sdr_bin_GC2083 /rootfs/mnt/cfg/param/cvi_sdr_bin && \
+		cp -p addons/device-config/$(BOARD)/mnt/data/sensor_cfg_GC2083.ini /rootfs/mnt/data/sensor_cfg.ini ; \
 	fi
 	@mkdir -p /rootfs/tmp/install/
 	@echo " sensor-config" >> /rootfs/tmp/install/systemd-enable
@@ -43,6 +46,9 @@ $(BUILDDIR)/sensor-config-package-stamp:
 	@rm -f $(BUILDDIR)/package/sensor-config-$(BOARD)-$(MIDDLEWAREVERSION)/mnt/cfg/param/cvi_sdr_bin
 	@mkdir -pv $(BUILDDIR)/package/sensor-config-$(BOARD)-$(MIDDLEWAREVERSION)/mnt/data/
 	@rsync -avpPxH addons/device-config/overlay/mnt/data/ $(BUILDDIR)/package/sensor-config-$(BOARD)-$(MIDDLEWAREVERSION)/mnt/data/
+	@if [ -e addons/device-config/$(BOARD)/mnt/data ]; then \
+		rsync -avpPxH addons/device-config/$(BOARD)/mnt/data/ $(BUILDDIR)/package/sensor-config-$(BOARD)-$(MIDDLEWAREVERSION)/mnt/data/ ; \
+	fi
 	@rm -f $(BUILDDIR)/package/sensor-config-$(BOARD)-$(MIDDLEWAREVERSION)/mnt/data/sensor_cfg.ini
 	@sed -i 's/Version: 1.0.0/Version: $(MIDDLEWAREVERSION)/' $(BUILDDIR)/package/sensor-config-$(BOARD)-$(MIDDLEWAREVERSION)/DEBIAN/control
 	@sed -i 's/Package: sensor-config/Package: sensor-config-$(BOARD)/' $(BUILDDIR)/package/sensor-config-$(BOARD)-$(MIDDLEWAREVERSION)/DEBIAN/control
