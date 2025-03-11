@@ -14,6 +14,9 @@ $(BUILDDIR)/load-systemko-stamp:
 	@chmod +x $(BUILDDIR)/package/load-systemko-$(BOARD)-$(OSDRVVERSION)/etc/init.d/S05tp
 	@cp -a addons/load-systemko/S25wifimod $(BUILDDIR)/package/load-systemko-$(BOARD)-$(OSDRVVERSION)/etc/init.d/
 	@chmod +x $(BUILDDIR)/package/load-systemko-$(BOARD)-$(OSDRVVERSION)/etc/init.d/S25wifimod
+	@if [ "$(BOARD)" = "duo256" ]; then \
+		sed -i 's|\tinsmod soph_vo.ko|\t#insmod soph_vo.ko|g' $(BUILDDIR)/package/load-systemko-$(BOARD)-$(OSDRVVERSION)/etc/init.d/S00kmod ; \
+	fi
 	@mkdir -pv $(BUILDDIR)/package/load-systemko-$(BOARD)-$(OSDRVVERSION)/etc/systemd/system/
 	@cp -a addons/load-systemko/load-systemko*.service $(BUILDDIR)/package/load-systemko-$(BOARD)-$(OSDRVVERSION)/etc/systemd/system/
 	@cp -a addons/load-systemko/enable-backlight*.service $(BUILDDIR)/package/load-systemko-$(BOARD)-$(OSDRVVERSION)/etc/systemd/system/
