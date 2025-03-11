@@ -12,7 +12,14 @@ then
 
 	. /etc/profile
 	printf "load kernel module: "
-	cd /mnt/system/ko/${KERNELRELEASE}/ || cd /mnt/system/ko/
+	cd /mnt/system/ko/
+	for ko in ${KERNELRELEASE}/*.ko ; do
+		if [ -e $ko ]; then
+			km=`basename $ko`
+			rm -f $km
+			ln -s $ko $km
+		fi
+	done
 	insmod soph_sys.ko
 	insmod soph_base.ko
 	insmod soph_rtos_cmdqu.ko

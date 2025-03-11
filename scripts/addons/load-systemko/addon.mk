@@ -1,5 +1,6 @@
 $(BUILDDIR)/load-systemko-stamp:
 	@echo "$(COLOUR_GREEN)Packaging load-systemko for $(BOARD)$(END_COLOUR)"
+	@$(eval LSKV=$(shell echo "-2"))
 	@mkdir -p $(BUILDDIR)/package/load-systemko-$(BOARD)-$(OSDRVVERSION)
 	@cp -r /builder/deb/load-systemko/* $(BUILDDIR)/package/load-systemko-$(BOARD)-$(OSDRVVERSION)/
 	@mkdir -pv $(BUILDDIR)/package/load-systemko-$(BOARD)-$(OSDRVVERSION)/etc/init.d/
@@ -19,10 +20,10 @@ $(BUILDDIR)/load-systemko-stamp:
 	@cp -a addons/load-systemko/load-fb*.service $(BUILDDIR)/package/load-systemko-$(BOARD)-$(OSDRVVERSION)/etc/systemd/system/
 	@cp -a addons/load-systemko/load-tp*.service $(BUILDDIR)/package/load-systemko-$(BOARD)-$(OSDRVVERSION)/etc/systemd/system/
 	@cp -a addons/load-systemko/load-wifimod*.service $(BUILDDIR)/package/load-systemko-$(BOARD)-$(OSDRVVERSION)/etc/systemd/system/
-	@sed -i 's/Version: 1.0.0/Version: $(OSDRVVERSION)/' $(BUILDDIR)/package/load-systemko-$(BOARD)-$(OSDRVVERSION)/DEBIAN/control
+	@sed -i 's/Version: 1.0.0/Version: $(OSDRVVERSION)$(LSKV)/' $(BUILDDIR)/package/load-systemko-$(BOARD)-$(OSDRVVERSION)/DEBIAN/control
 	@sed -i 's/Package: load-systemko/Package: load-systemko-$(BOARD)/' $(BUILDDIR)/package/load-systemko-$(BOARD)-$(OSDRVVERSION)/DEBIAN/control
-	@cd $(BUILDDIR)/package/ && dpkg-deb --build load-systemko-$(BOARD)-$(OSDRVVERSION) load-systemko-$(BOARD)_$(OSDRVVERSION)_$(DEB_ARCH).deb
-	@cp $(BUILDDIR)/package/load-systemko-$(BOARD)_$(OSDRVVERSION)_$(DEB_ARCH).deb /output/
+	@cd $(BUILDDIR)/package/ && dpkg-deb --build load-systemko-$(BOARD)-$(OSDRVVERSION) load-systemko-$(BOARD)_$(OSDRVVERSION)$(LSKV)_$(DEB_ARCH).deb
+	@cp $(BUILDDIR)/package/load-systemko-$(BOARD)_$(OSDRVVERSION)$(LSKV)_$(DEB_ARCH).deb /output/
 	@mkdir -p /rootfs/tmp/install/
 	@cp /output/load-systemko-*.deb /rootfs/tmp/install/
 	@echo "$(COLOUR_GREEN)Installing load-systemko for $(BOARD)$(END_COLOUR)"
