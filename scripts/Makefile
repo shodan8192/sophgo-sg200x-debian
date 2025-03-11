@@ -445,7 +445,7 @@ $(BUILDDIR)/fsbl-package-stamp: $(BUILDDIR)/fsbl-compile-stamp
 	@mkdir -p $(BUILDDIR)/package/cvitek-fsbl-$(BOARD)-$(FSBLVERSION)/boot/ $(BUILDDIR)/package/cvitek-fsbl-$(BOARD)-$(FSBLVERSION)/etc/
 	@cp $(BUILDDIR)/fip.bin $(BUILDDIR)/package/cvitek-fsbl-$(BOARD)-$(FSBLVERSION)/boot/
 	@cp $(BUILDDIR)/u-boot-initial-env $(BUILDDIR)/package/cvitek-fsbl-$(BOARD)-$(FSBLVERSION)/etc/
-	@sed -i 's/Version: 1.0.0/Version: $(FSBLVERSION)$(UV)/' $(BUILDDIR)/package/cvitek-fsbl-$(BOARD)-$(FSBLVERSION)/DEBIAN/control
+	@sed -i 's/Version: 1.1.0/Version: $(FSBLVERSION)$(UV)/' $(BUILDDIR)/package/cvitek-fsbl-$(BOARD)-$(FSBLVERSION)/DEBIAN/control
 	@sed -i 's/Package: cvitek-fsbl/Package: cvitek-fsbl-$(BOARD)/' $(BUILDDIR)/package/cvitek-fsbl-$(BOARD)-$(FSBLVERSION)/DEBIAN/control
 	@cd $(BUILDDIR)/package/ && dpkg-deb --build cvitek-fsbl-$(BOARD)-$(FSBLVERSION) cvitek-fsbl-$(BOARD)_$(FSBLVERSION)$(UV)_$(DEB_ARCH).deb
 	@cp $(BUILDDIR)/package/cvitek-fsbl-$(BOARD)_$(FSBLVERSION)$(UV)_$(DEB_ARCH).deb /output/
