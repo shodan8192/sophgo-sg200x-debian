@@ -1,5 +1,5 @@
 # Debian Images for Sophgo cv181x/sg200x based boards 
-This repository builds debian images for Sophgo cv181x/sg200x based boards such as MilkV Duo256/DuoS and Sipeed LicheeRvNano.
+This repository builds debian images for Sophgo cv181x/sg200x based boards such as MilkV Duo256/DuoS and Sipeed LicheeRvNano/NanoKVM.
 
 (Note, we don't support the MilkV Duo, as it does not have enough ram to run Debian)
 
@@ -79,7 +79,7 @@ For Boards with eithernet, they should automatically get a IP address if your ne
 ethernet port in /etc/network/interfaces.d/end0
 
 ### Camera/ISP/Panel Support
-The images are based on the vendor 5.10 kernel, but exclude the following drivers:
+The images are based on the vendor 5.10 kernel and osdrv, also including the following drivers:
 - mipi-rx/csi drivers
 - mipi-tx/dsi drivers
 - TPU Drivers
@@ -98,6 +98,38 @@ Support is disabled on my images because the small C906 core is used by ISP.
 This image also adds the debian repository for board-related packages so you can install additional repositories. The debian repository is hosted at 
 https://scpcom.github.io/deb which pulls down the compiled debian packages from the above github repository occasionally.
 
+Available debian packages:
+
+ - cvi-pinmux-cv181x  
+ Contains a tool named cvi_pinmux which allows to change the function of the pins (GPIO, SPI etc.).
+ - firmware-vcodec-cv181x  
+ Firmware for the video encoder/decoder running on the small C906 core.
+
+…and board-specific packages like:
+
+ - cvitek-fsbl-licheervnano  
+ The boot loader (including opensbi and u-boot).
+ - cvitek-middleware-licheervnano  
+ Libs and samples for the ISP (vi/vo/venc/vdec etc.).
+ - cvitek-osdrv-licheervnano-kvm  
+ Additional kernel drivers (required for camera support etc.).
+ - device-key-licheervnano  
+ Startup script that sets the Ethernet MAC address and hostname based on the hash off the device uuid.
+ - duo-pinmux-duo256  
+ Same as cvi-pinmux but customized for Milk-V Duo series boards.
+ - gadget-nic-licheervnano  
+ Startup script to setup USB Gadget NCM/RNDIS networking.
+ - linux-image-licheervnano-kvm  
+ The kernel customized for the board.
+ - load-systemko-licheervnano  
+ Startup script that loads the additional drivers (see cvitek-osdrv-licheervnano-kvm).
+ - nanokvm-licheervnano  
+ NanoKVM Server that provides the web interface to control your device.
+ - sensor-config-licheervnano  
+ Configuration files and parameters required to initialize the camera sensor.
+
+The package names are depending on the board you are using (licheervnano, duo256 or duos) and the variant (kvm = NanoKVM, e = all others).
+For example if you want the kernel for Milk-V Duo256 the package is called linux-image-duo256-e.
 
 ## Building the Image
 To build a stock image with no modifications:
