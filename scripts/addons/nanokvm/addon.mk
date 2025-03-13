@@ -58,6 +58,11 @@ $(BUILDDIR)/nanokvm-stamp: $(BUILDDIR)/buildroot-package-stamp
 	@cp -a addons/nanokvm/usb-device*.service $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/etc/systemd/system/
 	@cd $(BUILDDIR)/package/ && dpkg-deb --build nanokvm-$(BOARD)-$(NANOKVMVERSION) nanokvm-$(BOARD)_$(NANOKVMVERSION)$(BV)_$(DEB_ARCH).deb
 	@cp $(BUILDDIR)/package/nanokvm-$(BOARD)_$(NANOKVMVERSION)$(BV)_$(DEB_ARCH).deb /output/
+	@rm -f /output/nanokvm-latest.zip
+	@rsync -avpPxH $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/kvmapp/system/init.d/ $(BR_OUTPUT_DIR)/target/kvmapp/system/init.d/
+	@ln -s kvmapp $(BR_OUTPUT_DIR)/target/latest
+	@cd $(BR_OUTPUT_DIR)/target && zip -r --symlinks /output/nanokvm-latest.zip latest/*
+	@rm $(BR_OUTPUT_DIR)/target/latest
 	@mkdir -p /rootfs/tmp/install/
 	@echo " usb-device" >> /rootfs/tmp/install/systemd-enable
 	@echo " kvm-data" >> /rootfs/tmp/install/systemd-enable

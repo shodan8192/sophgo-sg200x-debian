@@ -326,13 +326,6 @@ $(BUILDDIR)/buildroot-compile-stamp: $(BUILDDIR)/buildroot-prepare-configure-sta
 
 $(BUILDDIR)/buildroot-package-stamp: $(BUILDDIR)/buildroot-compile-stamp
 	@echo "$(COLOUR_GREEN)Packaging Buildroot for $(BOARD)$(END_COLOUR)"
-	if [ -e $(BR_OUTPUT_DIR)/target/kvmapp/server/NanoKVM-Server ]; then \
-		rm -f /output/nanokvm-latest.zip ; \
-		cd $(BR_OUTPUT_DIR)/target ; \
-		ln -s kvmapp latest ; \
-		zip -r --symlinks /output/nanokvm-latest.zip latest/* ; \
-		rm latest ; \
-	fi
 	@rm -rf $(BR_OUTPUT_DIR)/build/*/*/
 	@touch $@
 
