@@ -55,7 +55,7 @@ $(BUILDDIR)/nanokvm-stamp: $(BUILDDIR)/buildroot-package-stamp
 	@cp -a addons/nanokvm/kvm-data*.service $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/etc/systemd/system/
 	@cp -a addons/nanokvm/kvm-hwd*.service $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/etc/systemd/system/
 	@cp -a addons/nanokvm/nanokvm*.service $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/etc/systemd/system/
-	@cp -a addons/nanokvm/usb-device*.service $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/etc/systemd/system/
+	@cp -a addons/usb-device/usb-device*.service $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/etc/systemd/system/
 	@cd $(BUILDDIR)/package/ && dpkg-deb --build nanokvm-$(BOARD)-$(NANOKVMVERSION) nanokvm-$(BOARD)_$(NANOKVMVERSION)$(BV)_$(DEB_ARCH).deb
 	@cp $(BUILDDIR)/package/nanokvm-$(BOARD)_$(NANOKVMVERSION)$(BV)_$(DEB_ARCH).deb /output/
 	@rm -f /output/nanokvm-latest.zip
