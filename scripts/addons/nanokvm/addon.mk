@@ -44,8 +44,16 @@ $(BUILDDIR)/nanokvm-stamp: $(BUILDDIR)/buildroot-package-stamp
 	@rm -f $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/kvmapp/system/init.d/S30gadget_nic
 	@cp -p addons/nanokvm/S30wifi $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/kvmapp/system/init.d/
 	@chmod +x $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/kvmapp/system/init.d/S30wifi
+	@mkdir -pv $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/kvmapp/system/systemd/
+	@cp -a addons/nanokvm/kvm-data*.service $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/kvmapp/system/systemd/
+	@cp -a addons/nanokvm/kvm-hwd*.service $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/kvmapp/system/systemd/
+	@cp -a addons/nanokvm/nanokvm*.service $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/kvmapp/system/systemd/
+	@cp -a addons/usb-device/usb-device*.service $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/kvmapp/system/systemd/
+	@cp -a addons/wifi-builtin/wifi-builtin*.service $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/kvmapp/system/systemd/
+	@cp -a addons/wifi-builtin/wifi-hostapd*.service $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/kvmapp/system/systemd/
 	@sed -i 's/Version: 1.0.0/Version: $(NANOKVMVERSION)$(BV)/' $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/DEBIAN/control
 	@sed -i 's/Package: nanokvm-sg200x/Package: nanokvm-$(BOARD)/' $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/DEBIAN/control
+	@chmod +x $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/DEBIAN/postinst
 	@cd $(BUILDDIR)/package/ && dpkg-deb --build nanokvm-$(BOARD)-$(NANOKVMVERSION) nanokvm-$(BOARD)_$(NANOKVMVERSION)$(BV)_$(DEB_ARCH).deb
 	@cp $(BUILDDIR)/package/nanokvm-$(BOARD)_$(NANOKVMVERSION)$(BV)_$(DEB_ARCH).deb /output/
 	@mkdir -p /rootfs/tmp/install/
