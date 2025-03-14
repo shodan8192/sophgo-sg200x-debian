@@ -102,6 +102,8 @@ Available debian packages:
 
  - cvi-pinmux-cv181x  
  Contains a tool named cvi_pinmux which allows to change the function of the pins (GPIO, SPI etc.).
+ - firmware-aic8800-cv181x  
+ Firmware for the on-board WiFi.
  - firmware-vcodec-cv181x  
  Firmware for the video encoder/decoder running on the small C906 core.
 
@@ -115,10 +117,14 @@ Available debian packages:
  Additional kernel drivers (required for camera support etc.).
  - device-key-licheervnano  
  Startup script that sets the Ethernet MAC address and hostname based on the hash off the device uuid.
- - duo-pinmux-duo256  
+ - duo-pinmux-duos  
  Same as cvi-pinmux but customized for Milk-V Duo series boards.
+ - ethernet-leds-duos  
+ Startup script to enable ethernet LED triggers.
  - gadget-nic-licheervnano  
  Startup script to setup USB Gadget NCM/RNDIS networking.
+ - hciattach-uart-duos  
+ Startup script to attach bluetooth to UART.
  - linux-image-licheervnano-kvm  
  The kernel customized for the board.
  - load-systemko-licheervnano  
@@ -127,6 +133,12 @@ Available debian packages:
  NanoKVM Server that provides the web interface to control your device.
  - sensor-config-licheervnano  
  Configuration files and parameters required to initialize the camera sensor.
+ - usb-device-licheervnano  
+ Startup script to setup USB gadget devices.
+ - usb-switch-duos  
+ Startup script to enable the USB switch.
+ - wifi-builtin-licheervnano  
+ Startup scripts to initialize the on-board WiFi.
 
 The package names are depending on the board you are using (licheervnano, duo256 or duos) and the variant (kvm = NanoKVM, e = all others).
 For example if you want the kernel for Milk-V Duo256 the package is called linux-image-duo256-e.
