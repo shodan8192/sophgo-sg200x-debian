@@ -1,11 +1,9 @@
 $(BUILDDIR)/nanokvm-stamp: $(BUILDDIR)/buildroot-package-stamp
-	@echo "$(COLOUR_GREEN)Installing nanokvm for $(BOARD)$(END_COLOUR)"
-	@mkdir -pv /rootfs/boot/
-	@touch /rootfs/boot/usb.disk0
-	@touch /rootfs/boot/usb.rndis0
 	@echo "$(COLOUR_GREEN)Packaging NanoKVM for $(BOARD)$(END_COLOUR)"
 	@$(eval NANOKVMVERSION=$(shell cat $(BR_OUTPUT_DIR)/target/kvmapp/version))
 	@$(eval BV=$(shell cd $(BUILDDIR)/buildroot && git log -1 --format="%at" | xargs -I{} date -d @{} +-%Y%m%d-${KERNELREV}))
+	@mkdir -p $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)
+	@cp -r /builder/deb/nanokvm-sg200x/* $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/
 	@mkdir -pv $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/etc/init.d/
 	@cp -a addons/nanokvm/S01fs $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/etc/init.d/
 	@chmod +x $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/etc/init.d/S01fs
@@ -13,12 +11,12 @@ $(BUILDDIR)/nanokvm-stamp: $(BUILDDIR)/buildroot-package-stamp
 	@chmod +x $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/etc/init.d/S15kvmhwd
 	@cp -a addons/nanokvm/S95nanokvm $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/etc/init.d/
 	@chmod +x $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/etc/init.d/S95nanokvm
-	@mkdir -p $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)
-	@cp -r /builder/deb/nanokvm-sg200x/* $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/
+	@mkdir -pv $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/etc/systemd/system/
+	@cp -a addons/nanokvm/kvm-data*.service $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/etc/systemd/system/
+	@cp -a addons/nanokvm/kvm-hwd*.service $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/etc/systemd/system/
+	@cp -a addons/nanokvm/nanokvm*.service $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/etc/systemd/system/
 	@mkdir -pv $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/kvmapp/
 	@rsync -avpPxH $(BR_OUTPUT_DIR)/target/kvmapp/ $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/kvmapp/
-	@sed -i 's/Version: 1.0.0/Version: $(NANOKVMVERSION)$(BV)/' $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/DEBIAN/control
-	@sed -i 's/Package: nanokvm-sg200x/Package: nanokvm-$(BOARD)/' $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/DEBIAN/control
 	@sed -i s/'i2cdetect -ry'/'i2cdetect -r -y'/g $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/etc/init.d/S15kvmhwd
 	@sed -i 's|# cp -r /kvmapp/server|cp -r /kvmapp/server|g' $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/etc/init.d/S95nanokvm
 	@sed -i 's|# /tmp/server/NanoKVM-Server|/tmp/server/NanoKVM-Server|g' $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/etc/init.d/S95nanokvm
@@ -46,10 +44,8 @@ $(BUILDDIR)/nanokvm-stamp: $(BUILDDIR)/buildroot-package-stamp
 	@rm -f $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/kvmapp/system/init.d/S30gadget_nic
 	@cp -p addons/nanokvm/S30wifi $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/kvmapp/system/init.d/
 	@chmod +x $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/kvmapp/system/init.d/S30wifi
-	@mkdir -pv $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/etc/systemd/system/
-	@cp -a addons/nanokvm/kvm-data*.service $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/etc/systemd/system/
-	@cp -a addons/nanokvm/kvm-hwd*.service $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/etc/systemd/system/
-	@cp -a addons/nanokvm/nanokvm*.service $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/etc/systemd/system/
+	@sed -i 's/Version: 1.0.0/Version: $(NANOKVMVERSION)$(BV)/' $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/DEBIAN/control
+	@sed -i 's/Package: nanokvm-sg200x/Package: nanokvm-$(BOARD)/' $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/DEBIAN/control
 	@cd $(BUILDDIR)/package/ && dpkg-deb --build nanokvm-$(BOARD)-$(NANOKVMVERSION) nanokvm-$(BOARD)_$(NANOKVMVERSION)$(BV)_$(DEB_ARCH).deb
 	@cp $(BUILDDIR)/package/nanokvm-$(BOARD)_$(NANOKVMVERSION)$(BV)_$(DEB_ARCH).deb /output/
 	@rm -f /output/nanokvm-latest.zip
@@ -57,6 +53,10 @@ $(BUILDDIR)/nanokvm-stamp: $(BUILDDIR)/buildroot-package-stamp
 	@ln -s kvmapp $(BR_OUTPUT_DIR)/target/latest
 	@cd $(BR_OUTPUT_DIR)/target && zip -r --symlinks /output/nanokvm-latest.zip latest/*
 	@rm $(BR_OUTPUT_DIR)/target/latest
+	@echo "$(COLOUR_GREEN)Installing nanokvm for $(BOARD)$(END_COLOUR)"
+	@mkdir -pv /rootfs/boot/
+	@touch /rootfs/boot/usb.disk0
+	@touch /rootfs/boot/usb.rndis0
 	@mkdir -p /rootfs/tmp/install/
 	@echo " kvm-data" >> /rootfs/tmp/install/systemd-enable
 	@echo " kvm-hwd" >> /rootfs/tmp/install/systemd-enable
