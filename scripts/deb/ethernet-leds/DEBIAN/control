@@ -1,6 +1,7 @@
 Package: ethernet-leds
 Architecture: riscv64
 Maintainer: @scpcom
+Depends: bash
 Priority: optional
 Version: 1.0.0
 Description: ethernet-leds for the CV18xx and SG200X series of RISC-V SoC's
