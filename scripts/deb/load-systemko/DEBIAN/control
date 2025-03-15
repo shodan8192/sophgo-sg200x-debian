@@ -1,6 +1,7 @@
 Package: load-systemko
 Architecture: riscv64
 Maintainer: @scpcom
+Depends: busybox-static
 Priority: optional
 Version: 1.0.0
 Description: load-systemko for the CV18xx and SG200X series of RISC-V SoC's

@@ -1,6 +1,7 @@
 Package: gadget-nic
 Architecture: riscv64
 Maintainer: @scpcom
+Depends: busybox-static, net-tools, udhcpd
 Priority: optional
 Version: 1.0.0
 Description: gadget-nic for the CV18xx and SG200X series of RISC-V SoC's
