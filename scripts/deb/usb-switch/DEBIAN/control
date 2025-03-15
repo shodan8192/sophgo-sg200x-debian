@@ -1,6 +1,7 @@
 Package: usb-switch
 Architecture: riscv64
 Maintainer: @scpcom
+Depends: gpiod
 Priority: optional
 Version: 1.0.0
 Description: usb-switch for the CV18xx and SG200X series of RISC-V SoC's
