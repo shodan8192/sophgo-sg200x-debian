@@ -467,7 +467,6 @@ $(BUILDDIR)/image-prepare-stamp:
 	@touch $@
 
 $(BUILDDIR)/image-addons-stamp: $(BUILDDIR)/image-prepare-stamp $(BUILDDIR)/fsbl-package-stamp $(BUILDDIR)/linux-package-stamp $(BUILDDIR)/osdrv-package-stamp $(BUILDDIR)/middleware-package-stamp $(addon-targets)
-	@[ -e /rootfs/usr/bin/devmem ] || ln -s busybox /rootfs/usr/bin/devmem
 	@echo "$(COLOUR_GREEN)Copying Deb files for installation on $(BOARD)$(END_COLOUR)"
 	@cp /output/cvitek-fsbl-$(BOARD)_*.deb /rootfs/tmp/install/
 	@cp /output/cvitek-osdrv-*$(BOARD)*.deb /rootfs/tmp/install/

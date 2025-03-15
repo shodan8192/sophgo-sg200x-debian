@@ -1,0 +1,2 @@
+#!/bin/sh
+[ -e /usr/bin/devmem ] || ln -s busybox /usr/bin/devmem
