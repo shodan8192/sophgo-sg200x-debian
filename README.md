@@ -61,6 +61,7 @@ After executing these commands, you need to reboot.
 ### DuoS - USB Type A Port
 After disabling the usb-gadgets, if you want to use the USB Type A Ports, then you need to turn them on:
 ```
+rm /boot/usb.dev
 systemctl enable usb-switch
 ```
 
