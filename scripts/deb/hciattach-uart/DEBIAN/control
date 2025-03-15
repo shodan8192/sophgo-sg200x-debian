@@ -1,6 +1,7 @@
 Package: hciattach-uart
 Architecture: riscv64
 Maintainer: @scpcom
+Depends: bluez
 Priority: optional
 Version: 1.0.0
 Description: hciattach-uart for the CV18xx and SG200X series of RISC-V SoC's
