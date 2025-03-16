@@ -182,7 +182,7 @@ $(BUILDDIR)/linux-package-stamp: $(BUILDDIR)/linux-compile-stamp
 	@sed -i 's/Version: 1.0.0-1/Version: $(LINUXMETAVERSION)/' $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/DEBIAN/control
 	@sed -i 's/Package: linux-image-sg200x/Package: linux-image-$(BOARD)-$(VARIANT)/' $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/DEBIAN/control
 	@sed -i 's/Depends: linux-image-.*/Depends: linux-image-$(LINUXMETAVERSION)/' $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/DEBIAN/control
-	@sed -i 's/Recommends: cvitek-osdrv-.*/Recommends: cvitek-osdrv-$(LINUXMETAVERSION)/' $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/DEBIAN/control
+	@sed -i 's/Recommends: cvitek-osdrv-.*/Recommends: cvitek-fsbl-$(BOARD_EXT), cvitek-osdrv-$(LINUXMETAVERSION)/' $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/DEBIAN/control
 	@cd $(BUILDDIR)/package/ && dpkg-deb --build linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION) linux-image-$(BOARD)-$(VARIANT)_$(LINUXMETAVERSION)_$(DEB_ARCH).deb
 	@cp $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)_$(LINUXMETAVERSION)_$(DEB_ARCH).deb /output/
 	@touch $@
