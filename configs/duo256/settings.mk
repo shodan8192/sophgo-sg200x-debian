@@ -9,7 +9,7 @@ PARTITION_FILE=partition_sd.xml
 STORAGE_TYPE=sd
 VARIANT?=e
 
-PACKAGES += " cvi-pinmux-cv181x"
+PACKAGES += " cvi-pinmux-cv181x udhcpd"
 
 IMAGE_ADDITIONS += "duo-pinmux"
 IMAGE_ADDITIONS += "sensor-config"
