@@ -1,3 +1,8 @@
+ifneq ("$(findstring aic8800-firmware,$(IMAGE_ADDITIONS))","")
+BSPDEPENDS += firmware-aic8800-$(CHIP)
+BSPFILTER += "aic8800-firmware"
+endif
+
 $(BUILDDIR)/aic8800-firmware-stamp:
 	@echo "$(COLOUR_GREEN)Installing aic8800-firmware for $(BOARD)$(END_COLOUR)"
 	@rm -rf $(BUILDDIR)/aic8800-firmware
