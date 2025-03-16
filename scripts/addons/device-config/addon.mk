@@ -1,3 +1,7 @@
+ifneq ("$(findstring sensor-config,$(IMAGE_ADDITIONS))","")
+BSPDEPENDS += firmware-vcodec-$(CHIP)
+endif
+
 $(BUILDDIR)/firmware-vcodec-package-stamp:
 	@echo "$(COLOUR_GREEN)Packaging vcodec-firmware for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)/package/firmware-vcodec-$(CHIP)-$(MIDDLEWAREVERSION)
