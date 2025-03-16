@@ -110,6 +110,8 @@ Available debian packages:
 
 …and board-specific packages like:
 
+ - board-support-licheervnano-kvm  
+ Meta package, installs all board-specific packages.
  - cvitek-fsbl-licheervnano  
  The boot loader (including opensbi and u-boot).
  - cvitek-middleware-licheervnano  
@@ -126,6 +128,8 @@ Available debian packages:
  Startup script to setup USB Gadget NCM/RNDIS networking.
  - hciattach-uart-duos  
  Startup script to attach bluetooth to UART.
+ - linux-headers-licheervnano-kvm  
+ The kernel headers for the board.
  - linux-image-licheervnano-kvm  
  The kernel customized for the board.
  - load-systemko-licheervnano  
