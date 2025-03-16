@@ -2,7 +2,7 @@
 Description=KVM Data
 After=load-systemko.service
 After=finalize-image.service
-Before=device-config.service
+Before=sensor-config.service
 Before=network.target
 StartLimitIntervalSec=0
 
