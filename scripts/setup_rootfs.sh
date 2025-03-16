@@ -115,15 +115,12 @@ cp ${lib_dir}/cvitek/*.dtb /boot/fdt/${kernel_image}/cvitek/
 
 cat /boot/extlinux/extlinux.conf
 
-if [ "$STORAGETYPE" = "sd" ]; then
-sed -i -i 's|#U_BOOT_PARAMETERS=".*"|U_BOOT_PARAMETERS="console=ttyS0,115200 earlycon=sbi root=/dev/mmcblk0p2 rootwait rw"|' /etc/default/u-boot
-else
-sed -i -i 's|#U_BOOT_PARAMETERS=".*"|U_BOOT_PARAMETERS="console=ttyS0,115200 earlycon=sbi root=/dev/mmcblk0p1 rootwait rw"|' /etc/default/u-boot
-fi
-
-sed -i -e 's|#U_BOOT_SYNC_DTBS=".*"|U_BOOT_SYNC_DTBS="true"|' /etc/default/u-boot
 #doing this dance, as in the chroot, / and /boot are same filesystem, so u-boot-update doesn't setup correctly
-echo "U_BOOT_FDT_DIR=\"/usr/lib/linux-image-\"" >> /etc/default/u-boot
+if grep -q '^U_BOOT_FDT_DIR' /etc/default/u-boot ; then
+  sed -i -e "s|U_BOOT_FDT_DIR=\".*\"|U_BOOT_FDT_DIR=\"/usr/lib/linux-image-\"|" /etc/default/u-boot
+else
+  echo "U_BOOT_FDT_DIR=\"/usr/lib/linux-image-\"" >> /etc/default/u-boot
+fi
 u-boot-update
 if [ "$STORAGETYPE" = "sd" ]; then
   sed -i -e 's|fdtdir /usr/lib/|fdtdir /fdt/|' /boot/extlinux/extlinux.conf
@@ -178,9 +175,6 @@ EOJ
 
 apt-get update
 apt-get install -y chrony
-
-echo "/boot/uboot.env	0x0000          0x20000" > /etc/fw_env.config
-mkenvimage -s 0x20000 -o /boot/uboot.env /etc/u-boot-initial-env
 
 
 #
