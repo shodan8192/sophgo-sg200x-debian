@@ -68,6 +68,13 @@ ifndef BOARD
 $(error $(red)BOARD is not set$(reset))
 endif
 
+BSPDEPENDS = cvitek-fsbl-$(BOARD)\
+ cvitek-middleware-$(BOARD)\
+ cvitek-osdrv-$(BOARD)-$(VARIANT)\
+ linux-headers-$(BOARD)-$(VARIANT)\
+ linux-image-$(BOARD)-$(VARIANT)
+BSPFILTER =
+
 include /configs/settings.mk
 
 ifneq ("$(wildcard /configs/$(BOARD)/settings.mk)","")
@@ -81,6 +88,12 @@ include $(wildcard /builder/addons/*/addon.mk)
 addon-targets = $(patsubst "%,$(BUILDDIR)/%-stamp,$(patsubst %",%,$(IMAGE_ADDITIONS)))
 _PACKAGES = $(patsubst "%,%,$(patsubst %",%,$(PACKAGES)))
 
+COMMA := ,
+EMPTY :=
+SPACE := $(EMPTY) $(EMPTY)
+
+BSPDEPENDS += $(patsubst "%,%-$(BOARD),$(patsubst %",%,$(filter-out $(BSPFILTER),$(IMAGE_ADDITIONS))))
+_BSPDEPENDS = $(subst $(SPACE),$(COMMA)$(SPACE),$(sort $(BSPDEPENDS)))
 
 $(info $(blue)Board: $(BOARD)$(reset))
 $(info $(blue)Variant: $(VARIANT)$(reset))
@@ -479,6 +492,19 @@ $(BUILDDIR)/image-prepare-stamp:
 	@touch $@
 
 $(BUILDDIR)/image-addons-stamp: $(BUILDDIR)/image-prepare-stamp $(BUILDDIR)/fsbl-package-stamp $(BUILDDIR)/linux-package-stamp $(BUILDDIR)/osdrv-package-stamp $(BUILDDIR)/middleware-package-stamp $(addon-targets)
+	@echo "$(COLOUR_GREEN)Packaging board-support-sg200x for $(BOARD)$(END_COLOUR)"
+	@mkdir -p $(BUILDDIR)/package/board-support-$(BOARD)-$(VARIANT)-$(BSPVERSION)
+	@cp -r /builder/deb/board-support-sg200x/* $(BUILDDIR)/package/board-support-$(BOARD)-$(VARIANT)-$(BSPVERSION)/
+	@mkdir -pv $(BUILDDIR)/package/board-support-$(BOARD)-$(VARIANT)-$(BSPVERSION)/usr/share/doc/board-support-$(BOARD)-$(VARIANT)/
+	@echo "meta package" > $(BUILDDIR)/package/board-support-$(BOARD)-$(VARIANT)-$(BSPVERSION)/usr/share/doc/board-support-$(BOARD)-$(VARIANT)/README
+	@sed -i 's/Version: 1.0.0-1/Version: $(BSPVERSION)/' $(BUILDDIR)/package/board-support-$(BOARD)-$(VARIANT)-$(BSPVERSION)/DEBIAN/control
+	@sed -i 's/Package: board-support-sg200x/Package: board-support-$(BOARD)-$(VARIANT)/' $(BUILDDIR)/package/board-support-$(BOARD)-$(VARIANT)-$(BSPVERSION)/DEBIAN/control
+	@sed -i 's/Depends: .*/Depends: $(_BSPDEPENDS)/' $(BUILDDIR)/package/board-support-$(BOARD)-$(VARIANT)-$(BSPVERSION)/DEBIAN/control
+	@sed -i '/Recommends: .*/d' $(BUILDDIR)/package/board-support-$(BOARD)-$(VARIANT)-$(BSPVERSION)/DEBIAN/control
+	@cd $(BUILDDIR)/package/ && dpkg-deb --build board-support-$(BOARD)-$(VARIANT)-$(BSPVERSION) board-support-$(BOARD)-$(VARIANT)_$(BSPVERSION)_$(DEB_ARCH).deb
+	@cp $(BUILDDIR)/package/board-support-$(BOARD)-$(VARIANT)_$(BSPVERSION)_$(DEB_ARCH).deb /output/
+	@mkdir -p /rootfs/tmp/install/
+	@cp /output/board-support-$(BOARD)-$(VARIANT)*.deb /rootfs/tmp/install/
 	@echo "$(COLOUR_GREEN)Copying Deb files for installation on $(BOARD)$(END_COLOUR)"
 	@cp /output/cvitek-fsbl-$(BOARD)_*.deb /rootfs/tmp/install/
 	@cp /output/cvitek-osdrv-*$(BOARD)*.deb /rootfs/tmp/install/
