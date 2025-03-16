@@ -146,9 +146,6 @@ EOF
 # Enable system services
 #
 systemctl enable finalize-image.service
-if [ -f /tmp/install/systemd-enable ]; then
-  systemctl enable `cat /tmp/install/systemd-enable`
-fi
 
 # Update source list 
 
