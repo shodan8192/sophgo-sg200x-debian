@@ -146,6 +146,18 @@ $(BUILDDIR)/linux-compile-stamp: $(BUILDDIR)/linux-prepare-configure-stamp
 	@touch $@
 
 $(BUILDDIR)/linux-package-stamp: $(BUILDDIR)/linux-compile-stamp
+	@echo "$(COLOUR_GREEN)Packaging linux-headers-sg200x for $(BOARD)$(END_COLOUR)"
+	@$(eval LINUXMETAVERSION=$(shell basename $(BUILDDIR)/kernel/debian/linux-headers/usr/share/doc/linux-headers-* | cut -d '-' -f 3-))
+	@mkdir -p $(BUILDDIR)/package/linux-headers-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)
+	@cp -r /builder/deb/linux-image-sg200x/* $(BUILDDIR)/package/linux-headers-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/
+	@mkdir -pv $(BUILDDIR)/package/linux-headers-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/usr/share/doc/linux-headers-$(BOARD)-$(VARIANT)/
+	@cp -p $(BUILDDIR)/kernel/debian/linux-headers/usr/share/doc/linux-headers-*/* $(BUILDDIR)/package/linux-headers-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/usr/share/doc/linux-headers-$(BOARD)-$(VARIANT)/
+	@sed -i 's/Version: 1.0.0-1/Version: $(LINUXMETAVERSION)/' $(BUILDDIR)/package/linux-headers-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/DEBIAN/control
+	@sed -i 's/Package: linux-image-sg200x/Package: linux-headers-$(BOARD)-$(VARIANT)/' $(BUILDDIR)/package/linux-headers-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/DEBIAN/control
+	@sed -i 's/Depends: linux-image-.*/Depends: linux-headers-$(LINUXMETAVERSION)/' $(BUILDDIR)/package/linux-headers-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/DEBIAN/control
+	@sed -i  '/Recommends: .*/d' $(BUILDDIR)/package/linux-headers-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/DEBIAN/control
+	@cd $(BUILDDIR)/package/ && dpkg-deb --build linux-headers-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION) linux-headers-$(BOARD)-$(VARIANT)_$(LINUXMETAVERSION)_$(DEB_ARCH).deb
+	@cp $(BUILDDIR)/package/linux-headers-$(BOARD)-$(VARIANT)_$(LINUXMETAVERSION)_$(DEB_ARCH).deb /output/
 	@echo "$(COLOUR_GREEN)Packaging linux-image-sg200x for $(BOARD)$(END_COLOUR)"
 	@$(eval LINUXMETAVERSION=$(shell basename $(BUILDDIR)/kernel/debian/linux-image/usr/share/doc/linux-image-* | cut -d '-' -f 3-))
 	@mkdir -p $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)
