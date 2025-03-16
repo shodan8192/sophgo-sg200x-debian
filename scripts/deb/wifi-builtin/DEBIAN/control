@@ -2,6 +2,8 @@ Package: wifi-builtin
 Architecture: riscv64
 Maintainer: @scpcom
 Depends: busybox-static, hostapd, net-tools, psmisc, udhcpd, wireless-regdb, wpasupplicant
+Provides: wifi-builtin-licheervnano
+Replaces: wifi-builtin-licheervnano
 Priority: optional
 Version: 1.0.0
 Description: wifi-builtin for the CV18xx and SG200X series of RISC-V SoC's
