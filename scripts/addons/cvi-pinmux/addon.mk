@@ -1,3 +1,8 @@
+ifneq ("$(findstring cvi-pinmux,$(IMAGE_ADDITIONS))$(findstring cvi-pinmux-$(CHIP),$(PACKAGES))","")
+BSPDEPENDS += cvi-pinmux-$(CHIP)
+BSPFILTER += "cvi-pinmux"
+endif
+
 $(BUILDDIR)/cvi-pinmux-stamp: $(BUILDDIR)/buildroot-package-stamp
 	@echo "$(COLOUR_GREEN)Packaging cvi-pinmux for $(BOARD)$(END_COLOUR)"
 	@$(eval CVIPINMUXVERSION=$(shell echo "1.0.0"))
