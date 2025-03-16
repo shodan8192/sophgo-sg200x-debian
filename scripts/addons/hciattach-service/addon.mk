@@ -1,4 +1,4 @@
-$(BUILDDIR)/hciattach-service-stamp:
+$(BUILDDIR)/hciattach-uart-stamp:
 	@echo "$(COLOUR_GREEN)Packaging hciattach systemd service for $(BOARD)$(END_COLOUR)"
 	@$(eval HCIATTACHVERSION=$(shell echo "1.0.0"))
 	@mkdir -p $(BUILDDIR)/package/hciattach-uart-$(BOARD)-$(HCIATTACHVERSION)
