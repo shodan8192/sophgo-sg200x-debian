@@ -1,7 +1,7 @@
 [Unit]
 Description=Store Device Key
 After=load-systemko.service
-After=device-config.service
+After=sensor-config.service
 Before=usb-device.service
 Before=ifup@end0.service
 Before=network.target
