@@ -60,6 +60,6 @@ $(BUILDDIR)/sensor-config-package-stamp:
 
 sensor-config: $(BUILDDIR)/sensor-config-install-stamp $(BUILDDIR)/sensor-config-package-stamp
 
-$(BUILDDIR)/device-config-stamp: firmware-vcodec sensor-config
-	@echo "$(COLOUR_GREEN)Installing device-config for $(BOARD)$(END_COLOUR)"
+$(BUILDDIR)/sensor-config-stamp: firmware-vcodec sensor-config
+	@echo "$(COLOUR_GREEN)Installing sensor-config for $(BOARD)$(END_COLOUR)"
 	@touch $@
