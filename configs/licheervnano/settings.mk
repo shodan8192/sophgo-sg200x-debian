@@ -5,6 +5,7 @@ BOOT_CPU=riscv
 ARCH=riscv
 DDR_CFG=ddr3_1866_x16
 ifneq ("$(findstring kvm,$(VARIANT))","")
+BOARD_EXT=$(BOARD)-$(VARIANT)
 ION_SIZE=35
 else
 ION_SIZE=63

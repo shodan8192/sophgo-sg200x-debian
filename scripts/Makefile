@@ -68,13 +68,6 @@ ifndef BOARD
 $(error $(red)BOARD is not set$(reset))
 endif
 
-BSPDEPENDS = cvitek-fsbl-$(BOARD)\
- cvitek-middleware-$(BOARD)\
- cvitek-osdrv-$(BOARD)-$(VARIANT)\
- linux-headers-$(BOARD)-$(VARIANT)\
- linux-image-$(BOARD)-$(VARIANT)
-BSPFILTER =
-
 include /configs/settings.mk
 
 ifneq ("$(wildcard /configs/$(BOARD)/settings.mk)","")
@@ -82,6 +75,15 @@ include /configs/$(BOARD)/settings.mk
 else
 $(error $(red)Board $(BOARD) not supported$(reset))
 endif
+
+BOARD_EXT ?= $(BOARD)
+
+BSPDEPENDS = cvitek-fsbl-$(BOARD_EXT)\
+ cvitek-middleware-$(BOARD)\
+ cvitek-osdrv-$(BOARD)-$(VARIANT)\
+ linux-headers-$(BOARD)-$(VARIANT)\
+ linux-image-$(BOARD)-$(VARIANT)
+BSPFILTER =
 
 include $(wildcard /builder/addons/*/addon.mk)
 
@@ -153,8 +155,8 @@ $(BUILDDIR)/linux-prepare-configure-stamp: $(BUILDDIR)/linux-prepare-patch-stamp
 
 $(BUILDDIR)/linux-compile-stamp: $(BUILDDIR)/linux-prepare-configure-stamp
 	@echo "$(COLOUR_GREEN)Building Kernel for $(BOARD)$(END_COLOUR)"
-	@cd $(BUILDDIR)/kernel && KCFLAGS=-Wno-attribute-alias ARCH=riscv CROSS_COMPILE="$(SDK_CROSS_COMPILE_PATH)/bin/$(SDK_CROSS_COMPILE_PREFIX)" KDEB_SOURCENAME=linux-$(BOARD) LOCALVERSION=+$(BOARD) $(MAKE) -j$(NPROCS) O=$(BUILDDIR)/kernel/ bindeb-pkg
-	@cd $(BUILDDIR)/kernel && KCFLAGS=-Wno-attribute-alias ARCH=riscv CROSS_COMPILE="$(SDK_CROSS_COMPILE_PATH)/bin/$(SDK_CROSS_COMPILE_PREFIX)" KDEB_SOURCENAME=linux-$(BOARD) LOCALVERSION=+$(BOARD) $(MAKE) -j$(NPROCS) O=$(BUILDDIR)/kernel/ modules_install INSTALL_MOD_PATH=$(BUILDDIR)/kernel/modules headers_install INSTALL_HDR_PATH=$(BUILDDIR)/kernel/riscv/usr
+	@cd $(BUILDDIR)/kernel && KCFLAGS=-Wno-attribute-alias ARCH=riscv CROSS_COMPILE="$(SDK_CROSS_COMPILE_PATH)/bin/$(SDK_CROSS_COMPILE_PREFIX)" KDEB_SOURCENAME=linux-$(BOARD) LOCALVERSION=+$(BOARD_EXT) $(MAKE) -j$(NPROCS) O=$(BUILDDIR)/kernel/ bindeb-pkg
+	@cd $(BUILDDIR)/kernel && KCFLAGS=-Wno-attribute-alias ARCH=riscv CROSS_COMPILE="$(SDK_CROSS_COMPILE_PATH)/bin/$(SDK_CROSS_COMPILE_PREFIX)" KDEB_SOURCENAME=linux-$(BOARD) LOCALVERSION=+$(BOARD_EXT) $(MAKE) -j$(NPROCS) O=$(BUILDDIR)/kernel/ modules_install INSTALL_MOD_PATH=$(BUILDDIR)/kernel/modules headers_install INSTALL_HDR_PATH=$(BUILDDIR)/kernel/riscv/usr
 	@cp $(BUILDDIR)/*.deb /output/
 	@touch $@
 
@@ -458,19 +460,26 @@ $(BUILDDIR)/fsbl-compile-stamp: $(BUILDDIR)/fsbl-prepare-patch-stamp $(BUILDDIR)
 $(BUILDDIR)/fsbl-package-stamp: $(BUILDDIR)/fsbl-compile-stamp
 	@echo "$(COLOUR_GREEN)Packaging FSBL for $(BOARD)$(END_COLOUR)"
 	@$(eval UV=$(shell cd $(BUILDDIR)/u-boot && git log -1 --format="%at" | xargs -I{} date -d @{} +-%Y%m%d-${KERNELREV}))
-	@mkdir -p $(BUILDDIR)/package/cvitek-fsbl-$(BOARD)-$(FSBLVERSION)
-	@cp -r /builder/deb/cvitek-fsbl/* $(BUILDDIR)/package/cvitek-fsbl-$(BOARD)-$(FSBLVERSION)/
-	@mkdir -p $(BUILDDIR)/package/cvitek-fsbl-$(BOARD)-$(FSBLVERSION)/usr/lib/cvitek-fsbl/$(BOARD)/
-	@cp $(BUILDDIR)/fip.bin $(BUILDDIR)/package/cvitek-fsbl-$(BOARD)-$(FSBLVERSION)/usr/lib/cvitek-fsbl/$(BOARD)/
-	@cp $(BUILDDIR)/u-boot-initial-env $(BUILDDIR)/package/cvitek-fsbl-$(BOARD)-$(FSBLVERSION)/usr/lib/cvitek-fsbl/$(BOARD)/
-	@echo "#!/bin/sh" > $(BUILDDIR)/package/cvitek-fsbl-$(BOARD)-$(FSBLVERSION)/DEBIAN/postinst
-	@echo "cp -p /usr/lib/cvitek-fsbl/$(BOARD)/fip.bin /boot/" >> $(BUILDDIR)/package/cvitek-fsbl-$(BOARD)-$(FSBLVERSION)/DEBIAN/postinst
-	@echo "cp -p /usr/lib/cvitek-fsbl/$(BOARD)/u-boot-initial-env /etc/" >> $(BUILDDIR)/package/cvitek-fsbl-$(BOARD)-$(FSBLVERSION)/DEBIAN/postinst
-	@chmod ugo+rx $(BUILDDIR)/package/cvitek-fsbl-$(BOARD)-$(FSBLVERSION)/DEBIAN/postinst
-	@sed -i 's/Version: 1.1.0/Version: $(FSBLVERSION)$(UV)/' $(BUILDDIR)/package/cvitek-fsbl-$(BOARD)-$(FSBLVERSION)/DEBIAN/control
-	@sed -i 's/Package: cvitek-fsbl/Package: cvitek-fsbl-$(BOARD)/' $(BUILDDIR)/package/cvitek-fsbl-$(BOARD)-$(FSBLVERSION)/DEBIAN/control
-	@cd $(BUILDDIR)/package/ && dpkg-deb --build cvitek-fsbl-$(BOARD)-$(FSBLVERSION) cvitek-fsbl-$(BOARD)_$(FSBLVERSION)$(UV)_$(DEB_ARCH).deb
-	@cp $(BUILDDIR)/package/cvitek-fsbl-$(BOARD)_$(FSBLVERSION)$(UV)_$(DEB_ARCH).deb /output/
+	@mkdir -p $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)
+	@cp -r /builder/deb/cvitek-fsbl/* $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/
+	@mkdir -p $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/usr/lib/cvitek-fsbl/$(BOARD)/
+	@cp $(BUILDDIR)/fip.bin $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/usr/lib/cvitek-fsbl/$(BOARD)/
+	@cp $(BUILDDIR)/u-boot-initial-env $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/usr/lib/cvitek-fsbl/$(BOARD)/
+	@echo "#!/bin/sh" > $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/DEBIAN/postinst
+	@echo "cp -p /usr/lib/cvitek-fsbl/$(BOARD)/fip.bin /boot/" >> $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/DEBIAN/postinst
+	@echo "cp -p /usr/lib/cvitek-fsbl/$(BOARD)/u-boot-initial-env /etc/" >> $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/DEBIAN/postinst
+	@chmod ugo+rx $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/DEBIAN/postinst
+	@sed -i 's/Version: 1.1.0/Version: $(FSBLVERSION)$(UV)/' $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/DEBIAN/control
+	@sed -i 's/Package: cvitek-fsbl/Package: cvitek-fsbl-$(BOARD_EXT)/' $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/DEBIAN/control
+	@if [ "$(BOARD)" = "$(BOARD_EXT)" ]; then \
+		sed -i '/Provides: .*/d' $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/DEBIAN/control && \
+		sed -i '/Replaces: .*/d' $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/DEBIAN/control ; \
+	else \
+		sed -i 's/Provides: .*/Provides: cvitek-fsbl-$(BOARD)/' $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/DEBIAN/control && \
+		sed -i 's/Replaces: .*/Replaces: cvitek-fsbl-$(BOARD)/' $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/DEBIAN/control ; \
+	fi
+	@cd $(BUILDDIR)/package/ && dpkg-deb --build cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION) cvitek-fsbl-$(BOARD_EXT)_$(FSBLVERSION)$(UV)_$(DEB_ARCH).deb
+	@cp $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)_$(FSBLVERSION)$(UV)_$(DEB_ARCH).deb /output/
 	@touch $@
 
 fsbl: $(BUILDDIR)/fsbl-package-stamp
@@ -506,7 +515,7 @@ $(BUILDDIR)/image-addons-stamp: $(BUILDDIR)/image-prepare-stamp $(BUILDDIR)/fsbl
 	@mkdir -p /rootfs/tmp/install/
 	@cp /output/board-support-$(BOARD)-$(VARIANT)*.deb /rootfs/tmp/install/
 	@echo "$(COLOUR_GREEN)Copying Deb files for installation on $(BOARD)$(END_COLOUR)"
-	@cp /output/cvitek-fsbl-$(BOARD)_*.deb /rootfs/tmp/install/
+	@cp /output/cvitek-fsbl-$(BOARD_EXT)_*.deb /rootfs/tmp/install/
 	@cp /output/cvitek-osdrv-*$(BOARD)*.deb /rootfs/tmp/install/
 	@cp /output/cvitek-middleware-$(BOARD)_*.deb /rootfs/tmp/install/
 	@cp /output/linux-image-*$(BOARD)*.deb /rootfs/tmp/install/

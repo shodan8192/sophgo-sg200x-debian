@@ -2,6 +2,8 @@ Package: cvitek-fsbl
 Architecture: riscv64
 Maintainer: @fishwaldo
 Depends: libubootenv-tool, u-boot-menu, u-boot-tools
+Provides: cvitek-fsbl-licheervnano
+Replaces: cvitek-fsbl-licheervnano
 Priority: optional
 Version: 1.1.0
 Description: First Stage Boot Loader for the CV18xx and SG200X series of RISC-V SoC's
