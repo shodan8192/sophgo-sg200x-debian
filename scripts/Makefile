@@ -462,10 +462,10 @@ $(BUILDDIR)/fsbl-package-stamp: $(BUILDDIR)/fsbl-compile-stamp
 	@$(eval UV=$(shell cd $(BUILDDIR)/u-boot && git log -1 --format="%at" | xargs -I{} date -d @{} +-%Y%m%d-${KERNELREV}))
 	@mkdir -p $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)
 	@cp -r /builder/deb/cvitek-fsbl/* $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/
-	@mkdir -p $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/usr/lib/cvitek-fsbl/$(BOARD)/
-	@cp $(BUILDDIR)/fip.bin $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/usr/lib/cvitek-fsbl/$(BOARD)/
-	@cp $(BUILDDIR)/u-boot-initial-env $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/usr/lib/cvitek-fsbl/$(BOARD)/
-	@sed -i 's|cvitek-fsbl/licheervnano|cvitek-fsbl/$(BOARD)|' $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/DEBIAN/postinst
+	@mkdir -p $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/usr/lib/cvitek-fsbl/$(BOARD_EXT)/
+	@cp $(BUILDDIR)/fip.bin $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/usr/lib/cvitek-fsbl/$(BOARD_EXT)/
+	@cp $(BUILDDIR)/u-boot-initial-env $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/usr/lib/cvitek-fsbl/$(BOARD_EXT)/
+	@sed -i 's|cvitek-fsbl/licheervnano|cvitek-fsbl/$(BOARD_EXT)|' $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/DEBIAN/postinst
 	@chmod ugo+rx $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/DEBIAN/postinst
 	@sed -i 's/Version: 1.1.0/Version: $(FSBLVERSION)$(UV)/' $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/DEBIAN/control
 	@sed -i 's/Package: cvitek-fsbl/Package: cvitek-fsbl-$(BOARD_EXT)/' $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/DEBIAN/control
