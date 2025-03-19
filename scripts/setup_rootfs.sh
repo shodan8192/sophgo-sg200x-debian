@@ -156,7 +156,7 @@ gpg --dearmor /tmp/install/public-key.asc
 cp /tmp/install/public-key.asc.gpg /etc/apt/trusted.gpg.d/scpcom-packages.gpg
 
 cat > /etc/apt/sources.list <<EOF
-deb http://ports.ubuntu.com/ubuntu-ports noble main restricted universe multiverse
+deb http://deb.debian.org/debian trixie main non-free-firmware
 EOF
 
 mkdir -p /etc/apt/sources.list.d
