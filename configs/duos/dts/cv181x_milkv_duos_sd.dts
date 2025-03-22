@@ -9,6 +9,9 @@
 / {
 	model = "Milk-V DuoS";
 
+	/delete-node/ wifi_pin;
+	/delete-node/ bt_pin;
+
 	leds {
 		compatible = "gpio-leds";
 		led0 {
@@ -95,6 +98,10 @@
 	status = "okay";
 };
 
+&sd {
+	no-1-8-v;
+};
+
 &wifisd {
 	status = "okay";
 	cap-sd-highspeed;
@@ -103,13 +110,6 @@
 	sd-uhs-sdr104;
 	min-frequency = <400000>;
 	max-frequency = <187500000>;
-};
-
-&wifi_pin {
-	status = "okay";
-	compatible = "cvitek,wifi-pin";
-	poweron-gpio = <&porta 15 GPIO_ACTIVE_HIGH>;
-	wakeup-gpio = <&porte 7 GPIO_ACTIVE_HIGH>;
 };
 
 &usb {
@@ -126,6 +126,14 @@
 			trip = <&soc_thermal_trip_1>;
 			cooling-device = <&cooling THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
 		};
+	};
+};
+
+&porta {
+	wifi_pwr {
+		gpio-hog;
+		gpios = <15 GPIO_ACTIVE_HIGH>;
+		output-high;
 	};
 };
 

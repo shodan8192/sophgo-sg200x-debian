@@ -10,6 +10,8 @@ $(BUILDDIR)/wifi-builtin-stamp: $(BUILDDIR)/buildroot-prepare-checkout-stamp
 	@mkdir -p $(BUILDDIR)/package/wifi-builtin-$(BOARD_EXT)-$(WIFIBIVERSION)
 	@cp -r /builder/deb/wifi-builtin/* $(BUILDDIR)/package/wifi-builtin-$(BOARD_EXT)-$(WIFIBIVERSION)/
 	@mkdir -pv $(BUILDDIR)/package/wifi-builtin-$(BOARD_EXT)-$(WIFIBIVERSION)/etc/init.d/
+	@cp -a addons/wifi-builtin/S28wifimac $(BUILDDIR)/package/wifi-builtin-$(BOARD_EXT)-$(WIFIBIVERSION)/etc/init.d/
+	@chmod +x $(BUILDDIR)/package/wifi-builtin-$(BOARD_EXT)-$(WIFIBIVERSION)/etc/init.d/S28wifimac
 	@if [ "X$(findstring kvm,$(VARIANT))" = "X" ]; then \
 		cp -a addons/wifi-builtin/S30wifi $(BUILDDIR)/package/wifi-builtin-$(BOARD_EXT)-$(WIFIBIVERSION)/etc/init.d/ ; \
 	else \
@@ -19,6 +21,7 @@ $(BUILDDIR)/wifi-builtin-stamp: $(BUILDDIR)/buildroot-prepare-checkout-stamp
 	@mkdir -pv $(BUILDDIR)/package/wifi-builtin-$(BOARD_EXT)-$(WIFIBIVERSION)/etc/systemd/system/
 	@cp -a addons/wifi-builtin/wifi-builtin*.service $(BUILDDIR)/package/wifi-builtin-$(BOARD_EXT)-$(WIFIBIVERSION)/etc/systemd/system/
 	@cp -a addons/wifi-builtin/wifi-hostapd*.service $(BUILDDIR)/package/wifi-builtin-$(BOARD_EXT)-$(WIFIBIVERSION)/etc/systemd/system/
+	@cp -a addons/wifi-builtin/wifi-mac*.service $(BUILDDIR)/package/wifi-builtin-$(BOARD_EXT)-$(WIFIBIVERSION)/etc/systemd/system/
 	@sed -i 's/Version: 1.0.0/Version: $(WIFIBIVERSION)$(BV)/' $(BUILDDIR)/package/wifi-builtin-$(BOARD_EXT)-$(WIFIBIVERSION)/DEBIAN/control
 	@sed -i 's/Package: wifi-builtin/Package: wifi-builtin-$(BOARD_EXT)/' $(BUILDDIR)/package/wifi-builtin-$(BOARD_EXT)-$(WIFIBIVERSION)/DEBIAN/control
 	@if [ "$(BOARD)" = "$(BOARD_EXT)" ]; then \
@@ -39,4 +42,5 @@ $(BUILDDIR)/wifi-builtin-stamp: $(BUILDDIR)/buildroot-prepare-checkout-stamp
 	@echo " wifi-builtin" >> /rootfs/tmp/install/systemd-enable
 	@echo " wifi-builtin-wlan0.service" >> /rootfs/tmp/install/systemd-enable
 	@echo " wifi-hostapd-wlan0.service" >> /rootfs/tmp/install/systemd-enable
+	@[ "$(BOARD)" = "licheervnano" ] || echo " wifi-mac" >> /rootfs/tmp/install/systemd-enable
 	@touch $@

@@ -1,0 +1,27 @@
+#!/bin/sh
+hex2mac() {
+	MAC=""
+	seq 2 2 12 | while read i
+	do
+		echo -n ${1} | head -c $i | tail -c 2
+		if [ $i != 12 ]
+		then
+			echo -n ':'
+		fi
+	done | tr '[:upper:]' '[:lower:]'
+}
+
+if [ "${1}" = start ]
+then
+	if [ -e /boot/wifi.mac ]
+	then
+		new_wifimac=$(cat /boot/wifi.mac)
+	else
+		new_wifimac=$(hex2mac 48da356a$(sha512sum /device_key_legacy  | head -c 4))
+	fi
+
+	#ifconfig wlan0 down
+	ip link set wlan0 address ${new_wifimac}
+	#ifconfig wlan0 up
+	echo "wifi mac address: ${new_wifimac}"
+fi
