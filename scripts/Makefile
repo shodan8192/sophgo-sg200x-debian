@@ -409,8 +409,8 @@ uboot-clean:
 $(BUILDDIR)/opensbi-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out OpenSBI for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
-	@git clone -b licheervnano-cvisdk-0.9 --depth 7 https://github.com/scpcom/opensbi $(BUILDDIR)/opensbi
-	@cd $(BUILDDIR)/opensbi && git checkout 9955579
+	@git clone -b licheervnano-cvisdk-1.2 --depth 7 https://github.com/scpcom/opensbi $(BUILDDIR)/opensbi
+	@cd $(BUILDDIR)/opensbi && git checkout 3491ae4
 #	git clone https://github.com/riscv-software-src/opensbi.git $(BUILDDIR)/opensbi
 #	@cd $(BUILDDIR)/opensbi && git checkout a2b255b
 	@touch $@
