@@ -132,7 +132,7 @@ $(BUILDDIR)/linux-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out Kernel for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
 	@git clone -b licheervnano-merged-5.10.y --depth 7 https://github.com/scpcom/linux.git /build/kernel
-	@cd $(BUILDDIR)/kernel && git checkout c2b481a
+	@cd $(BUILDDIR)/kernel && git checkout bca18bf
 	@touch $@
 
 $(BUILDDIR)/linux-prepare-patch-stamp: $(BUILDDIR)/linux-prepare-checkout-stamp $(BUILDDIR)/$(BOARD)-$(VARIANT)/cvi_board_memmap.h
@@ -311,8 +311,8 @@ middleware-clean:
 $(BUILDDIR)/buildroot-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out Buildroot for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
-	@git clone -b nanokvm-2024.05 --depth 7 --recursive https://github.com/scpcom/buildroot.git $(BUILDDIR)/buildroot
-	@cd $(BR_DIR) && git checkout fc29513
+	@git clone -b nanokvm-2025.02 --depth 7 --recursive https://github.com/scpcom/buildroot.git $(BUILDDIR)/buildroot
+	@cd $(BR_DIR) && git checkout e86ce54
 	@mkdir -p $(BUILDDIR)/ramdisk/tools
 	@git clone -b main https://github.com/scpcom/cvi-pinmux $(BUILDDIR)/ramdisk/tools/cvi_pinmux
 	@touch $@
@@ -409,8 +409,8 @@ uboot-clean:
 $(BUILDDIR)/opensbi-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out OpenSBI for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
-	@git clone -b licheervnano-cvisdk-0.9 --depth 7 https://github.com/scpcom/opensbi $(BUILDDIR)/opensbi
-	@cd $(BUILDDIR)/opensbi && git checkout 9955579
+	@git clone -b licheervnano-cvisdk-1.2 --depth 7 https://github.com/scpcom/opensbi $(BUILDDIR)/opensbi
+	@cd $(BUILDDIR)/opensbi && git checkout 3491ae4
 #	git clone https://github.com/riscv-software-src/opensbi.git $(BUILDDIR)/opensbi
 #	@cd $(BUILDDIR)/opensbi && git checkout a2b255b
 	@touch $@
