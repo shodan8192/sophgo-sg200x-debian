@@ -9,7 +9,7 @@ reset:=$(shell tput sgr0)
 
 GIT_REF ?= develop
 
-BUILDDIR := /build/
+BUILDDIR := /build
 
 DEB_ARCH = riscv64
 
@@ -131,7 +131,7 @@ $(BUILDDIR)/$(BOARD)-$(VARIANT)/cvi_board_memmap.h: $(BUILDDIR)/$(BOARD)-$(VARIA
 $(BUILDDIR)/linux-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out Kernel for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
-	@git clone -b licheervnano-merged-5.10.y --depth 7 https://github.com/scpcom/linux.git /build/kernel
+	@git clone -b licheervnano-merged-5.10.y --depth 7 https://github.com/scpcom/linux.git $(BUILDDIR)/kernel
 	@cd $(BUILDDIR)/kernel && git checkout bca18bf
 	@touch $@
 
@@ -198,7 +198,7 @@ linux-clean:
 $(BUILDDIR)/osdrv-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out OSdrv for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
-	@git clone -b licheervnano-cvisdk --depth 7 https://github.com/scpcom/sophgo-osdrv.git /build/osdrv
+	@git clone -b licheervnano-cvisdk --depth 7 https://github.com/scpcom/sophgo-osdrv.git $(BUILDDIR)/osdrv
 	@cd $(BUILDDIR)/osdrv && git checkout 0678123
 	@touch $@
 
@@ -259,7 +259,7 @@ osdrv-clean:
 $(BUILDDIR)/middleware-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out Middleware for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
-	@git clone -b maix_mmf-cvisdk --depth 7 --recursive https://github.com/scpcom/sophgo-middleware.git /build/middleware
+	@git clone -b maix_mmf-cvisdk --depth 7 --recursive https://github.com/scpcom/sophgo-middleware.git $(BUILDDIR)/middleware
 	@cd $(BUILDDIR)/middleware && git checkout 33092af
 	@touch $@
 
@@ -336,8 +336,8 @@ $(BUILDDIR)/buildroot-prepare-patch-stamp: $(BUILDDIR)/buildroot-prepare-checkou
 	@if [ "$(BOARD)" = "duos" ]; then \
 		sed -i s/'BR2_PACKAGE_DUO_PINMUX_DUO256M=y'/'BR2_PACKAGE_DUO_PINMUX_DUOS=y'/g $(BR_DIR)/configs/$(BR_DEFCONFIG) ; \
 	fi
-	@mkdir -pv /build/buildroot/board/cvitek/CV181X/overlay/usr/share/fw_vcodec
-	@mkdir -pv /build/ramdisk/tools/cvi_pinmux
+	@mkdir -pv $(BUILDDIR)/buildroot/board/cvitek/CV181X/overlay/usr/share/fw_vcodec
+	@mkdir -pv $(BUILDDIR)/ramdisk/tools/cvi_pinmux
 	@touch $@
 
 $(BUILDDIR)/buildroot-prepare-configure-stamp: $(BUILDDIR)/buildroot-prepare-patch-stamp
