@@ -19,7 +19,7 @@ RUN apt-get update \
         python3-setuptools  swig gnupg \
         systemd-container texinfo zlib1g-dev wget arch-test \
         genimage joe mc unzip zip \
-        fakeroot git kernel-wedge quilt ccache flex bison \
+        fakeroot git kernel-wedge quilt ccache cmake flex bison \
         libssl-dev dh-exec rsync libelf-dev bc gcc-riscv64-unknown-elf \
     && git clone --depth 1 https://github.com/milkv-duo/host-tools.git /host-tools \
     && rm -rf /host-tools/gcc/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-elf \
