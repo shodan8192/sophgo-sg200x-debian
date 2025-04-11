@@ -18,7 +18,7 @@ RUN apt-get update \
         python-is-python3 python3-jinja2 pkg-config xxd \
         python3-setuptools  swig gnupg \
         systemd-container texinfo zlib1g-dev wget arch-test \
-        genimage joe mc unzip zip \
+        genimage joe lzip mc unzip zip \
         fakeroot git kernel-wedge quilt ccache cmake flex bison \
         libssl-dev dh-exec rsync libelf-dev bc gcc-riscv64-unknown-elf \
     && git clone --depth 1 https://github.com/milkv-duo/host-tools.git /host-tools \
