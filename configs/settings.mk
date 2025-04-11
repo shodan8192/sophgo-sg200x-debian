@@ -9,3 +9,4 @@ PACKAGES += " network-manager"
 endif
 
 IMAGE_ADDITIONS="gadget-nic"
+IMAGE_ADDITIONS+="overlayfs-tools"
