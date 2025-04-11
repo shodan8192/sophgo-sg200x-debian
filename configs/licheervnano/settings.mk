@@ -25,5 +25,6 @@ IMAGE_ADDITIONS += "cvi-pinmux"
 IMAGE_ADDITIONS += "nanokvm"
 endif
 IMAGE_ADDITIONS += "usb-device"
+IMAGE_ADDITIONS += "zram-config"
 IMAGE_ADDITIONS += "wifi-builtin"
 IMAGE_ADDITIONS += "aic8800-firmware"

@@ -1,0 +1,11 @@
+Package: zram-config
+Version: 1.0.0-1
+Architecture: riscv64
+Maintainer: @scpcom
+Installed-Size: 30
+Depends: overlayfs-tools
+Section: admin
+Priority: optional
+Homepage: https://github.com/ecdye/zram-config
+Description: ZRAM config for MilkV Duo256 board
+ ZRAM config for MilkV Duo256
