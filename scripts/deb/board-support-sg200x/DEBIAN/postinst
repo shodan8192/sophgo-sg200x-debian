@@ -6,3 +6,8 @@ if [ ! -e /etc/sysctl.d/10-console-messages.conf ]; then
 kernel.printk = 4 4 1 7
 EOM
 fi
+for l in ld-linux-riscv64v0p7_xthead-lp64d.so.1 ld-linux-riscv64v_xthead-lp64d.so.1 ld-linux-riscv64xthead-lp64d.so.1 ; do
+  if [ -e /usr/lib/riscv64-linux-gnu/ld-linux-riscv64-lp64d.so.1 -a ! -e /usr/lib/$l ]; then
+    ln -s riscv64-linux-gnu/ld-linux-riscv64-lp64d.so.1 /usr/lib/$l
+  fi
+done
