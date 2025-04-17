@@ -28,14 +28,14 @@ index 0000000000..34fa41ea96
 +--- a/support/sg2002/kvm_system/main/lib/system_init/system_init.cpp
 ++++ b/support/sg2002/kvm_system/main/lib/system_init/system_init.cpp
 +@@ -19,8 +19,6 @@ void new_app_init(void)
-+ 	system("cp /kvmapp/system/init.d/S50sshd /etc/init.d/");
++ 	system("cp -f /kvmapp/system/init.d/S50sshd /etc/init.d/");
 + 	if(kvm_wifi_exist()) {
-+ 		system("cp /kvmapp/system/init.d/S30wifi /etc/init.d/");
++ 		system("cp -f /kvmapp/system/init.d/S30wifi /etc/init.d/");
 +-	} else {
-+-		system("rm /etc/init.d/S30wifi");
++-		system("rm -f /etc/init.d/S30wifi");
 + 	}
 + 
-+ 	// PCIe Patch
++ 	// rmmod soph_saradc
 +-- 
 +2.34.1
 +
