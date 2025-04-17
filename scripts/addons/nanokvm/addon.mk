@@ -42,6 +42,7 @@ $(BUILDDIR)/nanokvm-stamp: $(BUILDDIR)/buildroot-package-stamp
 	@sed -i 's|# /tmp/server/NanoKVM-Server|/tmp/server/NanoKVM-Server|g' $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/kvmapp/system/init.d/S95nanokvm
 	@sed -i 's|/tmp/server/NanoKVM-Server &|/tmp/server/NanoKVM-Server|g' $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/kvmapp/system/init.d/S95nanokvm
 	@sed -i /S49ntp/d $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/kvmapp/system/init.d/S95nanokvm
+	@rm -f $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/kvmapp/system/init.d/S00kmod
 	@rm -f $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/kvmapp/system/init.d/S30eth
 	@rm -f $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/kvmapp/system/init.d/S30gadget_nic
 	@cp -p addons/nanokvm/S30wifi $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/kvmapp/system/init.d/
