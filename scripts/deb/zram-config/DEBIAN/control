@@ -3,7 +3,7 @@ Version: 1.0.0-1
 Architecture: riscv64
 Maintainer: @scpcom
 Installed-Size: 30
-Depends: overlayfs-tools
+Depends: bc, overlayfs-tools
 Section: admin
 Priority: optional
 Homepage: https://github.com/ecdye/zram-config
