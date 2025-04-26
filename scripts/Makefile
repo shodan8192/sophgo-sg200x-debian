@@ -21,6 +21,7 @@ CROSS_COMPILE_PATH_MUSL_RISCV64 = /host-tools/gcc/riscv64-linux-musl-x86_64
 
 DEB_ARCH = riscv64
 KERNEL_ARCH = riscv
+UBOOT_ARCH = riscv
 QEMU_ARCH = riscv64
 SDK_CROSS_COMPILE_PATH = $(CROSS_COMPILE_PATH_GLIBC_RISCV64)
 SDK_CROSS_COMPILE_PREFIX = $(CROSS_COMPILE_GLIBC_RISCV64)
@@ -379,9 +380,9 @@ $(BUILDDIR)/uboot-prepare-patch-stamp: $(BUILDDIR)/uboot-prepare-checkout-stamp 
 	@$(foreach file, $(wildcard /configs/common/patches/u-boot/*.patch), cd $(BUILDDIR)/u-boot && git apply --ignore-whitespace $(file);)
 	@$(foreach file, $(wildcard /configs/$(BOARD)/patches/u-boot/*.patch), cd $(BUILDDIR)/u-boot && git apply --ignore-whitespace $(file);)
 	@cp /configs/$(BOARD)/u-boot/defconfig $(BUILDDIR)/u-boot/configs/$(BOARD)_defconfig
-	@$(foreach file, $(wildcard /configs/common/dts/$(CHIP)/*), cp $(file) $(BUILDDIR)/u-boot/arch/$(KERNEL_ARCH)/dts/;)
-	@$(foreach file, $(wildcard /configs/common/dts/$(CHIP)_$(ARCH)/*), cp $(file) $(BUILDDIR)/u-boot/arch/$(KERNEL_ARCH)/dts/;)
-	@$(foreach file, $(wildcard /configs/$(BOARD)/dts/*), cp $(file) $(BUILDDIR)/u-boot/arch/$(KERNEL_ARCH)/dts/;)
+	@$(foreach file, $(wildcard /configs/common/dts/$(CHIP)/*), cp $(file) $(BUILDDIR)/u-boot/arch/$(UBOOT_ARCH)/dts/;)
+	@$(foreach file, $(wildcard /configs/common/dts/$(CHIP)_$(ARCH)/*), cp $(file) $(BUILDDIR)/u-boot/arch/$(UBOOT_ARCH)/dts/;)
+	@$(foreach file, $(wildcard /configs/$(BOARD)/dts/*), cp $(file) $(BUILDDIR)/u-boot/arch/$(UBOOT_ARCH)/dts/;)
 	@cp /configs/$(BOARD)/u-boot/cvitek.h $(BUILDDIR)/u-boot/include/cvitek.h
 	@cp /configs/$(BOARD)/u-boot/cvi_board_init.c $(BUILDDIR)/u-boot/board/cvitek/cvi_board_init.c
 	@cp -p $(BUILDDIR)/$(BOARD)-$(VARIANT)/cvi_board_memmap.h $(BUILDDIR)/u-boot/include/cvi_board_memmap.h
