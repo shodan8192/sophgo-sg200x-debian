@@ -11,24 +11,65 @@ GIT_REF ?= develop
 
 BUILDDIR := /build
 
+ifeq ($(ARCH),arm64)
+SDK_VER ?= 64bit
+else ifeq ($(ARCH),arm)
+SDK_VER ?= 32bit
+else
 SDK_VER ?= glibc_riscv64
+endif
 
+CROSS_COMPILE_64 = aarch64-linux-gnu-
+CROSS_COMPILE_32 = arm-linux-gnueabihf-
 CROSS_COMPILE_GLIBC_RISCV64 = riscv64-unknown-linux-gnu-
 CROSS_COMPILE_MUSL_RISCV64 = riscv64-unknown-linux-musl-
 
+CROSS_COMPILE_PATH_64 = /host-tools/gcc/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu
+CROSS_COMPILE_PATH_32 = /host-tools/gcc/gcc-linaro-6.3.1-2017.05-x86_64_arm-linux-gnueabihf
 CROSS_COMPILE_PATH_GLIBC_RISCV64 = /host-tools/gcc/riscv64-linux-x86_64
 CROSS_COMPILE_PATH_MUSL_RISCV64 = /host-tools/gcc/riscv64-linux-musl-x86_64
 
+ifeq ($(SDK_VER),glibc_riscv64)
 DEB_ARCH = riscv64
+SDK_CROSS_COMPILE_PATH = $(CROSS_COMPILE_PATH_GLIBC_RISCV64)
+SDK_CROSS_COMPILE_PREFIX = $(CROSS_COMPILE_GLIBC_RISCV64)
+else ifeq ($(SDK_VER),musl_riscv64)
+DEB_ARCH = riscv64
+SDK_CROSS_COMPILE_PATH = $(CROSS_COMPILE_PATH_MUSL_RISCV64)
+SDK_CROSS_COMPILE_PREFIX = $(CROSS_COMPILE_MUSL_RISCV64)
+else ifeq ($(SDK_VER),64bit)
+DEB_ARCH = arm64
+SDK_CROSS_COMPILE_PATH = $(CROSS_COMPILE_PATH_64)
+SDK_CROSS_COMPILE_PREFIX = $(CROSS_COMPILE_64)
+else ifeq ($(SDK_VER),32bit)
+DEB_ARCH = armhf
+SDK_CROSS_COMPILE_PATH = $(CROSS_COMPILE_PATH_32)
+SDK_CROSS_COMPILE_PREFIX = $(CROSS_COMPILE_32)
+else
+$(error $(red)SDK_VER is invalid$(reset))
+endif
+
+ifeq ($(DEB_ARCH),riscv64)
 KERNEL_ARCH = riscv
 UBOOT_ARCH = riscv
 QEMU_ARCH = riscv64
-SDK_CROSS_COMPILE_PATH = $(CROSS_COMPILE_PATH_GLIBC_RISCV64)
-SDK_CROSS_COMPILE_PREFIX = $(CROSS_COMPILE_GLIBC_RISCV64)
+else ifeq ($(DEB_ARCH),arm64)
+KERNEL_ARCH = arm64
+UBOOT_ARCH = arm
+QEMU_ARCH = aarch64
+else ifeq ($(DEB_ARCH),armhf)
+KERNEL_ARCH = arm
+UBOOT_ARCH = arm
+QEMU_ARCH = arm
+else
+$(error $(red)DEB_ARCH is invalid$(reset))
+endif
 
 OSDRV_ENV = CHIP_ARCH=CV181X \
 CVIARCH=CV181X \
 SDK_VER=$(SDK_VER) \
+CROSS_COMPILE_64=$(CROSS_COMPILE_PATH_64)/bin/$(CROSS_COMPILE_64) \
+CROSS_COMPILE_32=$(CROSS_COMPILE_PATH_32)/bin/$(CROSS_COMPILE_32) \
 CROSS_COMPILE_GLIBC_RISCV64=$(CROSS_COMPILE_PATH_GLIBC_RISCV64)/bin/$(CROSS_COMPILE_GLIBC_RISCV64) \
 CROSS_COMPILE_MUSL_RISCV64=$(CROSS_COMPILE_PATH_MUSL_RISCV64)/bin/$(CROSS_COMPILE_MUSL_RISCV64) \
 CONFIG_ARCH=$(KERNEL_ARCH) \
@@ -103,6 +144,7 @@ _BSPDEPENDS = $(subst $(SPACE),$(COMMA)$(SPACE),$(sort $(BSPDEPENDS)))
 $(info $(blue)Board: $(BOARD)$(reset))
 $(info $(blue)Variant: $(VARIANT)$(reset))
 $(info $(blue)Storage: $(STORAGE_TYPE)$(reset))
+$(info $(blue)Target: $(SDK_VER)$(reset))
 $(info $(blue)ION Size: $(ION_SIZE)M$(reset))
 $(info $(blue)Image Addons: $(IMAGE_ADDITIONS)$(reset))
 $(info $(blue)Packages: $(_PACKAGES)$(reset))
