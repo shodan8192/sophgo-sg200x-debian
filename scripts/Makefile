@@ -119,8 +119,14 @@ endif
 
 include /configs/settings.mk
 
-ifneq ("$(wildcard /configs/$(BOARD)/settings.mk)","")
-include /configs/$(BOARD)/settings.mk
+ifneq ("$(wildcard /configs/$(BOARD)_$(ARCH)/settings.mk)","")
+BOARD_CFG=$(BOARD)_$(ARCH)
+else
+BOARD_CFG=$(BOARD)
+endif
+
+ifneq ("$(wildcard /configs/$(BOARD_CFG)/settings.mk)","")
+include /configs/$(BOARD_CFG)/settings.mk
 else
 $(error $(red)Board $(BOARD) not supported$(reset))
 endif
@@ -146,7 +152,7 @@ SPACE := $(EMPTY) $(EMPTY)
 BSPDEPENDS += $(patsubst "%,%-$(BOARD),$(patsubst %",%,$(filter-out $(BSPFILTER),$(IMAGE_ADDITIONS))))
 _BSPDEPENDS = $(subst $(SPACE),$(COMMA)$(SPACE),$(sort $(BSPDEPENDS)))
 
-$(info $(blue)Board: $(BOARD)$(reset))
+$(info $(blue)Board: $(BOARD_CFG)$(reset))
 $(info $(blue)Variant: $(VARIANT)$(reset))
 $(info $(blue)Storage: $(STORAGE_TYPE)$(reset))
 $(info $(blue)Target: $(SDK_VER)$(reset))
@@ -172,7 +178,7 @@ endef
 
 $(BUILDDIR)/$(BOARD)-$(VARIANT)/memmap.py:
 	@mkdir -p $(BUILDDIR)/$(BOARD)-$(VARIANT)
-	@cp -p /configs/$(BOARD)/memmap.py $@
+	@cp -p /configs/$(BOARD_CFG)/memmap.py $@
 	@sed -i s/'ION_SIZE = .* . SIZE_1M'/'ION_SIZE = $(ION_SIZE) * SIZE_1M'/g $@
 
 $(BUILDDIR)/$(BOARD)-$(VARIANT)/cvi_board_memmap.h: $(BUILDDIR)/$(BOARD)-$(VARIANT)/memmap.py
@@ -188,11 +194,11 @@ $(BUILDDIR)/linux-prepare-checkout-stamp:
 $(BUILDDIR)/linux-prepare-patch-stamp: $(BUILDDIR)/linux-prepare-checkout-stamp $(BUILDDIR)/$(BOARD)-$(VARIANT)/cvi_board_memmap.h
 	@echo "$(COLOUR_GREEN)Patching Kernel for $(BOARD)$(END_COLOUR)"
 	@$(foreach file, $(wildcard /configs/common/patches/linux/*.patch), cd $(BUILDDIR)/kernel && git apply --ignore-whitespace $(file);)
-	@$(foreach file, $(wildcard /configs/$(BOARD)/patches/linux/*.patch), cd $(BUILDDIR)/kernel && git apply --ignore-whitespace $(file);)
-	@cp /configs/$(BOARD)/linux/defconfig $(BUILDDIR)/kernel/arch/$(KERNEL_ARCH)/configs/${BOARD}_defconfig
+	@$(foreach file, $(wildcard /configs/$(BOARD_CFG)/patches/linux/*.patch), cd $(BUILDDIR)/kernel && git apply --ignore-whitespace $(file);)
+	@cp /configs/$(BOARD_CFG)/linux/defconfig $(BUILDDIR)/kernel/arch/$(KERNEL_ARCH)/configs/${BOARD}_defconfig
 	@$(foreach file, $(wildcard /configs/common/dts/$(CHIP)/*), cp $(file) $(BUILDDIR)/kernel/arch/$(KERNEL_ARCH)/boot/dts/cvitek/;)
 	@$(foreach file, $(wildcard /configs/common/dts/$(CHIP)_$(UBOOT_ARCH)/*), cp $(file) $(BUILDDIR)/kernel/arch/$(KERNEL_ARCH)/boot/dts/cvitek/;)
-	@$(foreach file, $(wildcard /configs/$(BOARD)/dts/*), cp $(file) $(BUILDDIR)/kernel/arch/$(KERNEL_ARCH)/boot/dts/cvitek/;)
+	@$(foreach file, $(wildcard /configs/$(BOARD_CFG)/dts/*), cp $(file) $(BUILDDIR)/kernel/arch/$(KERNEL_ARCH)/boot/dts/cvitek/;)
 	@cp -p $(BUILDDIR)/$(BOARD)-$(VARIANT)/cvi_board_memmap.h $(BUILDDIR)/kernel/arch/$(KERNEL_ARCH)/boot/dts/cvitek/cvi_board_memmap.h
 	@touch $@
 
@@ -256,7 +262,7 @@ $(BUILDDIR)/osdrv-prepare-patch-stamp: $(BUILDDIR)/osdrv-prepare-checkout-stamp 
 	@echo "$(COLOUR_GREEN)Patching OSdrv for $(BOARD)$(END_COLOUR)"
 	$(call copy_ko_action, $(BUILDDIR)/kernel/modules)
 	@$(foreach file, $(wildcard /configs/common/patches/osdrv/*.patch), cd $(BUILDDIR)/osdrv && git apply --ignore-whitespace $(file);)
-	@$(foreach file, $(wildcard /configs/$(BOARD)/patches/osdrv/*.patch), cd $(BUILDDIR)/osdrv && git apply --ignore-whitespace $(file);)
+	@$(foreach file, $(wildcard /configs/$(BOARD_CFG)/patches/osdrv/*.patch), cd $(BUILDDIR)/osdrv && git apply --ignore-whitespace $(file);)
 	@touch $@
 
 $(BUILDDIR)/osdrv-prepare-configure-stamp: $(BUILDDIR)/osdrv-prepare-patch-stamp
@@ -319,7 +325,7 @@ $(BUILDDIR)/middleware-prepare-patch-stamp: $(BUILDDIR)/middleware-prepare-check
 	mkdir -pv $(BUILDDIR)/kernel/$(KERNEL_ARCH)/usr/include/linux/
 	$(call copy_header_action, $(BUILDDIR)/kernel/$(KERNEL_ARCH)/usr/include)
 	@$(foreach file, $(wildcard /configs/common/patches/middleware/*.patch), cd $(BUILDDIR)/middleware && git apply --ignore-whitespace $(file);)
-	@$(foreach file, $(wildcard /configs/$(BOARD)/patches/middleware/*.patch), cd $(BUILDDIR)/middleware && git apply --ignore-whitespace $(file);)
+	@$(foreach file, $(wildcard /configs/$(BOARD_CFG)/patches/middleware/*.patch), cd $(BUILDDIR)/middleware && git apply --ignore-whitespace $(file);)
 	sed -i 's|$$(ROOT_DIR)/../host-tools|/host-tools|g' $(BUILDDIR)/middleware/Makefile.param
 	sed -i 's|^include $$(BUILD_PATH)/.config|-include $$(BUILD_PATH)/.config|g' $(BUILDDIR)/middleware/Makefile.param
 	sed -i 's|^include $$(BUILD_PATH)/.config|-include $$(BUILD_PATH)/.config|g' $(BUILDDIR)/middleware/component/isp/Makefile
@@ -372,7 +378,7 @@ $(BUILDDIR)/buildroot-prepare-checkout-stamp:
 $(BUILDDIR)/buildroot-prepare-patch-stamp: $(BUILDDIR)/buildroot-prepare-checkout-stamp $(BUILDDIR)/middleware-compile-stamp
 	@echo "$(COLOUR_GREEN)Patching Buildroot for $(BOARD)$(END_COLOUR)"
 	@$(foreach file, $(wildcard /configs/common/patches/buildroot/*.patch), cd $(BR_DIR) && git apply --ignore-whitespace $(file);)
-	@$(foreach file, $(wildcard /configs/$(BOARD)/patches/buildroot/*.patch), cd $(BR_DIR) && git apply --ignore-whitespace $(file);)
+	@$(foreach file, $(wildcard /configs/$(BOARD_CFG)/patches/buildroot/*.patch), cd $(BR_DIR) && git apply --ignore-whitespace $(file);)
 	@cp /configs/common/buildroot/$(ARCH)_defconfig $(BR_DIR)/configs/$(BR_DEFCONFIG)
 	@echo 'BR2_TOOLCHAIN_EXTERNAL_PATH="'$(SDK_CROSS_COMPILE_PATH)'"' >> $(BR_DIR)/configs/$(BR_DEFCONFIG)
 	@if [ "X$(findstring kvm,$(VARIANT))" = "X" ]; then \
@@ -425,16 +431,16 @@ $(BUILDDIR)/uboot-prepare-checkout-stamp:
 $(BUILDDIR)/uboot-prepare-patch-stamp: $(BUILDDIR)/uboot-prepare-checkout-stamp $(BUILDDIR)/$(BOARD)-$(VARIANT)/cvi_board_memmap.h
 	@echo "$(COLOUR_GREEN)Patching U-Boot for $(BOARD)$(END_COLOUR)"
 	@$(foreach file, $(wildcard /configs/common/patches/u-boot/*.patch), cd $(BUILDDIR)/u-boot && git apply --ignore-whitespace $(file);)
-	@$(foreach file, $(wildcard /configs/$(BOARD)/patches/u-boot/*.patch), cd $(BUILDDIR)/u-boot && git apply --ignore-whitespace $(file);)
-	@cp /configs/$(BOARD)/u-boot/defconfig $(BUILDDIR)/u-boot/configs/$(BOARD)_defconfig
+	@$(foreach file, $(wildcard /configs/$(BOARD_CFG)/patches/u-boot/*.patch), cd $(BUILDDIR)/u-boot && git apply --ignore-whitespace $(file);)
+	@cp /configs/$(BOARD_CFG)/u-boot/defconfig $(BUILDDIR)/u-boot/configs/$(BOARD)_defconfig
 	@$(foreach file, $(wildcard /configs/common/dts/$(CHIP)/*), cp $(file) $(BUILDDIR)/u-boot/arch/$(UBOOT_ARCH)/dts/;)
 	@$(foreach file, $(wildcard /configs/common/dts/$(CHIP)_$(UBOOT_ARCH)/*), cp $(file) $(BUILDDIR)/u-boot/arch/$(UBOOT_ARCH)/dts/;)
-	@$(foreach file, $(wildcard /configs/$(BOARD)/dts/*), cp $(file) $(BUILDDIR)/u-boot/arch/$(UBOOT_ARCH)/dts/;)
-	@cp /configs/$(BOARD)/u-boot/cvitek.h $(BUILDDIR)/u-boot/include/cvitek.h
-	@cp /configs/$(BOARD)/u-boot/cvi_board_init.c $(BUILDDIR)/u-boot/board/cvitek/cvi_board_init.c
+	@$(foreach file, $(wildcard /configs/$(BOARD_CFG)/dts/*), cp $(file) $(BUILDDIR)/u-boot/arch/$(UBOOT_ARCH)/dts/;)
+	@cp /configs/$(BOARD_CFG)/u-boot/cvitek.h $(BUILDDIR)/u-boot/include/cvitek.h
+	@cp /configs/$(BOARD_CFG)/u-boot/cvi_board_init.c $(BUILDDIR)/u-boot/board/cvitek/cvi_board_init.c
 	@cp -p $(BUILDDIR)/$(BOARD)-$(VARIANT)/cvi_board_memmap.h $(BUILDDIR)/u-boot/include/cvi_board_memmap.h
-	@python3 /builder/python/mkcvipart.py /configs/$(BOARD)/$(PARTITION_FILE) $(BUILDDIR)/u-boot/include/
-	@python3 /builder/python/mk_imgHeader.py /configs/$(BOARD)/$(PARTITION_FILE) $(BUILDDIR)/u-boot/include/ 
+	@python3 /builder/python/mkcvipart.py /configs/$(BOARD_CFG)/$(PARTITION_FILE) $(BUILDDIR)/u-boot/include/
+	@python3 /builder/python/mk_imgHeader.py /configs/$(BOARD_CFG)/$(PARTITION_FILE) $(BUILDDIR)/u-boot/include/ 
 	@touch $@
 
 $(BUILDDIR)/uboot-prepare-configure-stamp: $(BUILDDIR)/uboot-prepare-patch-stamp
@@ -471,7 +477,7 @@ $(BUILDDIR)/opensbi-prepare-checkout-stamp:
 $(BUILDDIR)/opensbi-prepare-patch-stamp: $(BUILDDIR)/opensbi-prepare-checkout-stamp
 	@echo "$(COLOUR_GREEN)Patching OpenSBI for $(BOARD)$(END_COLOUR)"
 	@$(foreach file, $(wildcard /configs/common/patches/opensbi/*.patch), cd $(BUILDDIR)/opensbi && git apply --ignore-whitespace $(file);)
-	@$(foreach file, $(wildcard /configs/$(BOARD)/patches/opensbi/*.patch), cd $(BUILDDIR)/opensbi && git apply --ignore-whitespace $(file);)
+	@$(foreach file, $(wildcard /configs/$(BOARD_CFG)/patches/opensbi/*.patch), cd $(BUILDDIR)/opensbi && git apply --ignore-whitespace $(file);)
 	@touch $@
 
 $(BUILDDIR)/opensbi-compile-stamp: $(BUILDDIR)/opensbi-prepare-patch-stamp $(BUILDDIR)/uboot-compile-stamp
@@ -503,7 +509,7 @@ $(BUILDDIR)/fsbl-prepare-checkout-stamp:
 $(BUILDDIR)/fsbl-prepare-patch-stamp: $(BUILDDIR)/fsbl-prepare-checkout-stamp $(BUILDDIR)/$(BOARD)-$(VARIANT)/cvi_board_memmap.h
 	@echo "$(COLOUR_GREEN)Patching FSBL for $(BOARD)$(END_COLOUR)"
 	$(foreach file, $(wildcard /configs/common/patches/fsbl/*.patch), cd $(BUILDDIR)/fsbl && git apply --ignore-whitespace $(file);)
-	$(foreach file, $(wildcard /configs/$(BOARD)/patches/fsbl/*.patch), cd $(BUILDDIR)/fsbl && git apply --ignore-whitespace $(file);)
+	$(foreach file, $(wildcard /configs/$(BOARD_CFG)/patches/fsbl/*.patch), cd $(BUILDDIR)/fsbl && git apply --ignore-whitespace $(file);)
 	@cp -p $(BUILDDIR)/$(BOARD)-$(VARIANT)/cvi_board_memmap.h $(BUILDDIR)/fsbl/plat/$(CHIP)/include/cvi_board_memmap.h
 	@printf '\163\000\120\020\157\360\337\377' > $(BUILDDIR)/fsbl/blank.bin
 	@touch $@
@@ -609,10 +615,10 @@ $(BUILDDIR)/image-compile-stamp: $(BUILDDIR)/image-customize-stamp
 	@cd $(BUILDDIR) && genimage --config /builder/genimage_$(STORAGE_TYPE).cfg --tmppath /tmp/genimage --rootpath /rootfs/
 	@rm -rf /tmp/genimage/
 	@if [ "$(STORAGE_TYPE)" = "emmc" ]; then \
-		python3 /builder/python/raw2cimg.py -v $(BUILDDIR)/images/sdcard.img $(BUILDDIR)/images /configs/$(BOARD)/partition_emmc.xml; \
+		python3 /builder/python/raw2cimg.py -v $(BUILDDIR)/images/sdcard.img $(BUILDDIR)/images /configs/$(BOARD_CFG)/partition_emmc.xml; \
 		mkdir -p /tmp/rom/; \
 		cp $(BUILDDIR)/images/sdcard.img /tmp/rom/; \
-		cp /configs/$(BOARD)/partition_emmc.xml /tmp/rom/; \
+		cp /configs/$(BOARD_CFG)/partition_emmc.xml /tmp/rom/; \
 		cp $(BUILDDIR)/fip.bin /tmp/rom/; \
 		cd /tmp && zip $(BOARD)_$(STORAGE_TYPE).zip -r rom/; \
 		cp /tmp/$(BOARD)_$(STORAGE_TYPE).zip /output/; \
