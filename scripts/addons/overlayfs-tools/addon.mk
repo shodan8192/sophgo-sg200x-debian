@@ -12,6 +12,7 @@ $(BUILDDIR)/overlayfs-tools-stamp: $(BUILDDIR)/buildroot-package-stamp
 	@mkdir -pv $(BUILDDIR)/package/overlayfs-tools-$(OVERLAYFSTOOLSVERSION)/usr/bin/
 	@cp -p $(BR_OUTPUT_DIR)/target/usr/bin/fsck.overlay $(BUILDDIR)/package/overlayfs-tools-$(OVERLAYFSTOOLSVERSION)/usr/bin/
 	@cp -p $(BR_OUTPUT_DIR)/target/usr/bin/overlay $(BUILDDIR)/package/overlayfs-tools-$(OVERLAYFSTOOLSVERSION)/usr/bin/
+	@sed -i 's/Architecture: riscv64/Architecture: $(DEB_ARCH)/' $(BUILDDIR)/package/overlayfs-tools-$(OVERLAYFSTOOLSVERSION)/DEBIAN/control
 	@sed -i 's/Version: 1.0.0-1/Version: $(OVERLAYFSTOOLSVERSION)$(BV)/' $(BUILDDIR)/package/overlayfs-tools-$(OVERLAYFSTOOLSVERSION)/DEBIAN/control
 	@sed -i 's/Package: overlayfs-tools/Package: overlayfs-tools/' $(BUILDDIR)/package/overlayfs-tools-$(OVERLAYFSTOOLSVERSION)/DEBIAN/control
 	@cd $(BUILDDIR)/package/ && dpkg-deb --build overlayfs-tools-$(OVERLAYFSTOOLSVERSION) overlayfs-tools_$(OVERLAYFSTOOLSVERSION)$(BV)_$(DEB_ARCH).deb

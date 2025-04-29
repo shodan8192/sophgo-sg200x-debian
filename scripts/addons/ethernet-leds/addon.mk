@@ -5,6 +5,7 @@ $(BUILDDIR)/ethernet-leds-stamp:
 	@cp -r /builder/deb/ethernet-leds/* $(BUILDDIR)/package/ethernet-leds-$(BOARD)-$(ETHLEDSVERSION)/
 	@mkdir -p $(BUILDDIR)/package/ethernet-leds-$(BOARD)-$(ETHLEDSVERSION)/etc/systemd/system/
 	@cp -a addons/ethernet-leds/ethernet-leds.service $(BUILDDIR)/package/ethernet-leds-$(BOARD)-$(ETHLEDSVERSION)/etc/systemd/system/
+	@sed -i 's/Architecture: riscv64/Architecture: $(DEB_ARCH)/' $(BUILDDIR)/package/ethernet-leds-$(BOARD)-$(ETHLEDSVERSION)/DEBIAN/control
 	@sed -i 's/Version: 1.0.0/Version: $(ETHLEDSVERSION)/' $(BUILDDIR)/package/ethernet-leds-$(BOARD)-$(ETHLEDSVERSION)/DEBIAN/control
 	@sed -i 's/Package: ethernet-leds/Package: ethernet-leds-$(BOARD)/' $(BUILDDIR)/package/ethernet-leds-$(BOARD)-$(ETHLEDSVERSION)/DEBIAN/control
 	@cd $(BUILDDIR)/package/ && dpkg-deb --build ethernet-leds-$(BOARD)-$(ETHLEDSVERSION) ethernet-leds-$(BOARD)_$(ETHLEDSVERSION)_$(DEB_ARCH).deb

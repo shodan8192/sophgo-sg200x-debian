@@ -18,6 +18,7 @@ $(BUILDDIR)/usb-device-stamp: $(BUILDDIR)/buildroot-prepare-checkout-stamp
 	@chmod +x $(BUILDDIR)/package/usb-device-$(BOARD_EXT)-$(USBDEVVERSION)/etc/init.d/S03usbdev
 	@mkdir -pv $(BUILDDIR)/package/usb-device-$(BOARD_EXT)-$(USBDEVVERSION)/etc/systemd/system/
 	@cp -a addons/usb-device/usb-device*.service $(BUILDDIR)/package/usb-device-$(BOARD_EXT)-$(USBDEVVERSION)/etc/systemd/system/
+	@sed -i 's/Architecture: riscv64/Architecture: $(DEB_ARCH)/' $(BUILDDIR)/package/usb-device-$(BOARD_EXT)-$(USBDEVVERSION)/DEBIAN/control
 	@sed -i 's/Version: 1.0.0/Version: $(USBDEVVERSION)$(BV)/' $(BUILDDIR)/package/usb-device-$(BOARD_EXT)-$(USBDEVVERSION)/DEBIAN/control
 	@sed -i 's/Package: usb-device/Package: usb-device-$(BOARD_EXT)/' $(BUILDDIR)/package/usb-device-$(BOARD_EXT)-$(USBDEVVERSION)/DEBIAN/control
 	@if [ "$(BOARD)" = "$(BOARD_EXT)" ]; then \

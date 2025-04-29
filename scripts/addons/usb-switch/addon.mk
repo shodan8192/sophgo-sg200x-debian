@@ -8,6 +8,7 @@ $(BUILDDIR)/usb-switch-stamp:
 	@chmod +x $(BUILDDIR)/package/usb-switch-$(BOARD)-$(USBSWITCHVERSION)/etc/init.d/usb-host.sh
 	@mkdir -p $(BUILDDIR)/package/usb-switch-$(BOARD)-$(USBSWITCHVERSION)/etc/systemd/system/
 	@cp -a addons/usb-switch/usb-switch.service $(BUILDDIR)/package/usb-switch-$(BOARD)-$(USBSWITCHVERSION)/etc/systemd/system/
+	@sed -i 's/Architecture: riscv64/Architecture: $(DEB_ARCH)/' $(BUILDDIR)/package/usb-switch-$(BOARD)-$(USBSWITCHVERSION)/DEBIAN/control
 	@sed -i 's/Version: 1.0.0/Version: $(USBSWITCHVERSION)/' $(BUILDDIR)/package/usb-switch-$(BOARD)-$(USBSWITCHVERSION)/DEBIAN/control
 	@sed -i 's/Package: usb-switch/Package: usb-switch-$(BOARD)/' $(BUILDDIR)/package/usb-switch-$(BOARD)-$(USBSWITCHVERSION)/DEBIAN/control
 	@cd $(BUILDDIR)/package/ && dpkg-deb --build usb-switch-$(BOARD)-$(USBSWITCHVERSION) usb-switch-$(BOARD)_$(USBSWITCHVERSION)_$(DEB_ARCH).deb

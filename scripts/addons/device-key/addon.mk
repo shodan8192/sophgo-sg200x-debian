@@ -11,6 +11,7 @@ $(BUILDDIR)/device-key-stamp:
 	@mkdir -pv $(BUILDDIR)/package/device-key-$(BOARD)-$(DEVICEKYVERSION)/etc/systemd/system/
 	@cp -a addons/device-key/device-key*.service $(BUILDDIR)/package/device-key-$(BOARD)-$(DEVICEKYVERSION)/etc/systemd/system/
 	@cp -a addons/device-key/device-uuid*.service $(BUILDDIR)/package/device-key-$(BOARD)-$(DEVICEKYVERSION)/etc/systemd/system/
+	@sed -i 's/Architecture: riscv64/Architecture: $(DEB_ARCH)/' $(BUILDDIR)/package/device-key-$(BOARD)-$(DEVICEKYVERSION)/DEBIAN/control
 	@sed -i 's/Version: 1.0.0/Version: $(DEVICEKYVERSION)/' $(BUILDDIR)/package/device-key-$(BOARD)-$(DEVICEKYVERSION)/DEBIAN/control
 	@sed -i 's/Package: device-key/Package: device-key-$(BOARD)/' $(BUILDDIR)/package/device-key-$(BOARD)-$(DEVICEKYVERSION)/DEBIAN/control
 	@cd $(BUILDDIR)/package/ && dpkg-deb --build device-key-$(BOARD)-$(DEVICEKYVERSION) device-key-$(BOARD)_$(DEVICEKYVERSION)_$(DEB_ARCH).deb

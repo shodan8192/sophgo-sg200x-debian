@@ -9,6 +9,7 @@ $(BUILDDIR)/gadget-nic-stamp:
 	@ln -s S30gadget_nic $(BUILDDIR)/package/gadget-nic-$(BOARD)-$(GADGETNICVERSION)/etc/init.d/S30rndis
 	@mkdir -pv $(BUILDDIR)/package/gadget-nic-$(BOARD)-$(GADGETNICVERSION)/etc/systemd/system/
 	@cp -a addons/gadget-nic/gadget-nic*.service $(BUILDDIR)/package/gadget-nic-$(BOARD)-$(GADGETNICVERSION)/etc/systemd/system/
+	@sed -i 's/Architecture: riscv64/Architecture: $(DEB_ARCH)/' $(BUILDDIR)/package/gadget-nic-$(BOARD)-$(GADGETNICVERSION)/DEBIAN/control
 	@sed -i 's/Version: 1.0.0/Version: $(GADGETNICVERSION)/' $(BUILDDIR)/package/gadget-nic-$(BOARD)-$(GADGETNICVERSION)/DEBIAN/control
 	@sed -i 's/Package: gadget-nic/Package: gadget-nic-$(BOARD)/' $(BUILDDIR)/package/gadget-nic-$(BOARD)-$(GADGETNICVERSION)/DEBIAN/control
 	@cd $(BUILDDIR)/package/ && dpkg-deb --build gadget-nic-$(BOARD)-$(GADGETNICVERSION) gadget-nic-$(BOARD)_$(GADGETNICVERSION)_$(DEB_ARCH).deb

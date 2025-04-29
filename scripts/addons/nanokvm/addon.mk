@@ -54,6 +54,7 @@ $(BUILDDIR)/nanokvm-stamp: $(BUILDDIR)/buildroot-package-stamp
 	@cp -a addons/usb-device/usb-device*.service $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/kvmapp/system/systemd/
 	@cp -a addons/wifi-builtin/wifi-builtin*.service $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/kvmapp/system/systemd/
 	@cp -a addons/wifi-builtin/wifi-hostapd*.service $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/kvmapp/system/systemd/
+	@sed -i 's/Architecture: riscv64/Architecture: $(DEB_ARCH)/' $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/DEBIAN/control
 	@sed -i 's/Version: 1.0.0/Version: $(NANOKVMVERSION)$(BV)/' $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/DEBIAN/control
 	@sed -i 's/Package: nanokvm-sg200x/Package: nanokvm-$(BOARD)/' $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/DEBIAN/control
 	@chmod +x $(BUILDDIR)/package/nanokvm-$(BOARD)-$(NANOKVMVERSION)/DEBIAN/postinst

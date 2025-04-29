@@ -22,6 +22,7 @@ $(BUILDDIR)/wifi-builtin-stamp: $(BUILDDIR)/buildroot-prepare-checkout-stamp
 	@cp -a addons/wifi-builtin/wifi-builtin*.service $(BUILDDIR)/package/wifi-builtin-$(BOARD_EXT)-$(WIFIBIVERSION)/etc/systemd/system/
 	@cp -a addons/wifi-builtin/wifi-hostapd*.service $(BUILDDIR)/package/wifi-builtin-$(BOARD_EXT)-$(WIFIBIVERSION)/etc/systemd/system/
 	@cp -a addons/wifi-builtin/wifi-mac*.service $(BUILDDIR)/package/wifi-builtin-$(BOARD_EXT)-$(WIFIBIVERSION)/etc/systemd/system/
+	@sed -i 's/Architecture: riscv64/Architecture: $(DEB_ARCH)/' $(BUILDDIR)/package/wifi-builtin-$(BOARD_EXT)-$(WIFIBIVERSION)/DEBIAN/control
 	@sed -i 's/Version: 1.0.0/Version: $(WIFIBIVERSION)$(BV)/' $(BUILDDIR)/package/wifi-builtin-$(BOARD_EXT)-$(WIFIBIVERSION)/DEBIAN/control
 	@sed -i 's/Package: wifi-builtin/Package: wifi-builtin-$(BOARD_EXT)/' $(BUILDDIR)/package/wifi-builtin-$(BOARD_EXT)-$(WIFIBIVERSION)/DEBIAN/control
 	@if [ "$(BOARD)" = "$(BOARD_EXT)" ]; then \
