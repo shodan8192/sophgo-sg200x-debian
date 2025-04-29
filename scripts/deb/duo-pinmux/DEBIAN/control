@@ -3,7 +3,7 @@ Version: 1.0.0-1
 Architecture: riscv64
 Maintainer: Justin Hammond <justin@dynam.ac>
 Installed-Size: 30
-Depends: libc6:riscv64 (>= 2.37), libc6
+Depends: libc6 (>= 2.34)
 Conflicts: cvi-pinmux-cv180x
 Section: admin
 Priority: optional
