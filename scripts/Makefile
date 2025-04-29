@@ -11,6 +11,8 @@ GIT_REF ?= develop
 
 BUILDDIR := /build
 
+ARCH ?= riscv
+
 ifeq ($(ARCH),arm64)
 SDK_VER ?= 64bit
 else ifeq ($(ARCH),arm)
@@ -371,7 +373,7 @@ $(BUILDDIR)/buildroot-prepare-patch-stamp: $(BUILDDIR)/buildroot-prepare-checkou
 	@echo "$(COLOUR_GREEN)Patching Buildroot for $(BOARD)$(END_COLOUR)"
 	@$(foreach file, $(wildcard /configs/common/patches/buildroot/*.patch), cd $(BR_DIR) && git apply --ignore-whitespace $(file);)
 	@$(foreach file, $(wildcard /configs/$(BOARD)/patches/buildroot/*.patch), cd $(BR_DIR) && git apply --ignore-whitespace $(file);)
-	@cp /configs/common/buildroot/defconfig $(BR_DIR)/configs/$(BR_DEFCONFIG)
+	@cp /configs/common/buildroot/$(ARCH)_defconfig $(BR_DIR)/configs/$(BR_DEFCONFIG)
 	@echo 'BR2_TOOLCHAIN_EXTERNAL_PATH="'$(SDK_CROSS_COMPILE_PATH)'"' >> $(BR_DIR)/configs/$(BR_DEFCONFIG)
 	@if [ "X$(findstring kvm,$(VARIANT))" = "X" ]; then \
 		sed -i /BR2_CCACHE/d $(BR_DIR)/configs/$(BR_DEFCONFIG) ; \
