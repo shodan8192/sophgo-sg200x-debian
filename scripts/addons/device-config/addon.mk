@@ -21,10 +21,10 @@ firmware-vcodec: $(BUILDDIR)/firmware-vcodec-package-stamp
 
 $(BUILDDIR)/sensor-config-install-stamp:
 	@mkdir -pv /rootfs/boot/
-	@[ "$(BOARD)" = "licheervnano" ] || touch /rootfs/boot/epsilon
+	@[ "$(BOARD)" = "licheervnano" -o "$(BOARD)" = "licheea53nano" ] || touch /rootfs/boot/epsilon
 	@mkdir -pv /rootfs/mnt/cfg/param/
 	@mkdir -pv /rootfs/mnt/data/
-	@if [ "$(BOARD)" = "licheervnano" ]; then \
+	@if [ "$(BOARD)" = "licheervnano" -o "$(BOARD)" = "licheea53nano" ]; then \
 		cp -p addons/device-config/overlay/mnt/cfg/param/sipeed_gc4653_30fps_202403261356.bin /rootfs/mnt/cfg/param/cvi_sdr_bin ; \
 	elif [ "$(BOARD)" = "duo256" ]; then \
 		cp -p addons/device-config/overlay/mnt/cfg/param/cvi_sdr_bin_GC2083 /rootfs/mnt/cfg/param/cvi_sdr_bin && \

@@ -28,6 +28,8 @@ $(BUILDDIR)/zram-config-stamp: $(BUILDDIR)/buildroot-package-stamp
 		sed -i 's/Duo256/DuoS/' $(BUILDDIR)/package/zram-config-$(BOARD)-$(ZRAMCONFIGVERSION)/DEBIAN/control ; \
 	elif [ "$(BOARD)" = "licheervnano" ]; then \
 		sed -i s/'MilkV Duo256'/'Sipeed LicheeRV Nano'/ $(BUILDDIR)/package/zram-config-$(BOARD)-$(ZRAMCONFIGVERSION)/DEBIAN/control ; \
+	elif [ "$(BOARD)" = "licheea53nano" ]; then \
+		sed -i s/'MilkV Duo256'/'Sipeed LicheeA53 Nano'/ $(BUILDDIR)/package/zram-config-$(BOARD)-$(ZRAMCONFIGVERSION)/DEBIAN/control ; \
 	fi
 	@cd $(BUILDDIR)/package/ && dpkg-deb --build zram-config-$(BOARD)-$(ZRAMCONFIGVERSION) zram-config-$(BOARD)_$(ZRAMCONFIGVERSION)$(BV)_$(DEB_ARCH).deb
 	@cp $(BUILDDIR)/package/zram-config-$(BOARD)_$(ZRAMCONFIGVERSION)$(BV)_$(DEB_ARCH).deb /output/

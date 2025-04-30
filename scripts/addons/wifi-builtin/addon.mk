@@ -43,5 +43,5 @@ $(BUILDDIR)/wifi-builtin-stamp: $(BUILDDIR)/buildroot-prepare-checkout-stamp
 	@echo " wifi-builtin" >> /rootfs/tmp/install/systemd-enable
 	@echo " wifi-builtin-wlan0.service" >> /rootfs/tmp/install/systemd-enable
 	@echo " wifi-hostapd-wlan0.service" >> /rootfs/tmp/install/systemd-enable
-	@[ "$(BOARD)" = "licheervnano" ] || echo " wifi-mac" >> /rootfs/tmp/install/systemd-enable
+	@[ "$(BOARD)" = "licheervnano" -o "$(BOARD)" = "licheea53nano" ] || echo " wifi-mac" >> /rootfs/tmp/install/systemd-enable
 	@touch $@
