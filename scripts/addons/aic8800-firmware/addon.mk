@@ -14,6 +14,7 @@ $(BUILDDIR)/aic8800-firmware-stamp:
 	@cp -a $(BUILDDIR)/aic8800-firmware/aic8800/SDIO/aic8800/ $(BUILDDIR)/package/firmware-aic8800-$(CHIP)-$(OSDRVVERSION)/lib/firmware/aic8800_sdio/
 # 	This is the DUOS firmware
 	@cp -a $(BUILDDIR)/aic8800-firmware/aic8800/SDIO/aic8800D80/* $(BUILDDIR)/package/firmware-aic8800-$(CHIP)-$(OSDRVVERSION)/lib/firmware/aic8800_sdio/aic8800/
+	@sed -i 's/Architecture: riscv64/Architecture: $(DEB_ARCH)/' $(BUILDDIR)/package/firmware-aic8800-$(CHIP)-$(OSDRVVERSION)/DEBIAN/control
 	@sed -i 's/Version: 1.0.0/Version: $(OSDRVVERSION)/' $(BUILDDIR)/package/firmware-aic8800-$(CHIP)-$(OSDRVVERSION)/DEBIAN/control
 	@sed -i 's/Package: firmware-aic8800-cv181x/Package: firmware-aic8800-$(CHIP)/' $(BUILDDIR)/package/firmware-aic8800-$(CHIP)-$(OSDRVVERSION)/DEBIAN/control
 	@cd $(BUILDDIR)/package/ && dpkg-deb --build firmware-aic8800-$(CHIP)-$(OSDRVVERSION) firmware-aic8800-$(CHIP)_$(OSDRVVERSION)_$(DEB_ARCH).deb

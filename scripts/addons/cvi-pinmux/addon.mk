@@ -11,6 +11,7 @@ $(BUILDDIR)/cvi-pinmux-stamp: $(BUILDDIR)/buildroot-package-stamp
 	@cp -r /builder/deb/cvi-pinmux-cv181x/* $(BUILDDIR)/package/cvi-pinmux-cv181x-$(CVIPINMUXVERSION)/
 	@mkdir -pv $(BUILDDIR)/package/cvi-pinmux-cv181x-$(CVIPINMUXVERSION)/usr/bin/
 	@cp -p $(BR_OUTPUT_DIR)/target/usr/bin/cvi-pinmux $(BUILDDIR)/package/cvi-pinmux-cv181x-$(CVIPINMUXVERSION)/usr/bin/cvi_pinmux
+	@sed -i 's/Architecture: riscv64/Architecture: $(DEB_ARCH)/' $(BUILDDIR)/package/cvi-pinmux-cv181x-$(CVIPINMUXVERSION)/DEBIAN/control
 	@sed -i 's/Version: 1.0.0-1/Version: $(CVIPINMUXVERSION)$(BV)/' $(BUILDDIR)/package/cvi-pinmux-cv181x-$(CVIPINMUXVERSION)/DEBIAN/control
 	@sed -i 's/Package: cvi-pinmux-cv181x/Package: cvi-pinmux-cv181x/' $(BUILDDIR)/package/cvi-pinmux-cv181x-$(CVIPINMUXVERSION)/DEBIAN/control
 	@cd $(BUILDDIR)/package/ && dpkg-deb --build cvi-pinmux-cv181x-$(CVIPINMUXVERSION) cvi-pinmux-cv181x_$(CVIPINMUXVERSION)$(BV)_$(DEB_ARCH).deb

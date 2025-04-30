@@ -6,6 +6,7 @@ $(BUILDDIR)/duo-pinmux-stamp: $(BUILDDIR)/buildroot-package-stamp
 	@cp -r /builder/deb/duo-pinmux/* $(BUILDDIR)/package/duo-pinmux-$(BOARD)-$(DUOPINMUXVERSION)/
 	@mkdir -pv $(BUILDDIR)/package/duo-pinmux-$(BOARD)-$(DUOPINMUXVERSION)/usr/bin/
 	@cp -p $(BR_OUTPUT_DIR)/target/usr/bin/duo-pinmux $(BUILDDIR)/package/duo-pinmux-$(BOARD)-$(DUOPINMUXVERSION)/usr/bin/duo-pinmux
+	@sed -i 's/Architecture: riscv64/Architecture: $(DEB_ARCH)/' $(BUILDDIR)/package/duo-pinmux-$(BOARD)-$(DUOPINMUXVERSION)/DEBIAN/control
 	@sed -i 's/Version: 1.0.0-1/Version: $(DUOPINMUXVERSION)$(BV)/' $(BUILDDIR)/package/duo-pinmux-$(BOARD)-$(DUOPINMUXVERSION)/DEBIAN/control
 	@sed -i 's/Package: duo-pinmux/Package: duo-pinmux-$(BOARD)/' $(BUILDDIR)/package/duo-pinmux-$(BOARD)-$(DUOPINMUXVERSION)/DEBIAN/control
 	@if [ "$(BOARD)" = "duos" ]; then \

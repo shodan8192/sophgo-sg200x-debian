@@ -18,6 +18,7 @@ $(BUILDDIR)/zram-config-stamp: $(BUILDDIR)/buildroot-package-stamp
 	@sed -i /overlayfs-tools.builddir/d $(BUILDDIR)/package/zram-config-$(BOARD)-$(ZRAMCONFIGVERSION)/usr/src/zram-config/*.bash
 	@sed -i s/'systemctl enable --now '/'systemctl enable '/g $(BUILDDIR)/package/zram-config-$(BOARD)-$(ZRAMCONFIGVERSION)/usr/src/zram-config/*.bash
 	@sed -i s/'systemctl show -p SubState --value zram-config'/'echo "exited"'/g $(BUILDDIR)/package/zram-config-$(BOARD)-$(ZRAMCONFIGVERSION)/usr/src/zram-config/*.bash
+	@sed -i 's/Architecture: riscv64/Architecture: $(DEB_ARCH)/' $(BUILDDIR)/package/zram-config-$(BOARD)-$(ZRAMCONFIGVERSION)/DEBIAN/control
 	@sed -i 's/Version: 1.0.0-1/Version: $(ZRAMCONFIGVERSION)$(BV)/' $(BUILDDIR)/package/zram-config-$(BOARD)-$(ZRAMCONFIGVERSION)/DEBIAN/control
 	@sed -i 's/Package: zram-config/Package: zram-config-$(BOARD)/' $(BUILDDIR)/package/zram-config-$(BOARD)-$(ZRAMCONFIGVERSION)/DEBIAN/control
 	@echo '#!/bin/sh' > $(BUILDDIR)/package/zram-config-$(BOARD)-$(ZRAMCONFIGVERSION)/DEBIAN/postinst
@@ -27,6 +28,8 @@ $(BUILDDIR)/zram-config-stamp: $(BUILDDIR)/buildroot-package-stamp
 		sed -i 's/Duo256/DuoS/' $(BUILDDIR)/package/zram-config-$(BOARD)-$(ZRAMCONFIGVERSION)/DEBIAN/control ; \
 	elif [ "$(BOARD)" = "licheervnano" ]; then \
 		sed -i s/'MilkV Duo256'/'Sipeed LicheeRV Nano'/ $(BUILDDIR)/package/zram-config-$(BOARD)-$(ZRAMCONFIGVERSION)/DEBIAN/control ; \
+	elif [ "$(BOARD)" = "licheea53nano" ]; then \
+		sed -i s/'MilkV Duo256'/'Sipeed LicheeA53 Nano'/ $(BUILDDIR)/package/zram-config-$(BOARD)-$(ZRAMCONFIGVERSION)/DEBIAN/control ; \
 	fi
 	@cd $(BUILDDIR)/package/ && dpkg-deb --build zram-config-$(BOARD)-$(ZRAMCONFIGVERSION) zram-config-$(BOARD)_$(ZRAMCONFIGVERSION)$(BV)_$(DEB_ARCH).deb
 	@cp $(BUILDDIR)/package/zram-config-$(BOARD)_$(ZRAMCONFIGVERSION)$(BV)_$(DEB_ARCH).deb /output/

@@ -23,6 +23,7 @@ $(BUILDDIR)/load-systemko-stamp:
 	@cp -a addons/load-systemko/load-fb*.service $(BUILDDIR)/package/load-systemko-$(BOARD)-$(OSDRVVERSION)/etc/systemd/system/
 	@cp -a addons/load-systemko/load-tp*.service $(BUILDDIR)/package/load-systemko-$(BOARD)-$(OSDRVVERSION)/etc/systemd/system/
 	@cp -a addons/load-systemko/load-wifimod*.service $(BUILDDIR)/package/load-systemko-$(BOARD)-$(OSDRVVERSION)/etc/systemd/system/
+	@sed -i 's/Architecture: riscv64/Architecture: $(DEB_ARCH)/' $(BUILDDIR)/package/load-systemko-$(BOARD)-$(OSDRVVERSION)/DEBIAN/control
 	@sed -i 's/Version: 1.0.0/Version: $(OSDRVVERSION)$(LSKV)/' $(BUILDDIR)/package/load-systemko-$(BOARD)-$(OSDRVVERSION)/DEBIAN/control
 	@sed -i 's/Package: load-systemko/Package: load-systemko-$(BOARD)/' $(BUILDDIR)/package/load-systemko-$(BOARD)-$(OSDRVVERSION)/DEBIAN/control
 	@chmod +x $(BUILDDIR)/package/load-systemko-$(BOARD)-$(OSDRVVERSION)/DEBIAN/postinst
