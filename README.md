@@ -194,7 +194,18 @@ docker run --privileged -it --rm -v ./configs/:/configs -v ./image:/output -v ./
 ```
 inside the container, packages are build in the /builder/ directory, and the rootfs is placed at /rootfs/ directory
 
+## ARM Images
+If the A53 CPU core is enabled on your board you can build the matching arm64 images.
+
+Use podman/docker run like described above and choose one of the supported boards:
+```
+make BOARD=duos ARCH=arm64 image
+make BOARD=duo256 ARCH=arm64 image
+make BOARD=licheea53nano ARCH=arm64 image
+```
+You can replace ARCH=arm64 with ARCH=arm to get 32 bit (armhf) images.
+
 # TODO
 - DeviceTree Overlay Support
-- Add support for the TPU drivers
+- Add support for the TPU SDK (TPU drivers are already included but not tested)
 - Possibly mainline kernel support via the sophgo linux for-next repositories
