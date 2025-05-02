@@ -508,7 +508,7 @@ $(BUILDDIR)/opensbi-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-sta
 
 $(BUILDDIR)/opensbi-compile-stamp: $(BUILDDIR)/opensbi-prepare-patch-stamp $(BUILDDIR)/uboot-compile-stamp
 	@echo "$(COLOUR_GREEN)Building OpenSBI for $(BOARD)$(END_COLOUR)"
-	@cd $(BUILDDIR)/opensbi && CROSS_COMPILE="$(SDK_CROSS_COMPILE_PATH)/bin/$(SDK_CROSS_COMPILE_PREFIX)" CHIP_ARCH=$(SDK_CHIP) make OPENSBI_PATH="$(BUILDDIR)/opensbi" PLATFORM=generic FW_FDT_PATH=$(BUILDDIR)/u-boot.dtb
+	@cd $(BUILDDIR)/opensbi && CHIP_ARCH=$(SDK_CHIP) $(MAKE) $(KERNEL_MAKE_OPTS) OPENSBI_PATH="$(BUILDDIR)/opensbi" PLATFORM=generic FW_FDT_PATH=$(BUILDDIR)/u-boot.dtb
 	@cp $(BUILDDIR)/opensbi/build/platform/generic/firmware/fw_dynamic.bin $(BUILDDIR) 
 	@touch $@
 
