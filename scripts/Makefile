@@ -70,6 +70,14 @@ endif
 SDK_CHIP = $(shell echo '$(CHIP)' | tr '[:lower:]' '[:upper:]')
 UBOOT_FAMILY ?= $(UBOOT_CHIP)
 
+UBOOT_MAKE_OPTS = ARCH=$(UBOOT_ARCH) \
+BOARD=$(UBOOT_FAMILY) \
+CONFIG_USE_DEFAULT_ENV=y \
+STORAGE_TYPE=$(STORAGE_TYPE) \
+CHIP=$(UBOOT_CHIP) \
+CVIBOARD=$(UBOOT_BOARD) \
+CROSS_COMPILE="$(SDK_CROSS_COMPILE_PATH)/bin/$(SDK_CROSS_COMPILE_PREFIX)"
+
 OSDRV_ENV = CHIP_ARCH=$(SDK_CHIP) \
 CVIARCH=$(SDK_CHIP) \
 SDK_VER=$(SDK_VER) \
@@ -458,13 +466,13 @@ $(BUILDDIR)/uboot-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp
 
 $(BUILDDIR)/uboot-prepare-configure-stamp: $(BUILDDIR)/uboot-prepare-patch-stamp
 	@echo "$(COLOUR_GREEN)Configuring U-Boot for $(BOARD)$(END_COLOUR)"
-	cd $(BUILDDIR)/u-boot/ && $(MAKE) -j$(NPROCS) ARCH=$(UBOOT_ARCH) BOARD=$(UBOOT_FAMILY) CONFIG_USE_DEFAULT_ENV=y STORAGE_TYPE=$(STORAGE_TYPE) CHIP=$(UBOOT_CHIP) CVIBOARD=$(UBOOT_BOARD) CROSS_COMPILE="$(SDK_CROSS_COMPILE_PATH)/bin/$(SDK_CROSS_COMPILE_PREFIX)" $(BOARD)_defconfig
+	cd $(BUILDDIR)/u-boot/ && $(MAKE) -j$(NPROCS) $(UBOOT_MAKE_OPTS) $(BOARD)_defconfig
 	@touch $@
 
 $(BUILDDIR)/uboot-compile-stamp: $(BUILDDIR)/uboot-prepare-configure-stamp
 	@echo "$(COLOUR_GREEN)Building U-Boot for $(BOARD)$(END_COLOUR)"
-	cd $(BUILDDIR)/u-boot/ && $(MAKE) -j$(NPROCS) ARCH=$(UBOOT_ARCH) BOARD=$(UBOOT_FAMILY) CONFIG_USE_DEFAULT_ENV=y STORAGE_TYPE=$(STORAGE_TYPE) CHIP=$(UBOOT_CHIP) CVIBOARD=$(UBOOT_BOARD) CROSS_COMPILE="$(SDK_CROSS_COMPILE_PATH)/bin/$(SDK_CROSS_COMPILE_PREFIX)"
-	cd $(BUILDDIR)/u-boot/ && $(MAKE) -j$(NPROCS) ARCH=$(UBOOT_ARCH) BOARD=$(UBOOT_FAMILY) CONFIG_USE_DEFAULT_ENV=y STORAGE_TYPE=$(STORAGE_TYPE) CHIP=$(UBOOT_CHIP) CVIBOARD=$(UBOOT_BOARD) CROSS_COMPILE="$(SDK_CROSS_COMPILE_PATH)/bin/$(SDK_CROSS_COMPILE_PREFIX)" u-boot-initial-env
+	cd $(BUILDDIR)/u-boot/ && $(MAKE) -j$(NPROCS) $(UBOOT_MAKE_OPTS)
+	cd $(BUILDDIR)/u-boot/ && $(MAKE) -j$(NPROCS) $(UBOOT_MAKE_OPTS) u-boot-initial-env
 	@cp $(BUILDDIR)/u-boot/u-boot.bin $(BUILDDIR)
 	@cp $(BUILDDIR)/u-boot/u-boot.dtb $(BUILDDIR)
 	@cp $(BUILDDIR)/u-boot/u-boot-initial-env $(BUILDDIR)
