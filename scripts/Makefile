@@ -60,11 +60,19 @@ KERNEL_ARCH = arm64
 UBOOT_ARCH = arm
 QEMU_ARCH = aarch64
 else ifeq ($(DEB_ARCH),armhf)
-KERNEL_ARCH = arm
+KERNEL_ARCH ?= arm64
 UBOOT_ARCH = arm
 QEMU_ARCH = arm
 else
 $(error $(red)DEB_ARCH is invalid$(reset))
+endif
+
+ifeq ($(KERNEL_ARCH)-$(SDK_VER),arm64-32bit)
+SBL_CROSS_COMPILE_PATH = $(CROSS_COMPILE_PATH_64)
+SBL_CROSS_COMPILE_PREFIX = $(CROSS_COMPILE_64)
+else
+SBL_CROSS_COMPILE_PATH = $(SDK_CROSS_COMPILE_PATH)
+SBL_CROSS_COMPILE_PREFIX = $(SDK_CROSS_COMPILE_PREFIX)
 endif
 
 SDK_CHIP = $(shell echo '$(CHIP)' | tr '[:lower:]' '[:upper:]')
@@ -76,10 +84,10 @@ CONFIG_USE_DEFAULT_ENV=y \
 STORAGE_TYPE=$(STORAGE_TYPE) \
 CHIP=$(UBOOT_CHIP) \
 CVIBOARD=$(UBOOT_BOARD) \
-CROSS_COMPILE="$(SDK_CROSS_COMPILE_PATH)/bin/$(SDK_CROSS_COMPILE_PREFIX)"
+CROSS_COMPILE="$(SBL_CROSS_COMPILE_PATH)/bin/$(SBL_CROSS_COMPILE_PREFIX)"
 
 KERNEL_MAKE_OPTS = ARCH=$(KERNEL_ARCH) \
-CROSS_COMPILE="$(SDK_CROSS_COMPILE_PATH)/bin/$(SDK_CROSS_COMPILE_PREFIX)" \
+CROSS_COMPILE="$(SBL_CROSS_COMPILE_PATH)/bin/$(SBL_CROSS_COMPILE_PREFIX)" \
 KDEB_SOURCENAME=linux-$(BOARD) \
 LOCALVERSION=+$(BOARD_EXT)
 
@@ -91,7 +99,7 @@ CROSS_COMPILE_32=$(CROSS_COMPILE_PATH_32)/bin/$(CROSS_COMPILE_32) \
 CROSS_COMPILE_GLIBC_RISCV64=$(CROSS_COMPILE_PATH_GLIBC_RISCV64)/bin/$(CROSS_COMPILE_GLIBC_RISCV64) \
 CROSS_COMPILE_MUSL_RISCV64=$(CROSS_COMPILE_PATH_MUSL_RISCV64)/bin/$(CROSS_COMPILE_MUSL_RISCV64) \
 CONFIG_ARCH=$(KERNEL_ARCH) \
-CONFIG_CROSS_COMPILE_KERNEL="$(SDK_CROSS_COMPILE_PATH)/bin/$(SDK_CROSS_COMPILE_PREFIX)" \
+CONFIG_CROSS_COMPILE_KERNEL="$(SBL_CROSS_COMPILE_PATH)/bin/$(SBL_CROSS_COMPILE_PREFIX)" \
 CONFIG_CP_EXT_WIRELESS=y
 
 SENSOR_ENV = CONFIG_SENSOR_GCORE_GC2083=y \
@@ -351,6 +359,7 @@ $(BUILDDIR)/middleware-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-
 	@echo "$(COLOUR_GREEN)Patching Middleware for $(BOARD)$(END_COLOUR)"
 	mkdir -pv $(BUILDDIR)/kernel/$(KERNEL_ARCH)/usr/include/linux/
 	$(call copy_header_action, $(BUILDDIR)/kernel/$(KERNEL_ARCH)/usr/include)
+	@[ "$(KERNEL_ARCH)" = "$(ARCH)" ] || ln -s $(KERNEL_ARCH) $(BUILDDIR)/kernel/$(ARCH)
 	@$(foreach file, $(wildcard /configs/common/patches/middleware/*.patch), cd $(BUILDDIR)/middleware && git apply --ignore-whitespace $(file);)
 	@$(foreach file, $(wildcard /configs/$(BOARD_CFG)/patches/middleware/*.patch), cd $(BUILDDIR)/middleware && git apply --ignore-whitespace $(file);)
 	sed -i 's|$$(ROOT_DIR)/../host-tools|/host-tools|g' $(BUILDDIR)/middleware/Makefile.param
