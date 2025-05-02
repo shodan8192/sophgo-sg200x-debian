@@ -78,6 +78,8 @@ endif
 SDK_CHIP = $(shell echo '$(CHIP)' | tr '[:lower:]' '[:upper:]')
 UBOOT_FAMILY ?= $(UBOOT_CHIP)
 
+GIT_CLONE_OPTS = --shallow-since=2020-12-30
+
 UBOOT_MAKE_OPTS = ARCH=$(UBOOT_ARCH) \
 BOARD=$(UBOOT_FAMILY) \
 CONFIG_USE_DEFAULT_ENV=y \
@@ -217,7 +219,7 @@ $(BUILDDIR)/toolchain-prepare-patch-stamp:
 $(BUILDDIR)/linux-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out Kernel for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
-	@git clone -b licheervnano-merged-5.10.y --depth 7 https://github.com/scpcom/linux.git $(BUILDDIR)/kernel
+	@git clone -b licheervnano-merged-5.10.y $(GIT_CLONE_OPTS) https://github.com/scpcom/linux.git $(BUILDDIR)/kernel
 	@cd $(BUILDDIR)/kernel && git checkout 738960b
 	@touch $@
 
@@ -287,7 +289,7 @@ linux-clean:
 $(BUILDDIR)/osdrv-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out OSdrv for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
-	@git clone -b licheervnano-cvisdk --depth 7 https://github.com/scpcom/sophgo-osdrv.git $(BUILDDIR)/osdrv
+	@git clone -b licheervnano-cvisdk $(GIT_CLONE_OPTS) https://github.com/scpcom/sophgo-osdrv.git $(BUILDDIR)/osdrv
 	@cd $(BUILDDIR)/osdrv && git checkout 790b11d
 	@touch $@
 
@@ -351,7 +353,7 @@ osdrv-clean:
 $(BUILDDIR)/middleware-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out Middleware for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
-	@git clone -b maix_mmf-cvisdk --depth 7 --recursive https://github.com/scpcom/sophgo-middleware.git $(BUILDDIR)/middleware
+	@git clone -b maix_mmf-cvisdk $(GIT_CLONE_OPTS) --recursive https://github.com/scpcom/sophgo-middleware.git $(BUILDDIR)/middleware
 	@cd $(BUILDDIR)/middleware && git checkout c6d16b8
 	@touch $@
 
@@ -406,7 +408,7 @@ middleware-clean:
 $(BUILDDIR)/buildroot-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out Buildroot for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
-	@git clone -b nanokvm-2025.02 --depth 7 --recursive https://github.com/scpcom/buildroot.git $(BUILDDIR)/buildroot
+	@git clone -b nanokvm-2025.02 $(GIT_CLONE_OPTS) --recursive https://github.com/scpcom/buildroot.git $(BUILDDIR)/buildroot
 	@cd $(BR_DIR) && git checkout 19082b8
 	@mkdir -p $(BUILDDIR)/ramdisk/tools
 	@git clone -b main https://github.com/scpcom/cvi-pinmux $(BUILDDIR)/ramdisk/tools/cvi_pinmux
@@ -461,7 +463,7 @@ buildroot-clean:
 $(BUILDDIR)/uboot-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out U-Boot for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
-	@git clone -b licheervnano-cvisdk-2021.10 --depth 7 https://github.com/scpcom/u-boot $(BUILDDIR)/u-boot
+	@git clone -b licheervnano-cvisdk-2021.10 $(GIT_CLONE_OPTS) https://github.com/scpcom/u-boot $(BUILDDIR)/u-boot
 	@cd $(BUILDDIR)/u-boot && git checkout d7d3fbc
 	@touch $@
 
@@ -504,7 +506,7 @@ uboot-clean:
 $(BUILDDIR)/opensbi-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out OpenSBI for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
-	@git clone -b licheervnano-cvisdk-1.2 --depth 7 https://github.com/scpcom/opensbi $(BUILDDIR)/opensbi
+	@git clone -b licheervnano-cvisdk-1.2 $(GIT_CLONE_OPTS) https://github.com/scpcom/opensbi $(BUILDDIR)/opensbi
 	@cd $(BUILDDIR)/opensbi && git checkout 3491ae4
 #	git clone https://github.com/riscv-software-src/opensbi.git $(BUILDDIR)/opensbi
 #	@cd $(BUILDDIR)/opensbi && git checkout a2b255b
@@ -539,7 +541,7 @@ opensbi-clean:
 $(BUILDDIR)/fsbl-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out FSBL for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
-	@git clone -b licheervnano-cvisdk --depth 7 https://github.com/scpcom/sophgo-fsbl $(BUILDDIR)/fsbl
+	@git clone -b licheervnano-cvisdk $(GIT_CLONE_OPTS) https://github.com/scpcom/sophgo-fsbl $(BUILDDIR)/fsbl
 	@cd $(BUILDDIR)/fsbl && git checkout 24da299
 	@touch $@
 
