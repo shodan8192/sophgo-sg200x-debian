@@ -240,31 +240,32 @@ $(BUILDDIR)/linux-compile-stamp: $(BUILDDIR)/linux-prepare-configure-stamp
 
 $(BUILDDIR)/linux-package-stamp: $(BUILDDIR)/linux-compile-stamp
 	@echo "$(COLOUR_GREEN)Packaging linux-headers-sg200x for $(BOARD)$(END_COLOUR)"
+	@$(eval KERNEL_DEB_ARCH=$(shell grep -m1 '^Architecture: ' $(BUILDDIR)/kernel/debian/control | cut -d ' ' -f 2))
 	@$(eval LINUXMETAVERSION=$(shell basename $(BUILDDIR)/kernel/debian/linux-headers/usr/share/doc/linux-headers-* | cut -d '-' -f 3-))
 	@mkdir -p $(BUILDDIR)/package/linux-headers-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)
 	@cp -r /builder/deb/linux-image-sg200x/* $(BUILDDIR)/package/linux-headers-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/
 	@mkdir -pv $(BUILDDIR)/package/linux-headers-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/usr/share/doc/linux-headers-$(BOARD)-$(VARIANT)/
 	@cp -p $(BUILDDIR)/kernel/debian/linux-headers/usr/share/doc/linux-headers-*/* $(BUILDDIR)/package/linux-headers-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/usr/share/doc/linux-headers-$(BOARD)-$(VARIANT)/
-	@sed -i 's/Architecture: riscv64/Architecture: $(DEB_ARCH)/' $(BUILDDIR)/package/linux-headers-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/DEBIAN/control
+	@sed -i 's/Architecture: riscv64/Architecture: $(KERNEL_DEB_ARCH)/' $(BUILDDIR)/package/linux-headers-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/DEBIAN/control
 	@sed -i 's/Version: 1.0.0-1/Version: $(LINUXMETAVERSION)/' $(BUILDDIR)/package/linux-headers-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/DEBIAN/control
 	@sed -i 's/Package: linux-image-sg200x/Package: linux-headers-$(BOARD)-$(VARIANT)/' $(BUILDDIR)/package/linux-headers-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/DEBIAN/control
 	@sed -i 's/Depends: linux-image-.*/Depends: linux-headers-$(LINUXMETAVERSION)/' $(BUILDDIR)/package/linux-headers-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/DEBIAN/control
 	@sed -i  '/Recommends: .*/d' $(BUILDDIR)/package/linux-headers-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/DEBIAN/control
-	@cd $(BUILDDIR)/package/ && dpkg-deb --build linux-headers-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION) linux-headers-$(BOARD)-$(VARIANT)_$(LINUXMETAVERSION)_$(DEB_ARCH).deb
-	@cp $(BUILDDIR)/package/linux-headers-$(BOARD)-$(VARIANT)_$(LINUXMETAVERSION)_$(DEB_ARCH).deb /output/
+	@cd $(BUILDDIR)/package/ && dpkg-deb --build linux-headers-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION) linux-headers-$(BOARD)-$(VARIANT)_$(LINUXMETAVERSION)_$(KERNEL_DEB_ARCH).deb
+	@cp $(BUILDDIR)/package/linux-headers-$(BOARD)-$(VARIANT)_$(LINUXMETAVERSION)_$(KERNEL_DEB_ARCH).deb /output/
 	@echo "$(COLOUR_GREEN)Packaging linux-image-sg200x for $(BOARD)$(END_COLOUR)"
 	@$(eval LINUXMETAVERSION=$(shell basename $(BUILDDIR)/kernel/debian/linux-image/usr/share/doc/linux-image-* | cut -d '-' -f 3-))
 	@mkdir -p $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)
 	@cp -r /builder/deb/linux-image-sg200x/* $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/
 	@mkdir -pv $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/usr/share/doc/linux-image-$(BOARD)-$(VARIANT)/
 	@cp -p $(BUILDDIR)/kernel/debian/linux-image/usr/share/doc/linux-image-*/* $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/usr/share/doc/linux-image-$(BOARD)-$(VARIANT)/
-	@sed -i 's/Architecture: riscv64/Architecture: $(DEB_ARCH)/' $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/DEBIAN/control
+	@sed -i 's/Architecture: riscv64/Architecture: $(KERNEL_DEB_ARCH)/' $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/DEBIAN/control
 	@sed -i 's/Version: 1.0.0-1/Version: $(LINUXMETAVERSION)/' $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/DEBIAN/control
 	@sed -i 's/Package: linux-image-sg200x/Package: linux-image-$(BOARD)-$(VARIANT)/' $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/DEBIAN/control
 	@sed -i 's/Depends: linux-image-.*/Depends: linux-image-$(LINUXMETAVERSION)/' $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/DEBIAN/control
 	@sed -i 's/Recommends: cvitek-osdrv-.*/Recommends: cvitek-fsbl-$(BOARD_EXT), cvitek-osdrv-$(LINUXMETAVERSION)/' $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/DEBIAN/control
-	@cd $(BUILDDIR)/package/ && dpkg-deb --build linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION) linux-image-$(BOARD)-$(VARIANT)_$(LINUXMETAVERSION)_$(DEB_ARCH).deb
-	@cp $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)_$(LINUXMETAVERSION)_$(DEB_ARCH).deb /output/
+	@cd $(BUILDDIR)/package/ && dpkg-deb --build linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION) linux-image-$(BOARD)-$(VARIANT)_$(LINUXMETAVERSION)_$(KERNEL_DEB_ARCH).deb
+	@cp $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)_$(LINUXMETAVERSION)_$(KERNEL_DEB_ARCH).deb /output/
 	@touch $@
 
 linux: $(BUILDDIR)/linux-package-stamp
@@ -300,6 +301,7 @@ $(BUILDDIR)/osdrv-compile-stamp: $(BUILDDIR)/osdrv-prepare-configure-stamp
 
 $(BUILDDIR)/osdrv-package-stamp: $(BUILDDIR)/osdrv-compile-stamp
 	@echo "$(COLOUR_GREEN)Packaging OSdrv for $(BOARD)$(END_COLOUR)"
+	@$(eval KERNEL_DEB_ARCH=$(shell grep -m1 '^Architecture: ' $(BUILDDIR)/kernel/debian/control | cut -d ' ' -f 2))
 	@$(eval KERNELRELEASE=$(shell basename $(BUILDDIR)/kernel/debian/linux-headers/usr/share/doc/linux-headers-* | cut -d '-' -f 3-))
 	@mkdir -p $(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION)
 	@cp -r /builder/deb/cvitek-osdrv/* $(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION)/
@@ -312,23 +314,23 @@ $(BUILDDIR)/osdrv-package-stamp: $(BUILDDIR)/osdrv-compile-stamp
 	@rm -f $(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION)/mnt/system/ko/$(KERNELRELEASE)/soph_wdt.ko
 	@mkdir -pv $(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION)/mnt/system/ko/$(KERNELRELEASE)/3rd/
 	@cp -p $(BUILDDIR)/osdrv/ko/3rd/*.ko $(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION)/mnt/system/ko/$(KERNELRELEASE)/3rd/
-	@sed -i 's/Architecture: riscv64/Architecture: $(DEB_ARCH)/' $(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION)/DEBIAN/control
+	@sed -i 's/Architecture: riscv64/Architecture: $(KERNEL_DEB_ARCH)/' $(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION)/DEBIAN/control
 	@sed -i 's/Version: 1.0.0/Version: $(OSDRVVERSION)-$(KERNELRELEASE)/' $(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION)/DEBIAN/control
 	@sed -i 's/Package: cvitek-osdrv/Package: cvitek-osdrv-$(KERNELRELEASE)/' $(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION)/DEBIAN/control
-	@cd $(BUILDDIR)/package/ && dpkg-deb --build cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION) cvitek-osdrv-$(KERNELRELEASE)_$(OSDRVVERSION)-$(KERNELRELEASE)_$(DEB_ARCH).deb
-	@cp $(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)_$(OSDRVVERSION)-$(KERNELRELEASE)_$(DEB_ARCH).deb /output/
+	@cd $(BUILDDIR)/package/ && dpkg-deb --build cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION) cvitek-osdrv-$(KERNELRELEASE)_$(OSDRVVERSION)-$(KERNELRELEASE)_$(KERNEL_DEB_ARCH).deb
+	@cp $(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)_$(OSDRVVERSION)-$(KERNELRELEASE)_$(KERNEL_DEB_ARCH).deb /output/
 	@echo "$(COLOUR_GREEN)Packaging cvitek-osdrv-sg200x for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(VARIANT)-$(KERNELRELEASE)
 	@cp -r /builder/deb/linux-image-sg200x/* $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(VARIANT)-$(KERNELRELEASE)/
 	@mkdir -pv $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(VARIANT)-$(KERNELRELEASE)/usr/share/doc/cvitek-osdrv-$(BOARD)-$(VARIANT)/
 	@cp -p $(BUILDDIR)/kernel/debian/linux-image/usr/share/doc/linux-image-*/* $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(VARIANT)-$(KERNELRELEASE)/usr/share/doc/cvitek-osdrv-$(BOARD)-$(VARIANT)/
-	@sed -i 's/Architecture: riscv64/Architecture: $(DEB_ARCH)/' $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(VARIANT)-$(KERNELRELEASE)/DEBIAN/control
+	@sed -i 's/Architecture: riscv64/Architecture: $(KERNEL_DEB_ARCH)/' $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(VARIANT)-$(KERNELRELEASE)/DEBIAN/control
 	@sed -i 's/Version: 1.0.0-1/Version: $(OSDRVVERSION)-$(KERNELRELEASE)/' $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(VARIANT)-$(KERNELRELEASE)/DEBIAN/control
 	@sed -i 's/Package: linux-image-sg200x/Package: cvitek-osdrv-$(BOARD)-$(VARIANT)/' $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(VARIANT)-$(KERNELRELEASE)/DEBIAN/control
 	@sed -i 's/Depends: linux-image-.*/Depends: cvitek-osdrv-$(KERNELRELEASE)/' $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(VARIANT)-$(KERNELRELEASE)/DEBIAN/control
 	@sed -i 's/Recommends: cvitek-osdrv-.*/Recommends: linux-image-$(KERNELRELEASE)/' $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(VARIANT)-$(KERNELRELEASE)/DEBIAN/control
-	@cd $(BUILDDIR)/package/ && dpkg-deb --build cvitek-osdrv-$(BOARD)-$(VARIANT)-$(KERNELRELEASE) cvitek-osdrv-$(BOARD)-$(VARIANT)_$(OSDRVVERSION)-$(KERNELRELEASE)_$(DEB_ARCH).deb
-	@cp $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(VARIANT)_$(OSDRVVERSION)-$(KERNELRELEASE)_$(DEB_ARCH).deb /output/
+	@cd $(BUILDDIR)/package/ && dpkg-deb --build cvitek-osdrv-$(BOARD)-$(VARIANT)-$(KERNELRELEASE) cvitek-osdrv-$(BOARD)-$(VARIANT)_$(OSDRVVERSION)-$(KERNELRELEASE)_$(KERNEL_DEB_ARCH).deb
+	@cp $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(VARIANT)_$(OSDRVVERSION)-$(KERNELRELEASE)_$(KERNEL_DEB_ARCH).deb /output/
 	@touch $@
 
 osdrv: $(BUILDDIR)/osdrv-package-stamp
@@ -590,6 +592,7 @@ $(BUILDDIR)/image-prepare-stamp:
 
 $(BUILDDIR)/image-addons-stamp: $(BUILDDIR)/image-prepare-stamp $(BUILDDIR)/fsbl-package-stamp $(BUILDDIR)/linux-package-stamp $(BUILDDIR)/osdrv-package-stamp $(BUILDDIR)/middleware-package-stamp $(addon-targets)
 	@echo "$(COLOUR_GREEN)Packaging board-support-sg200x for $(BOARD)$(END_COLOUR)"
+	@$(eval KERNEL_DEB_ARCH=$(shell grep -m1 '^Architecture: ' $(BUILDDIR)/kernel/debian/control | cut -d ' ' -f 2))
 	@mkdir -p $(BUILDDIR)/package/board-support-$(BOARD)-$(VARIANT)-$(BSPVERSION)
 	@cp -r /builder/deb/board-support-sg200x/* $(BUILDDIR)/package/board-support-$(BOARD)-$(VARIANT)-$(BSPVERSION)/
 	@mkdir -pv $(BUILDDIR)/package/board-support-$(BOARD)-$(VARIANT)-$(BSPVERSION)/usr/share/doc/board-support-$(BOARD)-$(VARIANT)/
@@ -598,6 +601,9 @@ $(BUILDDIR)/image-addons-stamp: $(BUILDDIR)/image-prepare-stamp $(BUILDDIR)/fsbl
 	@sed -i 's/Version: 1.0.0-1/Version: $(BSPVERSION)/' $(BUILDDIR)/package/board-support-$(BOARD)-$(VARIANT)-$(BSPVERSION)/DEBIAN/control
 	@sed -i 's/Package: board-support-sg200x/Package: board-support-$(BOARD)-$(VARIANT)/' $(BUILDDIR)/package/board-support-$(BOARD)-$(VARIANT)-$(BSPVERSION)/DEBIAN/control
 	@sed -i 's/Depends: .*/Depends: $(_BSPDEPENDS)/' $(BUILDDIR)/package/board-support-$(BOARD)-$(VARIANT)-$(BSPVERSION)/DEBIAN/control
+	@sed -i 's|cvitek-osdrv-$(BOARD)-$(VARIANT)|cvitek-osdrv-$(BOARD)-$(VARIANT):$(KERNEL_DEB_ARCH)|g' $(BUILDDIR)/package/board-support-$(BOARD)-$(VARIANT)-$(BSPVERSION)/DEBIAN/control
+	@sed -i 's|linux-headers-$(BOARD)-$(VARIANT)|linux-headers-$(BOARD)-$(VARIANT):$(KERNEL_DEB_ARCH)|g' $(BUILDDIR)/package/board-support-$(BOARD)-$(VARIANT)-$(BSPVERSION)/DEBIAN/control
+	@sed -i 's|linux-image-$(BOARD)-$(VARIANT)|linux-image-$(BOARD)-$(VARIANT):$(KERNEL_DEB_ARCH)|g' $(BUILDDIR)/package/board-support-$(BOARD)-$(VARIANT)-$(BSPVERSION)/DEBIAN/control
 	@sed -i '/Recommends: .*/d' $(BUILDDIR)/package/board-support-$(BOARD)-$(VARIANT)-$(BSPVERSION)/DEBIAN/control
 	@if [ -f /rootfs/tmp/install/systemd-enable ]; then \
 		echo "systemctl enable `cat /rootfs/tmp/install/systemd-enable | tr -d '\n'`" >> $(BUILDDIR)/package/board-support-$(BOARD)-$(VARIANT)-$(BSPVERSION)/DEBIAN/postinst ; \
@@ -619,6 +625,7 @@ $(BUILDDIR)/image-addons-stamp: $(BUILDDIR)/image-prepare-stamp $(BUILDDIR)/fsbl
 
 $(BUILDDIR)/image-customize-stamp: $(BUILDDIR)/image-addons-stamp $(BUILDDIR)/linux-package-stamp $(BUILDDIR)/fsbl-package-stamp
 	@echo "$(COLOUR_GREEN)Customizing Image for $(BOARD)$(END_COLOUR)"
+	@$(eval KERNEL_DEB_ARCH=$(shell grep -m1 '^Architecture: ' $(BUILDDIR)/kernel/debian/control | cut -d ' ' -f 2))
 	@mkdir -p /rootfs/tmp/install/
 	@echo $(GIT_REF) > /rootfs/tmp/install/gitref
 	@echo $(BOARD) > /rootfs/tmp/install/hostname
@@ -628,6 +635,7 @@ $(BUILDDIR)/image-customize-stamp: $(BUILDDIR)/image-addons-stamp $(BUILDDIR)/li
 	@cp -v /usr/bin/qemu-$(QEMU_ARCH)-static /rootfs/tmp/install/
 	@cp -v /builder/setup_rootfs.sh /rootfs/tmp/install/
 	@cp -v $(BUILDDIR)/public-key.asc /rootfs/tmp/install/
+	@[ $(DEB_ARCH) = $(KERNEL_DEB_ARCH) ] || chroot /rootfs/ /tmp/install/qemu-$(QEMU_ARCH)-static /usr/bin/dpkg --add-architecture $(KERNEL_DEB_ARCH)
 	@chroot /rootfs/ /tmp/install/qemu-$(QEMU_ARCH)-static /bin/sh /tmp/install/setup_rootfs.sh
 	@rm -rf /rootfs/tmp/install/
 	@umount /rootfs/proc || true 
