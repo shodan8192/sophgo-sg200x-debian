@@ -78,6 +78,11 @@ CHIP=$(UBOOT_CHIP) \
 CVIBOARD=$(UBOOT_BOARD) \
 CROSS_COMPILE="$(SDK_CROSS_COMPILE_PATH)/bin/$(SDK_CROSS_COMPILE_PREFIX)"
 
+KERNEL_MAKE_OPTS = ARCH=$(KERNEL_ARCH) \
+CROSS_COMPILE="$(SDK_CROSS_COMPILE_PATH)/bin/$(SDK_CROSS_COMPILE_PREFIX)" \
+KDEB_SOURCENAME=linux-$(BOARD) \
+LOCALVERSION=+$(BOARD_EXT)
+
 OSDRV_ENV = CHIP_ARCH=$(SDK_CHIP) \
 CVIARCH=$(SDK_CHIP) \
 SDK_VER=$(SDK_VER) \
@@ -221,15 +226,15 @@ $(BUILDDIR)/linux-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp
 
 $(BUILDDIR)/linux-prepare-configure-stamp: $(BUILDDIR)/linux-prepare-patch-stamp
 	@echo "$(COLOUR_GREEN)Configuring Kernel for $(BOARD)$(END_COLOUR)"
-	@cd $(BUILDDIR)/kernel KDEB_SOURCENAME=linux-sophgo  && $(MAKE) -j$(NPROCS) O=$(BUILDDIR)/kernel/ ARCH=$(KERNEL_ARCH) CROSS_COMPILE="$(SDK_CROSS_COMPILE_PATH)/bin/$(SDK_CROSS_COMPILE_PREFIX)" ${BOARD}_defconfig
+	@cd $(BUILDDIR)/kernel && $(MAKE) -j$(NPROCS) O=$(BUILDDIR)/kernel/ $(KERNEL_MAKE_OPTS) ${BOARD}_defconfig
 	@$(eval LV=$(shell cd $(BUILDDIR)/kernel && git log -1 --format="%at" | xargs -I{} date -d @{} +-%Y%m%d-${KERNELREV}))
 	@sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="$(LV)"/' $(BUILDDIR)/kernel/.config
 	@touch $@
 
 $(BUILDDIR)/linux-compile-stamp: $(BUILDDIR)/linux-prepare-configure-stamp
 	@echo "$(COLOUR_GREEN)Building Kernel for $(BOARD)$(END_COLOUR)"
-	@cd $(BUILDDIR)/kernel && KCFLAGS=-Wno-attribute-alias ARCH=$(KERNEL_ARCH) CROSS_COMPILE="$(SDK_CROSS_COMPILE_PATH)/bin/$(SDK_CROSS_COMPILE_PREFIX)" KDEB_SOURCENAME=linux-$(BOARD) LOCALVERSION=+$(BOARD_EXT) $(MAKE) -j$(NPROCS) O=$(BUILDDIR)/kernel/ bindeb-pkg
-	@cd $(BUILDDIR)/kernel && KCFLAGS=-Wno-attribute-alias ARCH=$(KERNEL_ARCH) CROSS_COMPILE="$(SDK_CROSS_COMPILE_PATH)/bin/$(SDK_CROSS_COMPILE_PREFIX)" KDEB_SOURCENAME=linux-$(BOARD) LOCALVERSION=+$(BOARD_EXT) $(MAKE) -j$(NPROCS) O=$(BUILDDIR)/kernel/ modules_install INSTALL_MOD_PATH=$(BUILDDIR)/kernel/modules headers_install INSTALL_HDR_PATH=$(BUILDDIR)/kernel/$(KERNEL_ARCH)/usr
+	@cd $(BUILDDIR)/kernel && KCFLAGS=-Wno-attribute-alias $(MAKE) -j$(NPROCS) O=$(BUILDDIR)/kernel/ $(KERNEL_MAKE_OPTS) bindeb-pkg
+	@cd $(BUILDDIR)/kernel && KCFLAGS=-Wno-attribute-alias $(MAKE) -j$(NPROCS) O=$(BUILDDIR)/kernel/ $(KERNEL_MAKE_OPTS) modules_install INSTALL_MOD_PATH=$(BUILDDIR)/kernel/modules headers_install INSTALL_HDR_PATH=$(BUILDDIR)/kernel/$(KERNEL_ARCH)/usr
 	@cp $(BUILDDIR)/*.deb /output/
 	@touch $@
 
@@ -290,7 +295,7 @@ $(BUILDDIR)/osdrv-prepare-configure-stamp: $(BUILDDIR)/osdrv-prepare-patch-stamp
 
 $(BUILDDIR)/osdrv-compile-stamp: $(BUILDDIR)/osdrv-prepare-configure-stamp
 	@echo "$(COLOUR_GREEN)Building OSdrv for $(BOARD)$(END_COLOUR)"
-	@cd $(BUILDDIR)/osdrv && $(OSDRV_ENV) $(MAKE) KERNEL_DIR=$(BUILDDIR)/kernel INSTALL_DIR=$(BUILDDIR)/osdrv/ko all
+	@cd $(BUILDDIR)/osdrv && $(OSDRV_ENV) $(MAKE) $(KERNEL_MAKE_OPTS) KERNEL_DIR=$(BUILDDIR)/kernel INSTALL_DIR=$(BUILDDIR)/osdrv/ko all
 	@touch $@
 
 $(BUILDDIR)/osdrv-package-stamp: $(BUILDDIR)/osdrv-compile-stamp
