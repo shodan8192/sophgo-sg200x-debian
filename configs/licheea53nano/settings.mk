@@ -23,6 +23,8 @@ IMAGE_ADDITIONS += "load-systemko"
 IMAGE_ADDITIONS += "cvi-pinmux"
 ifneq ("$(findstring kvm,$(VARIANT))","")
 IMAGE_ADDITIONS += "nanokvm"
+else
+IMAGE_ADDITIONS += "tpusdk"
 endif
 IMAGE_ADDITIONS += "usb-device"
 IMAGE_ADDITIONS += "zram-config"
