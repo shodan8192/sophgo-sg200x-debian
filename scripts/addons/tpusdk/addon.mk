@@ -56,6 +56,8 @@ $(BUILDDIR)/tpusdk-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stam
 	@cd $(BUILDDIR)/tpusdk && ln -s ../osdrv osdrv
 	@cd $(BUILDDIR)/tpusdk && ln -s ../ramdisk ramdisk
 	@cp -p addons/tpusdk/build-sdk.sh $(BUILDDIR)/tpusdk/
+	@cd $(BUILDDIR)/tpusdk && cp -p middleware/modules/bin/tmp_3rd/cvi_json-c/output/cvi-json-c.tar.gz oss/oss_release_tarball/$(SDK_VER)/
+	@cd $(BUILDDIR)/tpusdk && cp -p middleware/modules/bin/tmp_3rd/cvi_miniz/output/cvi-miniz.tar.gz oss/oss_release_tarball/$(SDK_VER)/
 	@touch $@
 
 $(BUILDDIR)/tpusdk-prepare-configure-stamp: $(BUILDDIR)/tpusdk-prepare-patch-stamp
