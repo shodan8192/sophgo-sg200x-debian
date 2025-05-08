@@ -58,6 +58,18 @@ $(BUILDDIR)/tpusdk-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stam
 	@cp -p addons/tpusdk/build-sdk.sh $(BUILDDIR)/tpusdk/
 	@cd $(BUILDDIR)/tpusdk && cp -p middleware/modules/bin/tmp_3rd/cvi_json-c/output/cvi-json-c.tar.gz oss/oss_release_tarball/$(SDK_VER)/
 	@cd $(BUILDDIR)/tpusdk && cp -p middleware/modules/bin/tmp_3rd/cvi_miniz/output/cvi-miniz.tar.gz oss/oss_release_tarball/$(SDK_VER)/
+	$(foreach file, $(wildcard /configs/common/patches/tpusdk/cvi_rtsp-*.patch), cd $(BUILDDIR)/tpusdk/cvi_rtsp && git apply --ignore-whitespace $(file);)
+	$(foreach file, $(wildcard /configs/$(BOARD_CFG)/patches/tpusdk/cvi_rtsp-*.patch), cd $(BUILDDIR)/tpusdk/cvi_rtsp && git apply --ignore-whitespace $(file);)
+	$(foreach file, $(wildcard /configs/common/patches/tpusdk/cvibuilder-*.patch), cd $(BUILDDIR)/tpusdk/cvibuilder && git apply --ignore-whitespace $(file);)
+	$(foreach file, $(wildcard /configs/$(BOARD_CFG)/patches/tpusdk/cvibuilder-*.patch), cd $(BUILDDIR)/tpusdk/cvibuilder && git apply --ignore-whitespace $(file);)
+	$(foreach file, $(wildcard /configs/common/patches/tpusdk/cvikernel-*.patch), cd $(BUILDDIR)/tpusdk/cvikernel && git apply --ignore-whitespace $(file);)
+	$(foreach file, $(wildcard /configs/$(BOARD_CFG)/patches/tpusdk/cvikernel-*.patch), cd $(BUILDDIR)/tpusdk/cvikernel && git apply --ignore-whitespace $(file);)
+	$(foreach file, $(wildcard /configs/common/patches/tpusdk/cvimath-*.patch), cd $(BUILDDIR)/tpusdk/cvimath && git apply --ignore-whitespace $(file);)
+	$(foreach file, $(wildcard /configs/$(BOARD_CFG)/patches/tpusdk/cvimath-*.patch), cd $(BUILDDIR)/tpusdk/cvimath && git apply --ignore-whitespace $(file);)
+	$(foreach file, $(wildcard /configs/common/patches/tpusdk/cviruntime-*.patch), cd $(BUILDDIR)/tpusdk/cviruntime && git apply --ignore-whitespace $(file);)
+	$(foreach file, $(wildcard /configs/$(BOARD_CFG)/patches/tpusdk/cviruntime-*.patch), cd $(BUILDDIR)/tpusdk/cviruntime && git apply --ignore-whitespace $(file);)
+	$(foreach file, $(wildcard /configs/common/patches/tpusdk/tdl_sdk-*.patch), cd $(BUILDDIR)/tpusdk/tdl_sdk && git apply --ignore-whitespace $(file);)
+	$(foreach file, $(wildcard /configs/$(BOARD_CFG)/patches/tpusdk/tdl_sdk-*.patch), cd $(BUILDDIR)/tpusdk/tdl_sdk && git apply --ignore-whitespace $(file);)
 	@touch $@
 
 $(BUILDDIR)/tpusdk-prepare-configure-stamp: $(BUILDDIR)/tpusdk-prepare-patch-stamp
