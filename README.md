@@ -118,6 +118,8 @@ Available debian packages:
  Libs and samples for the ISP (vi/vo/venc/vdec etc.).
  - cvitek-osdrv-licheervnano-kvm  
  Additional kernel drivers (required for camera support etc.).
+ - cvitek-tpusdk-licheervnano
+ Libs and samples for the TPU (AI)
  - device-key-licheervnano  
  Startup script that sets the Ethernet MAC address and hostname based on the hash off the device uuid.
  - duo-pinmux-duos  
@@ -207,5 +209,4 @@ You can replace ARCH=arm64 with ARCH=arm to get 32 bit (armhf) images.
 
 # TODO
 - DeviceTree Overlay Support
-- Add support for the TPU SDK (TPU drivers are already included but not tested)
 - Possibly mainline kernel support via the sophgo linux for-next repositories
