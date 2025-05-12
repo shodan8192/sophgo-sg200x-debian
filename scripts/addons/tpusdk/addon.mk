@@ -41,7 +41,7 @@ $(BUILDDIR)/tpusdk-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out TPU SDK for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
 	@git clone -b develop $(GIT_CLONE_OPTS) --shallow-submodules https://github.com/scpcom/LicheeSG-Nano-Build.git $(BUILDDIR)/tpusdk
-	@cd $(BUILDDIR)/tpusdk && git checkout 8526d99
+	@cd $(BUILDDIR)/tpusdk && git checkout 6ca0d87
 	@cd $(BUILDDIR)/tpusdk && git rm -r buildroot freertos fsbl isp_tuning linux_5.10 middleware opensbi osdrv ramdisk u-boot-2021.10
 	@cd $(BUILDDIR)/tpusdk && git submodule update --init --recursive --depth=1
 	@touch $@
@@ -56,8 +56,6 @@ $(BUILDDIR)/tpusdk-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stam
 	@cd $(BUILDDIR)/tpusdk && ln -s ../osdrv osdrv
 	@cd $(BUILDDIR)/tpusdk && ln -s ../ramdisk ramdisk
 	@cp -p addons/tpusdk/build-sdk.sh $(BUILDDIR)/tpusdk/
-	@cd $(BUILDDIR)/tpusdk && cp -p middleware/modules/bin/tmp_3rd/cvi_json-c/output/cvi-json-c.tar.gz oss/oss_release_tarball/$(SDK_VER)/
-	@cd $(BUILDDIR)/tpusdk && cp -p middleware/modules/bin/tmp_3rd/cvi_miniz/output/cvi-miniz.tar.gz oss/oss_release_tarball/$(SDK_VER)/
 	$(foreach file, $(wildcard /configs/common/patches/tpusdk/cvi_rtsp-*.patch), cd $(BUILDDIR)/tpusdk/cvi_rtsp && git apply --ignore-whitespace $(file);)
 	$(foreach file, $(wildcard /configs/$(BOARD_CFG)/patches/tpusdk/cvi_rtsp-*.patch), cd $(BUILDDIR)/tpusdk/cvi_rtsp && git apply --ignore-whitespace $(file);)
 	$(foreach file, $(wildcard /configs/common/patches/tpusdk/cvibuilder-*.patch), cd $(BUILDDIR)/tpusdk/cvibuilder && git apply --ignore-whitespace $(file);)
