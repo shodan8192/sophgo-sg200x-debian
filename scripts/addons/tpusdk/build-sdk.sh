@@ -107,11 +107,11 @@ function build_sdks()
     # middleware needs osdrv headers
     build_osdrv || return $?
   fi
-  build_3rd_party || return $?
   if [ ! -e middleware/lib/libcvi_bin.so ]; then
     # sdk needs middleware libs
     build_middleware || return $?
   fi
+  build_3rd_party || return $?
   if [ "$TPU_REL" = 1 ]; then
     build_tpu_sdk || return $?
     build_ive_sdk || return $?
