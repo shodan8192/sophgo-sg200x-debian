@@ -78,7 +78,7 @@ endif
 SDK_CHIP = $(shell echo '$(CHIP)' | tr '[:lower:]' '[:upper:]')
 UBOOT_FAMILY ?= $(UBOOT_CHIP)
 
-GIT_CLONE_OPTS = --shallow-since=2019-04-24
+GIT_CLONE_OPTS = --shallow-since=2020-03-12
 
 UBOOT_MAKE_OPTS = ARCH=$(UBOOT_ARCH) \
 BOARD=$(UBOOT_FAMILY) \
@@ -354,7 +354,7 @@ $(BUILDDIR)/middleware-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out Middleware for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
 	@git clone -b maix_mmf-cvisdk $(GIT_CLONE_OPTS) --recursive https://github.com/scpcom/sophgo-middleware.git $(BUILDDIR)/middleware
-	@cd $(BUILDDIR)/middleware && git checkout 3269ee5
+	@cd $(BUILDDIR)/middleware && git checkout 7b631b3
 	@touch $@
 
 $(BUILDDIR)/middleware-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $(BUILDDIR)/middleware-prepare-checkout-stamp $(BUILDDIR)/osdrv-compile-stamp
