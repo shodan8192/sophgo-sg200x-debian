@@ -13,7 +13,7 @@ RUN apt-get update \
         dosfstools e2fsprogs fdisk flex gawk  \
         git gperf kmod libexpat-dev \
         libgmp-dev liblzma-dev libmpc-dev libmpfr-dev libncurses-dev libssl-dev \
-        libtool mmdebstrap openssl parted \
+        libtool mmdebstrap openssl parted tcl \
         patchutils python3 python3-dev  \
         python-is-python3 python3-jinja2 pkg-config xxd \
         python3-setuptools  swig gnupg \
