@@ -14,5 +14,6 @@ $(BUILDDIR)/duo-pinmux-stamp: $(BUILDDIR)/buildroot-package-stamp
 	fi
 	@cd $(BUILDDIR)/package/ && dpkg-deb --build duo-pinmux-$(BOARD)-$(DUOPINMUXVERSION) duo-pinmux-$(BOARD)_$(DUOPINMUXVERSION)$(BV)_$(DEB_ARCH).deb
 	@cp $(BUILDDIR)/package/duo-pinmux-$(BOARD)_$(DUOPINMUXVERSION)$(BV)_$(DEB_ARCH).deb /output/
+	@mkdir -p /rootfs/tmp/install/
 	@cp /output/duo-pinmux-$(BOARD)_$(DUOPINMUXVERSION)$(BV)_$(DEB_ARCH).deb /rootfs/tmp/install/
 	@touch $@
