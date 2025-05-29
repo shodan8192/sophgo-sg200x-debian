@@ -8,6 +8,7 @@ $(BUILDDIR)/zram-config-stamp: $(BUILDDIR)/buildroot-package-stamp
 	@cd $(BUILDDIR)/package/zram-config-$(BOARD)-$(ZRAMCONFIGVERSION)/usr/src/ && wget -N https://github.com/ecdye/zram-config/releases/download/v$(ZRAMCONFIGVERSION)/zram-config-v$(ZRAMCONFIGVERSION).tar.lz
 	@cd $(BUILDDIR)/package/zram-config-$(BOARD)-$(ZRAMCONFIGVERSION)/usr/src/ && tar -xf zram-config-v$(ZRAMCONFIGVERSION).tar.lz --strip-components=1 --directory=zram-config
 	@cd $(BUILDDIR)/package/zram-config-$(BOARD)-$(ZRAMCONFIGVERSION)/usr/src/ && rm zram-config-v$(ZRAMCONFIGVERSION).tar.lz
+	$(foreach file, $(wildcard /configs/common/patches/zram-config/*.patch), cd $(BUILDDIR)/package/zram-config-$(BOARD)-$(ZRAMCONFIGVERSION)/usr/src/zram-config && git apply --ignore-whitespace $(file);)
 	@sed -i s/250M/100M/g $(BUILDDIR)/package/zram-config-$(BOARD)-$(ZRAMCONFIGVERSION)/usr/src/zram-config/ztab
 	@sed -i s/750M/300M/g $(BUILDDIR)/package/zram-config-$(BOARD)-$(ZRAMCONFIGVERSION)/usr/src/zram-config/ztab
 	@sed -i s/150M/60M/g $(BUILDDIR)/package/zram-config-$(BOARD)-$(ZRAMCONFIGVERSION)/usr/src/zram-config/ztab
@@ -21,8 +22,6 @@ $(BUILDDIR)/zram-config-stamp: $(BUILDDIR)/buildroot-package-stamp
 	@sed -i 's/Architecture: riscv64/Architecture: $(DEB_ARCH)/' $(BUILDDIR)/package/zram-config-$(BOARD)-$(ZRAMCONFIGVERSION)/DEBIAN/control
 	@sed -i 's/Version: 1.0.0-1/Version: $(ZRAMCONFIGVERSION)$(BV)/' $(BUILDDIR)/package/zram-config-$(BOARD)-$(ZRAMCONFIGVERSION)/DEBIAN/control
 	@sed -i 's/Package: zram-config/Package: zram-config-$(BOARD)/' $(BUILDDIR)/package/zram-config-$(BOARD)-$(ZRAMCONFIGVERSION)/DEBIAN/control
-	@echo '#!/bin/sh' > $(BUILDDIR)/package/zram-config-$(BOARD)-$(ZRAMCONFIGVERSION)/DEBIAN/postinst
-	@echo '[ -e /usr/local/sbin/zram-config -o -e /usr/sbin/zram-config ] || /usr/src/zram-config/install.bash' >> $(BUILDDIR)/package/zram-config-$(BOARD)-$(ZRAMCONFIGVERSION)/DEBIAN/postinst
 	@chmod +x $(BUILDDIR)/package/zram-config-$(BOARD)-$(ZRAMCONFIGVERSION)/DEBIAN/postinst
 	@if [ "$(BOARD)" = "duos" ]; then \
 		sed -i 's/Duo256/DuoS/' $(BUILDDIR)/package/zram-config-$(BOARD)-$(ZRAMCONFIGVERSION)/DEBIAN/control ; \
@@ -33,5 +32,6 @@ $(BUILDDIR)/zram-config-stamp: $(BUILDDIR)/buildroot-package-stamp
 	fi
 	@cd $(BUILDDIR)/package/ && dpkg-deb --build zram-config-$(BOARD)-$(ZRAMCONFIGVERSION) zram-config-$(BOARD)_$(ZRAMCONFIGVERSION)$(BV)_$(DEB_ARCH).deb
 	@cp $(BUILDDIR)/package/zram-config-$(BOARD)_$(ZRAMCONFIGVERSION)$(BV)_$(DEB_ARCH).deb /output/
+	@mkdir -p /rootfs/tmp/install/
 	@cp /output/zram-config-$(BOARD)_$(ZRAMCONFIGVERSION)$(BV)_$(DEB_ARCH).deb /rootfs/tmp/install/
 	@touch $@

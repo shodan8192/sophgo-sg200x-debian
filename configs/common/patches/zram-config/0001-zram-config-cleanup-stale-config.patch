@@ -1,0 +1,10 @@
+--- a/service/SystemD/zram-config.service	2025-04-12 20:19:09.355852745 +0000
++++ b/service/SystemD/zram-config.service	2025-05-28 22:19:59.155643467 +0000
+@@ -13,6 +13,7 @@
+ TimeoutStopSec=240
+ RemainAfterExit=yes
+ WorkingDirectory=/usr/local/lib/zram-config
++ExecStart=bash -c 'test -d "/sys/class/zram-control" || /usr/local/sbin/zram-config "stop"'
+ ExecStart=/usr/local/sbin/zram-config "start"
+ ExecReload=/usr/local/sbin/zram-config "sync"
+ ExecStop=/usr/local/sbin/zram-config "stop"

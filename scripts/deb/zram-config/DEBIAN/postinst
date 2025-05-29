@@ -1,0 +1,8 @@
+#!/bin/sh
+BASEDIR=/usr/src/zram-config
+if [ -e /usr/local/sbin/zram-config ]; then
+  install -m 755 "$BASEDIR"/zram-config /usr/local/sbin/
+  install -m 644 "$BASEDIR"/service/SystemD/zram-config.service /etc/systemd/system/zram-config.service
+else
+  "$BASEDIR"/install.bash
+fi
