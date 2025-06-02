@@ -67,12 +67,17 @@ else
 $(error $(red)DEB_ARCH is invalid$(reset))
 endif
 
-ifeq ($(KERNEL_ARCH)-$(SDK_VER),arm64-32bit)
+ifeq ($(UBOOT_ARCH),arm)
 SBL_CROSS_COMPILE_PATH = $(CROSS_COMPILE_PATH_64)
 SBL_CROSS_COMPILE_PREFIX = $(CROSS_COMPILE_64)
 else
 SBL_CROSS_COMPILE_PATH = $(SDK_CROSS_COMPILE_PATH)
 SBL_CROSS_COMPILE_PREFIX = $(SDK_CROSS_COMPILE_PREFIX)
+endif
+ifeq ($(KERNEL_ARCH),arm64)
+SDK_CROSS_COMPILE_KERNEL="$(SBL_CROSS_COMPILE_PATH)/bin/$(SBL_CROSS_COMPILE_PREFIX)"
+else
+SDK_CROSS_COMPILE_KERNEL="$(SDK_CROSS_COMPILE_PATH)/bin/$(SDK_CROSS_COMPILE_PREFIX)"
 endif
 
 SDK_CHIP = $(shell echo '$(CHIP)' | tr '[:lower:]' '[:upper:]')
@@ -89,7 +94,7 @@ CVIBOARD=$(UBOOT_BOARD) \
 CROSS_COMPILE="$(SBL_CROSS_COMPILE_PATH)/bin/$(SBL_CROSS_COMPILE_PREFIX)"
 
 KERNEL_MAKE_OPTS = ARCH=$(KERNEL_ARCH) \
-CROSS_COMPILE="$(SBL_CROSS_COMPILE_PATH)/bin/$(SBL_CROSS_COMPILE_PREFIX)" \
+CROSS_COMPILE="$(SDK_CROSS_COMPILE_KERNEL)" \
 KDEB_SOURCENAME=linux-$(BOARD) \
 LOCALVERSION=+$(BOARD_EXT)
 
@@ -102,7 +107,7 @@ CROSS_COMPILE_32=$(CROSS_COMPILE_PATH_32)/bin/$(CROSS_COMPILE_32) \
 CROSS_COMPILE_GLIBC_RISCV64=$(CROSS_COMPILE_PATH_GLIBC_RISCV64)/bin/$(CROSS_COMPILE_GLIBC_RISCV64) \
 CROSS_COMPILE_MUSL_RISCV64=$(CROSS_COMPILE_PATH_MUSL_RISCV64)/bin/$(CROSS_COMPILE_MUSL_RISCV64) \
 CONFIG_ARCH=$(KERNEL_ARCH) \
-CONFIG_CROSS_COMPILE_KERNEL="$(SBL_CROSS_COMPILE_PATH)/bin/$(SBL_CROSS_COMPILE_PREFIX)" \
+CONFIG_CROSS_COMPILE_KERNEL="$(SDK_CROSS_COMPILE_KERNEL)" \
 CONFIG_CP_EXT_WIRELESS=y
 
 SENSOR_ENV = CONFIG_SENSOR_GCORE_GC2083=y \
@@ -221,7 +226,7 @@ $(BUILDDIR)/linux-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out Kernel for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
 	@git clone -b licheervnano-merged-5.10.y $(GIT_CLONE_OPTS) https://github.com/scpcom/linux.git $(BUILDDIR)/kernel
-	@cd $(BUILDDIR)/kernel && git checkout a18b098
+	@cd $(BUILDDIR)/kernel && git checkout e3b55a8
 	@touch $@
 
 $(BUILDDIR)/linux-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $(BUILDDIR)/linux-prepare-checkout-stamp $(BUILDDIR)/$(BOARD)-$(VARIANT)/cvi_board_memmap.h
@@ -291,7 +296,7 @@ $(BUILDDIR)/osdrv-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out OSdrv for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
 	@git clone -b licheervnano-cvisdk $(GIT_CLONE_OPTS) https://github.com/scpcom/sophgo-osdrv.git $(BUILDDIR)/osdrv
-	@cd $(BUILDDIR)/osdrv && git checkout 790b11d
+	@cd $(BUILDDIR)/osdrv && git checkout 3c4d256
 	@touch $@
 
 $(BUILDDIR)/osdrv-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $(BUILDDIR)/osdrv-prepare-checkout-stamp $(BUILDDIR)/linux-compile-stamp
@@ -557,7 +562,7 @@ $(BUILDDIR)/fsbl-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp 
 
 $(BUILDDIR)/fsbl-compile-stamp: $(BUILDDIR)/fsbl-prepare-patch-stamp $(BUILDDIR)/$(UBOOT_ARCH)-sbi-compile-stamp $(BUILDDIR)/uboot-compile-stamp
 	@echo "$(COLOUR_GREEN)Building FSBL for $(BOARD)$(END_COLOUR)"
-	@cd $(BUILDDIR)/fsbl && OD_CLK_SEL=y $(MAKE) -j$(NPROCS) $(KERNEL_MAKE_OPTS) CHIP_ARCH=$(CHIP) BOOT_CPU=$(BOOT_CPU) DDR_CFG=$(DDR_CFG) RTOS_ENABLE_FREERTOS=y BLCP_2ND_PATH=$(BUILDDIR)/fsbl/blank.bin LOADER_2ND_PATH=$(BUILDDIR)/u-boot.bin
+	@cd $(BUILDDIR)/fsbl && OD_CLK_SEL=y $(MAKE) -j$(NPROCS) $(UBOOT_MAKE_OPTS) CHIP_ARCH=$(CHIP) BOOT_CPU=$(BOOT_CPU) DDR_CFG=$(DDR_CFG) RTOS_ENABLE_FREERTOS=y BLCP_2ND_PATH=$(BUILDDIR)/fsbl/blank.bin LOADER_2ND_PATH=$(BUILDDIR)/u-boot.bin
 	@cp $(BUILDDIR)/fsbl/build/$(CHIP)/fip.bin $(BUILDDIR)
 	@touch $@
 
