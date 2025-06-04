@@ -118,8 +118,6 @@ CONFIG_SENSOR_OV_OV5647=y \
 CONFIG_SENSOR_SMS_SC035GS=y \
 CONFIG_SENSOR_LONTIUM_LT6911=y
 
-MIDDLEWARE_ENV = $(OSDRV_ENV) $(SENSOR_ENV)
-
 BR_BOARD = cvitek_$(SDK_CHIP)_$(SDK_VER)
 BR_DEFCONFIG = $(BR_BOARD)_defconfig
 BR_DIR = $(BUILDDIR)/buildroot
@@ -162,6 +160,14 @@ endif
 
 BOARD_EXT ?= $(BOARD)
 
+ifneq ("$(PANEL_TUNING_DEFAULT)","")
+PANEL_CONFIG_DEFAULT = $(shell echo '$(PANEL_TUNING_DEFAULT)' | tr '[:lower:]' '[:upper:]')
+UBOOT_MAKE_OPTS += PANEL_TUNING_PARAM="$(PANEL_TUNING_DEFAULT)"
+OSDRV_ENV += CONFIG_$(PANEL_CONFIG_DEFAULT)=y CONFIG_PANEL_TUNING_PARAM="$(PANEL_TUNING_DEFAULT)"
+endif
+
+MIDDLEWARE_ENV = $(OSDRV_ENV) $(SENSOR_ENV)
+
 BSPDEPENDS = cvitek-fsbl-$(BOARD_EXT)\
  cvitek-middleware-$(BOARD)\
  cvitek-osdrv-$(BOARD)-$(VARIANT)\
@@ -186,6 +192,7 @@ $(info $(blue)Variant: $(VARIANT)$(reset))
 $(info $(blue)Storage: $(STORAGE_TYPE)$(reset))
 $(info $(blue)Target: $(SDK_VER)$(reset))
 $(info $(blue)ION Size: $(ION_SIZE)M$(reset))
+$(info $(blue)Default Panel: $(PANEL_TUNING_DEFAULT)$(reset))
 $(info $(blue)Image Addons: $(IMAGE_ADDITIONS)$(reset))
 $(info $(blue)Packages: $(_PACKAGES)$(reset))
 
