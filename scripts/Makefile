@@ -162,7 +162,7 @@ BOARD_EXT ?= $(BOARD)
 
 ifneq ("$(PANEL_TUNING_DEFAULT)","")
 PANEL_CONFIG_DEFAULT = $(shell echo '$(PANEL_TUNING_DEFAULT)' | tr '[:lower:]' '[:upper:]')
-UBOOT_MAKE_OPTS += PANEL_TUNING_PARAM="$(PANEL_TUNING_DEFAULT)"
+UBOOT_PANEL_OPTS = PANEL_TUNING_PARAM="$(PANEL_TUNING_DEFAULT)"
 OSDRV_ENV += CONFIG_$(PANEL_CONFIG_DEFAULT)=y CONFIG_PANEL_TUNING_PARAM="$(PANEL_TUNING_DEFAULT)"
 endif
 
@@ -496,19 +496,27 @@ $(BUILDDIR)/uboot-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp
 	@python3 /builder/python/mk_imgHeader.py /configs/$(BOARD_CFG)/$(PARTITION_FILE) $(BUILDDIR)/u-boot/include/ 
 	@touch $@
 
-$(BUILDDIR)/uboot-prepare-configure-stamp: $(BUILDDIR)/uboot-prepare-patch-stamp
-	@echo "$(COLOUR_GREEN)Configuring U-Boot for $(BOARD)$(END_COLOUR)"
-	cd $(BUILDDIR)/u-boot/ && $(MAKE) -j$(NPROCS) $(UBOOT_MAKE_OPTS) $(BOARD)_defconfig
+define uboot_configure_action
+	@echo "$(COLOUR_GREEN)Configuring U-Boot for $(BOARD) ${1}$(END_COLOUR)"
+	cd $(BUILDDIR)/u-boot/ && $(MAKE) -j$(NPROCS) ${1} $(UBOOT_MAKE_OPTS) $(BOARD)_defconfig
 	@touch $@
+endef
 
-$(BUILDDIR)/uboot-compile-stamp: $(BUILDDIR)/uboot-prepare-configure-stamp
-	@echo "$(COLOUR_GREEN)Building U-Boot for $(BOARD)$(END_COLOUR)"
-	cd $(BUILDDIR)/u-boot/ && $(MAKE) -j$(NPROCS) $(UBOOT_MAKE_OPTS)
-	cd $(BUILDDIR)/u-boot/ && $(MAKE) -j$(NPROCS) $(UBOOT_MAKE_OPTS) u-boot-initial-env
+define uboot_compile_action
+	@echo "$(COLOUR_GREEN)Building U-Boot for $(BOARD) ${1}$(END_COLOUR)"
+	cd $(BUILDDIR)/u-boot/ && $(MAKE) -j$(NPROCS) ${1} $(UBOOT_MAKE_OPTS)
+	cd $(BUILDDIR)/u-boot/ && $(MAKE) -j$(NPROCS) ${1} $(UBOOT_MAKE_OPTS) u-boot-initial-env
 	@cp $(BUILDDIR)/u-boot/u-boot.bin $(BUILDDIR)
 	@cp $(BUILDDIR)/u-boot/u-boot.dtb $(BUILDDIR)
 	@cp $(BUILDDIR)/u-boot/u-boot-initial-env $(BUILDDIR)
 	@touch $@
+endef
+
+$(BUILDDIR)/uboot-prepare-configure-stamp: $(BUILDDIR)/uboot-prepare-patch-stamp
+	$(call uboot_configure_action,$(UBOOT_PANEL_OPTS))
+
+$(BUILDDIR)/uboot-compile-stamp: $(BUILDDIR)/uboot-prepare-configure-stamp
+	$(call uboot_compile_action,$(UBOOT_PANEL_OPTS))
 
 uboot: $(BUILDDIR)/uboot-compile-stamp
 
