@@ -381,7 +381,7 @@ $(BUILDDIR)/middleware-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out Middleware for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
 	@git clone -b maix_mmf-cvisdk $(GIT_CLONE_OPTS) --recursive https://github.com/scpcom/sophgo-middleware.git $(BUILDDIR)/middleware
-	@cd $(BUILDDIR)/middleware && git checkout 7950293
+	@cd $(BUILDDIR)/middleware && git checkout c8a3e82
 	@touch $@
 
 $(BUILDDIR)/middleware-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $(BUILDDIR)/middleware-prepare-checkout-stamp $(BUILDDIR)/osdrv-compile-stamp
@@ -609,12 +609,14 @@ define fsbl_package_action
 	@$(eval UV=$(shell cd $(BUILDDIR)/u-boot && git log -1 --format="%at" | xargs -I{} date -d @{} +-%Y%m%d-${KERNELREV}))
 	@$(eval FSBL_PACKAGE_NAME=$(shell echo "cvitek-fsbl-$(BOARD_EXT)${2}"))
 	@$(eval FSBL_PACKAGE_DIR=$(shell echo "$(BUILDDIR)/package/$(FSBL_PACKAGE_NAME)-$(FSBLVERSION)"))
+	@$(eval PANEL_NAME_FSBL=$(shell echo '${2}' | cut -d '-' -f 2- | tr '-' '_'))
 	@mkdir -p $(FSBL_PACKAGE_DIR)
 	@cp -r /builder/deb/cvitek-fsbl/* $(FSBL_PACKAGE_DIR)/
 	@mkdir -p $(FSBL_PACKAGE_DIR)/usr/lib/cvitek-fsbl/$(BOARD_EXT)${2}/
 	@cp $(BUILDDIR)/fip.bin $(FSBL_PACKAGE_DIR)/usr/lib/cvitek-fsbl/$(BOARD_EXT)${2}/
 	@cp $(BUILDDIR)/u-boot-initial-env $(FSBL_PACKAGE_DIR)/usr/lib/cvitek-fsbl/$(BOARD_EXT)${2}/
 	@sed -i 's|cvitek-fsbl/licheervnano|cvitek-fsbl/$(BOARD_EXT)${2}|' $(FSBL_PACKAGE_DIR)/DEBIAN/postinst
+	@[ "X$(PANEL_NAME_FSBL)" = "X" ] || sed -i s/'^panel='/'panel='$(PANEL_NAME_FSBL)/g $(FSBL_PACKAGE_DIR)/DEBIAN/postinst
 	@chmod ugo+rx $(FSBL_PACKAGE_DIR)/DEBIAN/postinst
 	@sed -i 's/Architecture: riscv64/Architecture: $(DEB_ARCH)/' $(FSBL_PACKAGE_DIR)/DEBIAN/control
 	@sed -i 's/Version: 1.1.0/Version: $(FSBLVERSION)$(UV)/' $(FSBL_PACKAGE_DIR)/DEBIAN/control

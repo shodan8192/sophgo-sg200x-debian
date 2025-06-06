@@ -1,4 +1,5 @@
 #!/bin/sh
+panel=
 cp -p /usr/lib/cvitek-fsbl/licheervnano/fip.bin /boot/
 cp -p /usr/lib/cvitek-fsbl/licheervnano/u-boot-initial-env /etc/
 sed -i -e 's|#U_BOOT_SYNC_DTBS=".*"|U_BOOT_SYNC_DTBS="true"|' /etc/default/u-boot
@@ -11,3 +12,11 @@ else
 fi
 [ -e /etc/fw_env.config ] || echo '/boot/uboot.env	0x0000          0x20000' > /etc/fw_env.config
 [ -e /boot/uboot.env ] || mkenvimage -s 0x20000 -o /boot/uboot.env /etc/u-boot-initial-env
+[ -e /boot/board ] || echo "id=maixcam" > /boot/board
+if [ "X${panel}" != "X" ]; then
+  if grep -q '^panel=' /boot/board ; then
+    sed -i s/'^panel='/'panel='${panel}/g /boot/board
+  else
+    echo "panel=${panel}" >> /boot/board
+  fi
+fi
