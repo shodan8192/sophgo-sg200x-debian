@@ -576,25 +576,27 @@ $(BUILDDIR)/fsbl-compile-stamp: $(BUILDDIR)/fsbl-prepare-patch-stamp $(BUILDDIR)
 $(BUILDDIR)/fsbl-package-stamp: $(BUILDDIR)/fsbl-compile-stamp
 	@echo "$(COLOUR_GREEN)Packaging FSBL for $(BOARD)$(END_COLOUR)"
 	@$(eval UV=$(shell cd $(BUILDDIR)/u-boot && git log -1 --format="%at" | xargs -I{} date -d @{} +-%Y%m%d-${KERNELREV}))
-	@mkdir -p $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)
-	@cp -r /builder/deb/cvitek-fsbl/* $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/
-	@mkdir -p $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/usr/lib/cvitek-fsbl/$(BOARD_EXT)/
-	@cp $(BUILDDIR)/fip.bin $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/usr/lib/cvitek-fsbl/$(BOARD_EXT)/
-	@cp $(BUILDDIR)/u-boot-initial-env $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/usr/lib/cvitek-fsbl/$(BOARD_EXT)/
-	@sed -i 's|cvitek-fsbl/licheervnano|cvitek-fsbl/$(BOARD_EXT)|' $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/DEBIAN/postinst
-	@chmod ugo+rx $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/DEBIAN/postinst
-	@sed -i 's/Architecture: riscv64/Architecture: $(DEB_ARCH)/' $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/DEBIAN/control
-	@sed -i 's/Version: 1.1.0/Version: $(FSBLVERSION)$(UV)/' $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/DEBIAN/control
-	@sed -i 's/Package: cvitek-fsbl/Package: cvitek-fsbl-$(BOARD_EXT)/' $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/DEBIAN/control
+	@$(eval FSBL_PACKAGE_NAME=$(shell echo "cvitek-fsbl-$(BOARD_EXT)"))
+	@$(eval FSBL_PACKAGE_DIR=$(shell echo "$(BUILDDIR)/package/$(FSBL_PACKAGE_NAME)-$(FSBLVERSION)"))
+	@mkdir -p $(FSBL_PACKAGE_DIR)
+	@cp -r /builder/deb/cvitek-fsbl/* $(FSBL_PACKAGE_DIR)/
+	@mkdir -p $(FSBL_PACKAGE_DIR)/usr/lib/cvitek-fsbl/$(BOARD_EXT)/
+	@cp $(BUILDDIR)/fip.bin $(FSBL_PACKAGE_DIR)/usr/lib/cvitek-fsbl/$(BOARD_EXT)/
+	@cp $(BUILDDIR)/u-boot-initial-env $(FSBL_PACKAGE_DIR)/usr/lib/cvitek-fsbl/$(BOARD_EXT)/
+	@sed -i 's|cvitek-fsbl/licheervnano|cvitek-fsbl/$(BOARD_EXT)|' $(FSBL_PACKAGE_DIR)/DEBIAN/postinst
+	@chmod ugo+rx $(FSBL_PACKAGE_DIR)/DEBIAN/postinst
+	@sed -i 's/Architecture: riscv64/Architecture: $(DEB_ARCH)/' $(FSBL_PACKAGE_DIR)/DEBIAN/control
+	@sed -i 's/Version: 1.1.0/Version: $(FSBLVERSION)$(UV)/' $(FSBL_PACKAGE_DIR)/DEBIAN/control
+	@sed -i 's/Package: cvitek-fsbl/Package: $(FSBL_PACKAGE_NAME)/' $(FSBL_PACKAGE_DIR)/DEBIAN/control
 	@if [ "$(BOARD)" = "$(BOARD_EXT)" ]; then \
-		sed -i '/Provides: .*/d' $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/DEBIAN/control && \
-		sed -i '/Replaces: .*/d' $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/DEBIAN/control ; \
+		sed -i '/Provides: .*/d' $(FSBL_PACKAGE_DIR)/DEBIAN/control && \
+		sed -i '/Replaces: .*/d' $(FSBL_PACKAGE_DIR)/DEBIAN/control ; \
 	else \
-		sed -i 's/Provides: .*/Provides: cvitek-fsbl-$(BOARD)/' $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/DEBIAN/control && \
-		sed -i 's/Replaces: .*/Replaces: cvitek-fsbl-$(BOARD)/' $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION)/DEBIAN/control ; \
+		sed -i 's/Provides: .*/Provides: cvitek-fsbl-$(BOARD)/' $(FSBL_PACKAGE_DIR)/DEBIAN/control && \
+		sed -i 's/Replaces: .*/Replaces: cvitek-fsbl-$(BOARD)/' $(FSBL_PACKAGE_DIR)/DEBIAN/control ; \
 	fi
-	@cd $(BUILDDIR)/package/ && dpkg-deb --build cvitek-fsbl-$(BOARD_EXT)-$(FSBLVERSION) cvitek-fsbl-$(BOARD_EXT)_$(FSBLVERSION)$(UV)_$(DEB_ARCH).deb
-	@cp $(BUILDDIR)/package/cvitek-fsbl-$(BOARD_EXT)_$(FSBLVERSION)$(UV)_$(DEB_ARCH).deb /output/
+	@cd $(BUILDDIR)/package/ && dpkg-deb --build $(FSBL_PACKAGE_NAME)-$(FSBLVERSION) $(FSBL_PACKAGE_NAME)_$(FSBLVERSION)$(UV)_$(DEB_ARCH).deb
+	@cp $(BUILDDIR)/package/$(FSBL_PACKAGE_NAME)_$(FSBLVERSION)$(UV)_$(DEB_ARCH).deb /output/
 	@touch $@
 
 fsbl: $(BUILDDIR)/fsbl-package-stamp
@@ -639,7 +641,7 @@ $(BUILDDIR)/image-addons-stamp: $(BUILDDIR)/image-prepare-stamp $(BUILDDIR)/fsbl
 	@mkdir -p /rootfs/tmp/install/
 	@cp /output/board-support-$(BOARD)-$(VARIANT)*.deb /rootfs/tmp/install/
 	@echo "$(COLOUR_GREEN)Copying Deb files for installation on $(BOARD)$(END_COLOUR)"
-	@cp /output/cvitek-fsbl-$(BOARD_EXT)_*.deb /rootfs/tmp/install/
+	@cp /output/cvitek-fsbl-$(BOARD_EXT)*.deb /rootfs/tmp/install/
 	@cp /output/cvitek-osdrv-*$(BOARD)*.deb /rootfs/tmp/install/
 	@cp /output/cvitek-middleware-$(BOARD)_*.deb /rootfs/tmp/install/
 	@cp /output/linux-image-*$(BOARD)*.deb /rootfs/tmp/install/
