@@ -181,11 +181,11 @@ endif
 
 MIDDLEWARE_ENV = $(OSDRV_ENV) $(SENSOR_ENV)
 
-BSPDEPENDS = cvitek-fsbl-$(BOARD_EXT)\
- cvitek-middleware-$(BOARD)\
+BSPDEPENDS = cvitek-middleware-$(BOARD)\
  cvitek-osdrv-$(BOARD)-$(VARIANT)\
  linux-headers-$(BOARD)-$(VARIANT)\
  linux-image-$(BOARD)-$(VARIANT)
+BSPRECOMMENDS = cvitek-fsbl-$(BOARD_EXT)
 BSPFILTER =
 
 include $(wildcard /builder/addons/*/addon.mk)
@@ -199,6 +199,7 @@ SPACE := $(EMPTY) $(EMPTY)
 
 BSPDEPENDS += $(patsubst "%,%-$(BOARD),$(patsubst %",%,$(filter-out $(BSPFILTER),$(IMAGE_ADDITIONS))))
 _BSPDEPENDS = $(subst $(SPACE),$(COMMA)$(SPACE),$(sort $(BSPDEPENDS)))
+_BSPRECOMMENDS = $(subst $(SPACE),$(COMMA)$(SPACE),$(sort $(BSPRECOMMENDS)))
 
 $(info $(blue)Board: $(BOARD_CFG)$(reset))
 $(info $(blue)Variant: $(VARIANT)$(reset))
@@ -677,7 +678,7 @@ $(BUILDDIR)/image-addons-stamp: $(BUILDDIR)/image-prepare-stamp $(FSBL_TARGETS) 
 	@sed -i 's|cvitek-osdrv-$(BOARD)-$(VARIANT)|cvitek-osdrv-$(BOARD)-$(VARIANT):$(KERNEL_DEB_ARCH)|g' $(BUILDDIR)/package/board-support-$(BOARD)-$(VARIANT)-$(BSPVERSION)/DEBIAN/control
 	@sed -i 's|linux-headers-$(BOARD)-$(VARIANT)|linux-headers-$(BOARD)-$(VARIANT):$(KERNEL_DEB_ARCH)|g' $(BUILDDIR)/package/board-support-$(BOARD)-$(VARIANT)-$(BSPVERSION)/DEBIAN/control
 	@sed -i 's|linux-image-$(BOARD)-$(VARIANT)|linux-image-$(BOARD)-$(VARIANT):$(KERNEL_DEB_ARCH)|g' $(BUILDDIR)/package/board-support-$(BOARD)-$(VARIANT)-$(BSPVERSION)/DEBIAN/control
-	@sed -i '/Recommends: .*/d' $(BUILDDIR)/package/board-support-$(BOARD)-$(VARIANT)-$(BSPVERSION)/DEBIAN/control
+	@sed -i 's/Recommends: .*/Recommends: $(_BSPRECOMMENDS)/' $(BUILDDIR)/package/board-support-$(BOARD)-$(VARIANT)-$(BSPVERSION)/DEBIAN/control
 	@if [ -f /rootfs/tmp/install/systemd-enable ]; then \
 		echo "systemctl enable `cat /rootfs/tmp/install/systemd-enable | tr -d '\n'`" >> $(BUILDDIR)/package/board-support-$(BOARD)-$(VARIANT)-$(BSPVERSION)/DEBIAN/postinst ; \
 	fi
@@ -687,7 +688,7 @@ $(BUILDDIR)/image-addons-stamp: $(BUILDDIR)/image-prepare-stamp $(FSBL_TARGETS) 
 	@mkdir -p /rootfs/tmp/install/
 	@cp /output/board-support-$(BOARD)-$(VARIANT)*.deb /rootfs/tmp/install/
 	@echo "$(COLOUR_GREEN)Copying Deb files for installation on $(BOARD)$(END_COLOUR)"
-	@cp /output/cvitek-fsbl-$(BOARD_EXT)*.deb /rootfs/tmp/install/
+	@cp /output/cvitek-fsbl-$(BOARD_EXT)_*.deb /rootfs/tmp/install/
 	@cp /output/cvitek-osdrv-*$(BOARD)*.deb /rootfs/tmp/install/
 	@cp /output/cvitek-middleware-$(BOARD)_*.deb /rootfs/tmp/install/
 	@cp /output/linux-image-*$(BOARD)*.deb /rootfs/tmp/install/
