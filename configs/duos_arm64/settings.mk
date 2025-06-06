@@ -7,6 +7,7 @@ BOOT_CPU=aarch64
 ARCH=arm64
 DDR_CFG=ddr3_1866_x16
 ION_SIZE=74
+PANEL_TUNING_DEFAULT?=MIPI_panel_milkv_8hd
 PARTITION_FILE=partition_$(STORAGE_TYPE).xml
 
 PACKAGES += " hostapd udhcpd wireless-regdb wpasupplicant bluez"
