@@ -95,6 +95,33 @@ The images, by default, allocate minimum amount of memory for the ION heap to us
 ### Ardunio/Freertos Support
 Support is disabled on my images because the small C906 core is used by ISP.
 
+### LCD Panel Support
+If you have a LCD panel connected you can install the matching bootloader.
+
+LicheeRV Nano
+
+ - cvitek-fsbl-licheervnano (no LCD)
+ - cvitek-fsbl-licheervnano-st7701-d300fpc9307a
+ - cvitek-fsbl-licheervnano-st7701-dxq5d0019b480854
+ - cvitek-fsbl-licheervnano-st7701-hd228001c31
+ - cvitek-fsbl-licheervnano-zct2133v1
+
+Milk-V DuoS
+
+ - cvitek-fsbl-duos (no LCD)
+ - cvitek-fsbl-duos-milkv-8hd
+
+Example if you have a st7701_hd228001c31 connected:
+```
+apt-get install cvitek-fsbl-licheervnano-st7701-hd228001c31
+apt-get remove cvitek-fsbl-licheervnano
+```
+
+You may also want to enable the FB driver:
+```
+touch /boot/fb
+```
+
 ### Additional Packages
 This image also adds the debian repository for board-related packages so you can install additional repositories. The debian repository is hosted at 
 https://scpcom.github.io/deb which pulls down the compiled debian packages from the above github repository occasionally.
