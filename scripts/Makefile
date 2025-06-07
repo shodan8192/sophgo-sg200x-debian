@@ -499,7 +499,6 @@ $(BUILDDIR)/uboot-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp
 	@echo "$(COLOUR_GREEN)Patching U-Boot for $(BOARD)$(END_COLOUR)"
 	@$(foreach file, $(wildcard /configs/common/patches/u-boot/*.patch), cd $(BUILDDIR)/u-boot && git apply --ignore-whitespace $(file);)
 	@$(foreach file, $(wildcard /configs/$(BOARD_CFG)/patches/u-boot/*.patch), cd $(BUILDDIR)/u-boot && git apply --ignore-whitespace $(file);)
-	@cp /configs/$(BOARD_CFG)/u-boot/defconfig $(BUILDDIR)/u-boot/configs/$(BOARD)_defconfig
 	@$(foreach file, $(wildcard /configs/common/dts/$(CHIP)/*), cp $(file) $(BUILDDIR)/u-boot/arch/$(UBOOT_ARCH)/dts/;)
 	@$(foreach file, $(wildcard /configs/common/dts/$(CHIP)_$(UBOOT_ARCH)/*), cp $(file) $(BUILDDIR)/u-boot/arch/$(UBOOT_ARCH)/dts/;)
 	@$(foreach file, $(wildcard /configs/$(BOARD_CFG)/dts/*), cp $(file) $(BUILDDIR)/u-boot/arch/$(UBOOT_ARCH)/dts/;)
@@ -513,7 +512,18 @@ $(BUILDDIR)/uboot-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp
 define uboot_configure_action
 	@echo "$(COLOUR_GREEN)Configuring U-Boot for $(BOARD) ${1}$(END_COLOUR)"
 	cd $(BUILDDIR)/u-boot/ && $(MAKE) -j$(NPROCS) ${1} $(UBOOT_MAKE_OPTS) clean
-	cd $(BUILDDIR)/u-boot/ && $(MAKE) -j$(NPROCS) ${1} $(UBOOT_MAKE_OPTS) $(BOARD)_defconfig
+	@cp /configs/$(BOARD_CFG)/u-boot/defconfig $(BUILDDIR)/u-boot/configs/$(BOARD)${2}_defconfig
+	@if [ "X${2}" = "X" ] ; then \
+		sed -i /^CONFIG_CMD_CVI_VO/d $(BUILDDIR)/u-boot/configs/$(BOARD)${2}_defconfig ; \
+		sed -i /^CONFIG_DM_VIDEO/d $(BUILDDIR)/u-boot/configs/$(BOARD)${2}_defconfig ; \
+		sed -i /^CONFIG_CMD_VIDCONSOLE/d $(BUILDDIR)/u-boot/configs/$(BOARD)${2}_defconfig ; \
+		sed -i /^CONFIG_VIDEO/d $(BUILDDIR)/u-boot/configs/$(BOARD)${2}_defconfig ; \
+		sed -i /^CONFIG_DISPLAY_CVITEK_MIPI/d $(BUILDDIR)/u-boot/configs/$(BOARD)${2}_defconfig ; \
+		sed -i /^CONFIG_DISPLAY=/d $(BUILDDIR)/u-boot/configs/$(BOARD)${2}_defconfig ; \
+		sed -i /^CONFIG_BMP_/d $(BUILDDIR)/u-boot/configs/$(BOARD)${2}_defconfig ; \
+		sed -i /^CONFIG_BOOTLOGO/d $(BUILDDIR)/u-boot/configs/$(BOARD)${2}_defconfig ; \
+	fi
+	cd $(BUILDDIR)/u-boot/ && $(MAKE) -j$(NPROCS) ${1} $(UBOOT_MAKE_OPTS) $(BOARD)${2}_defconfig
 	@touch $@
 endef
 
@@ -528,13 +538,16 @@ define uboot_compile_action
 endef
 
 $(BUILDDIR)/uboot-%.prepare-configure-stamp: $(BUILDDIR)/uboot-prepare-patch-stamp
-	$(call uboot_configure_action,PANEL_TUNING_PARAM="$(patsubst uboot-%.prepare-configure-stamp,%,$(notdir $@))")
+	$(eval PANEL_TUNING_FSBL=$(patsubst uboot-%.prepare-configure-stamp,%,$(notdir $@)))
+	$(eval PANEL_PACKAGE_FSBL=$(shell echo '$(PANEL_TUNING_FSBL)' | tr '[:upper:]_' '[:lower:]-' | sed s/'^mipi-panel-'/'-'/g))
+	$(call uboot_configure_action,PANEL_TUNING_PARAM="$(PANEL_TUNING_FSBL)",$(PANEL_PACKAGE_FSBL))
 
 $(BUILDDIR)/uboot-%.compile-stamp: $(BUILDDIR)/uboot-%.prepare-configure-stamp
-	$(call uboot_compile_action,PANEL_TUNING_PARAM="$(patsubst uboot-%.compile-stamp,%,$(notdir $@))")
+	$(eval PANEL_TUNING_FSBL=$(patsubst uboot-%.compile-stamp,%,$(notdir $@)))
+	$(call uboot_compile_action,PANEL_TUNING_PARAM="$(PANEL_TUNING_FSBL)")
 
 $(BUILDDIR)/uboot-prepare-configure-stamp: $(BUILDDIR)/uboot-prepare-patch-stamp
-	$(call uboot_configure_action,)
+	$(call uboot_configure_action,,)
 
 $(BUILDDIR)/uboot-compile-stamp: $(BUILDDIR)/uboot-prepare-configure-stamp
 	$(call uboot_compile_action,)
