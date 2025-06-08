@@ -381,7 +381,7 @@ $(BUILDDIR)/middleware-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out Middleware for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
 	@git clone -b maix_mmf-cvisdk $(GIT_CLONE_OPTS) --recursive https://github.com/scpcom/sophgo-middleware.git $(BUILDDIR)/middleware
-	@cd $(BUILDDIR)/middleware && git checkout c8a3e82
+	@cd $(BUILDDIR)/middleware && git checkout 2126b07
 	@touch $@
 
 $(BUILDDIR)/middleware-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $(BUILDDIR)/middleware-prepare-checkout-stamp $(BUILDDIR)/osdrv-compile-stamp
@@ -492,14 +492,13 @@ $(BUILDDIR)/uboot-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out U-Boot for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
 	@git clone -b licheervnano-cvisdk-2021.10 $(GIT_CLONE_OPTS) https://github.com/scpcom/u-boot $(BUILDDIR)/u-boot
-	@cd $(BUILDDIR)/u-boot && git checkout 0192b5b
+	@cd $(BUILDDIR)/u-boot && git checkout b77933a
 	@touch $@
 
 $(BUILDDIR)/uboot-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $(BUILDDIR)/uboot-prepare-checkout-stamp $(BUILDDIR)/$(BOARD)-$(VARIANT)/cvi_board_memmap.h
 	@echo "$(COLOUR_GREEN)Patching U-Boot for $(BOARD)$(END_COLOUR)"
 	@$(foreach file, $(wildcard /configs/common/patches/u-boot/*.patch), cd $(BUILDDIR)/u-boot && git apply --ignore-whitespace $(file);)
 	@$(foreach file, $(wildcard /configs/$(BOARD_CFG)/patches/u-boot/*.patch), cd $(BUILDDIR)/u-boot && git apply --ignore-whitespace $(file);)
-	@cp /configs/$(BOARD_CFG)/u-boot/defconfig $(BUILDDIR)/u-boot/configs/$(BOARD)_defconfig
 	@$(foreach file, $(wildcard /configs/common/dts/$(CHIP)/*), cp $(file) $(BUILDDIR)/u-boot/arch/$(UBOOT_ARCH)/dts/;)
 	@$(foreach file, $(wildcard /configs/common/dts/$(CHIP)_$(UBOOT_ARCH)/*), cp $(file) $(BUILDDIR)/u-boot/arch/$(UBOOT_ARCH)/dts/;)
 	@$(foreach file, $(wildcard /configs/$(BOARD_CFG)/dts/*), cp $(file) $(BUILDDIR)/u-boot/arch/$(UBOOT_ARCH)/dts/;)
@@ -513,7 +512,18 @@ $(BUILDDIR)/uboot-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp
 define uboot_configure_action
 	@echo "$(COLOUR_GREEN)Configuring U-Boot for $(BOARD) ${1}$(END_COLOUR)"
 	cd $(BUILDDIR)/u-boot/ && $(MAKE) -j$(NPROCS) ${1} $(UBOOT_MAKE_OPTS) clean
-	cd $(BUILDDIR)/u-boot/ && $(MAKE) -j$(NPROCS) ${1} $(UBOOT_MAKE_OPTS) $(BOARD)_defconfig
+	@cp /configs/$(BOARD_CFG)/u-boot/defconfig $(BUILDDIR)/u-boot/configs/$(BOARD)${2}_defconfig
+	@if [ "X${2}" = "X" ] ; then \
+		sed -i /^CONFIG_CMD_CVI_VO/d $(BUILDDIR)/u-boot/configs/$(BOARD)${2}_defconfig ; \
+		sed -i /^CONFIG_DM_VIDEO/d $(BUILDDIR)/u-boot/configs/$(BOARD)${2}_defconfig ; \
+		sed -i /^CONFIG_CMD_VIDCONSOLE/d $(BUILDDIR)/u-boot/configs/$(BOARD)${2}_defconfig ; \
+		sed -i /^CONFIG_VIDEO/d $(BUILDDIR)/u-boot/configs/$(BOARD)${2}_defconfig ; \
+		sed -i /^CONFIG_DISPLAY_CVITEK_MIPI/d $(BUILDDIR)/u-boot/configs/$(BOARD)${2}_defconfig ; \
+		sed -i /^CONFIG_DISPLAY=/d $(BUILDDIR)/u-boot/configs/$(BOARD)${2}_defconfig ; \
+		sed -i /^CONFIG_BMP_/d $(BUILDDIR)/u-boot/configs/$(BOARD)${2}_defconfig ; \
+		sed -i /^CONFIG_BOOTLOGO/d $(BUILDDIR)/u-boot/configs/$(BOARD)${2}_defconfig ; \
+	fi
+	cd $(BUILDDIR)/u-boot/ && $(MAKE) -j$(NPROCS) ${1} $(UBOOT_MAKE_OPTS) $(BOARD)${2}_defconfig
 	@touch $@
 endef
 
@@ -528,13 +538,16 @@ define uboot_compile_action
 endef
 
 $(BUILDDIR)/uboot-%.prepare-configure-stamp: $(BUILDDIR)/uboot-prepare-patch-stamp
-	$(call uboot_configure_action,PANEL_TUNING_PARAM="$(patsubst uboot-%.prepare-configure-stamp,%,$(notdir $@))")
+	$(eval PANEL_TUNING_FSBL=$(patsubst uboot-%.prepare-configure-stamp,%,$(notdir $@)))
+	$(eval PANEL_PACKAGE_FSBL=$(shell echo '$(PANEL_TUNING_FSBL)' | tr '[:upper:]_' '[:lower:]-' | sed s/'^mipi-panel-'/'-'/g))
+	$(call uboot_configure_action,PANEL_TUNING_PARAM="$(PANEL_TUNING_FSBL)",$(PANEL_PACKAGE_FSBL))
 
 $(BUILDDIR)/uboot-%.compile-stamp: $(BUILDDIR)/uboot-%.prepare-configure-stamp
-	$(call uboot_compile_action,PANEL_TUNING_PARAM="$(patsubst uboot-%.compile-stamp,%,$(notdir $@))")
+	$(eval PANEL_TUNING_FSBL=$(patsubst uboot-%.compile-stamp,%,$(notdir $@)))
+	$(call uboot_compile_action,PANEL_TUNING_PARAM="$(PANEL_TUNING_FSBL)")
 
 $(BUILDDIR)/uboot-prepare-configure-stamp: $(BUILDDIR)/uboot-prepare-patch-stamp
-	$(call uboot_configure_action,)
+	$(call uboot_configure_action,,)
 
 $(BUILDDIR)/uboot-compile-stamp: $(BUILDDIR)/uboot-prepare-configure-stamp
 	$(call uboot_compile_action,)
@@ -615,7 +628,8 @@ define fsbl_package_action
 	@mkdir -p $(FSBL_PACKAGE_DIR)/usr/lib/cvitek-fsbl/$(BOARD_EXT)${2}/
 	@cp $(BUILDDIR)/fip.bin $(FSBL_PACKAGE_DIR)/usr/lib/cvitek-fsbl/$(BOARD_EXT)${2}/
 	@cp $(BUILDDIR)/u-boot-initial-env $(FSBL_PACKAGE_DIR)/usr/lib/cvitek-fsbl/$(BOARD_EXT)${2}/
-	@sed -i 's|cvitek-fsbl/licheervnano|cvitek-fsbl/$(BOARD_EXT)${2}|' $(FSBL_PACKAGE_DIR)/DEBIAN/postinst
+	@[ ! -e /configs/$(BOARD_CFG)/logo.jpeg ] || cp /configs/$(BOARD_CFG)/logo.jpeg $(FSBL_PACKAGE_DIR)/usr/lib/cvitek-fsbl/$(BOARD_EXT)${2}/
+	@sed -i 's|cvitek-fsbl/licheervnano|cvitek-fsbl/$(BOARD_EXT)${2}|g' $(FSBL_PACKAGE_DIR)/DEBIAN/postinst
 	@[ "X$(PANEL_NAME_FSBL)" = "X" ] || sed -i s/'^panel='/'panel='$(PANEL_NAME_FSBL)/g $(FSBL_PACKAGE_DIR)/DEBIAN/postinst
 	@chmod ugo+rx $(FSBL_PACKAGE_DIR)/DEBIAN/postinst
 	@sed -i 's/Architecture: riscv64/Architecture: $(DEB_ARCH)/' $(FSBL_PACKAGE_DIR)/DEBIAN/control

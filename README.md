@@ -101,15 +101,20 @@ If you have a LCD panel connected you can install the matching bootloader.
 LicheeRV Nano
 
  - cvitek-fsbl-licheervnano (no LCD)
- - cvitek-fsbl-licheervnano-st7701-d300fpc9307a
- - cvitek-fsbl-licheervnano-st7701-dxq5d0019b480854
- - cvitek-fsbl-licheervnano-st7701-hd228001c31
- - cvitek-fsbl-licheervnano-zct2133v1
+ - cvitek-fsbl-licheervnano-d240si31 (2.4 inch)
+ - cvitek-fsbl-licheervnano-mtd700920b (7 inch)
+ - cvitek-fsbl-licheervnano-st7701-d300fpc9307a (3 inch)
+ - cvitek-fsbl-licheervnano-st7701-d310t9362v1 (3.1 inch)
+ - cvitek-fsbl-licheervnano-st7701-dxq5d0019b480854 (5 inch)
+ - cvitek-fsbl-licheervnano-st7701-dxq5d0019-v0 (5 inch)
+ - cvitek-fsbl-licheervnano-st7701-hd228001c31 (2.28 inch)
+ - cvitek-fsbl-licheervnano-st7701-hd228001c31-alt0 (2.28 inch)
+ - cvitek-fsbl-licheervnano-zct2133v1 (7 inch)
 
 Milk-V DuoS
 
  - cvitek-fsbl-duos (no LCD)
- - cvitek-fsbl-duos-milkv-8hd
+ - cvitek-fsbl-duos-milkv-8hd (8 inch)
 
 Example if you have a st7701_hd228001c31 connected:
 ```
