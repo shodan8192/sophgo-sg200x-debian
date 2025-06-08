@@ -16,7 +16,7 @@ fi
 [ -e /boot/board ] || echo "id=maixcam" > /boot/board
 if [ "X${panel}" != "X" ]; then
   if grep -q '^panel=' /boot/board ; then
-    sed -i s/'^panel='/'panel='${panel}/g /boot/board
+    sed -i s/'^panel=.*'/'panel='${panel}/g /boot/board
   else
     echo "panel=${panel}" >> /boot/board
   fi
