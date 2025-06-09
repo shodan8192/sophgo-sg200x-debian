@@ -101,7 +101,7 @@ If you have a LCD panel connected you can install the matching bootloader.
 LicheeRV Nano
 
  - cvitek-fsbl-licheervnano (no LCD)
- - cvitek-fsbl-licheervnano-d240si31 (2.4 inch)
+ - cvitek-fsbl-licheervnano-d240si31 (2.4 inch, a.k.a st7701_lct024bsi20)
  - cvitek-fsbl-licheervnano-mtd700920b (7 inch)
  - cvitek-fsbl-licheervnano-st7701-d300fpc9307a (3 inch)
  - cvitek-fsbl-licheervnano-st7701-d310t9362v1 (3.1 inch)

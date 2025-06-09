@@ -381,7 +381,7 @@ $(BUILDDIR)/middleware-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out Middleware for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
 	@git clone -b maix_mmf-cvisdk $(GIT_CLONE_OPTS) --recursive https://github.com/scpcom/sophgo-middleware.git $(BUILDDIR)/middleware
-	@cd $(BUILDDIR)/middleware && git checkout 2126b07
+	@cd $(BUILDDIR)/middleware && git checkout df0d5c3
 	@touch $@
 
 $(BUILDDIR)/middleware-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $(BUILDDIR)/middleware-prepare-checkout-stamp $(BUILDDIR)/osdrv-compile-stamp
@@ -437,7 +437,7 @@ $(BUILDDIR)/buildroot-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out Buildroot for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
 	@git clone -b nanokvm-2025.02 $(GIT_CLONE_OPTS) --recursive https://github.com/scpcom/buildroot.git $(BUILDDIR)/buildroot
-	@cd $(BR_DIR) && git checkout 91a2808
+	@cd $(BR_DIR) && git checkout 8aba97f
 	@mkdir -p $(BUILDDIR)/ramdisk/tools
 	@git clone -b main https://github.com/scpcom/cvi-pinmux $(BUILDDIR)/ramdisk/tools/cvi_pinmux
 	@touch $@
@@ -448,7 +448,7 @@ $(BUILDDIR)/buildroot-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-s
 	@$(foreach file, $(wildcard /configs/$(BOARD_CFG)/patches/buildroot/*.patch), cd $(BR_DIR) && git apply --ignore-whitespace $(file);)
 	@cp /configs/common/buildroot/$(ARCH)_defconfig $(BR_DIR)/configs/$(BR_DEFCONFIG)
 	@echo 'BR2_TOOLCHAIN_EXTERNAL_PATH="'$(SDK_CROSS_COMPILE_PATH)'"' >> $(BR_DIR)/configs/$(BR_DEFCONFIG)
-	@if [ "X$(findstring kvm,$(VARIANT))" = "X" ]; then \
+	@if [ "X$(findstring kvm,$(VARIANT))$(findstring maixapp,$(IMAGE_ADDITIONS))" = "X" ]; then \
 		sed -i /BR2_CCACHE/d $(BR_DIR)/configs/$(BR_DEFCONFIG) ; \
 		sed -i /BR2_PACKAGE_CA_CERTIFICATES/d $(BR_DIR)/configs/$(BR_DEFCONFIG) ; \
 		sed -i /BR2_PACKAGE_LIBOPENSSL/d $(BR_DIR)/configs/$(BR_DEFCONFIG) ; \
@@ -456,6 +456,18 @@ $(BUILDDIR)/buildroot-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-s
 		sed -i /BR2_PACKAGE_PYTHON/d $(BR_DIR)/configs/$(BR_DEFCONFIG) ; \
 		sed -i /BR2_PACKAGE_HOST_PYTHON/d $(BR_DIR)/configs/$(BR_DEFCONFIG) ; \
 		sed -i /BR2_PACKAGE_MAIX_CDK/d $(BR_DIR)/configs/$(BR_DEFCONFIG) ; \
+	fi
+	@if [ "X$(findstring maixapp,$(IMAGE_ADDITIONS))" = "X" ]; then \
+		sed -i /BR2_PACKAGE_MPG123/d $(BR_DIR)/configs/$(BR_DEFCONFIG) ; \
+		sed -i /BR2_PACKAGE_LIBWEBSOCKETS/d $(BR_DIR)/configs/$(BR_DEFCONFIG) ; \
+		sed -i /BR2_PACKAGE_NANOMSG/d $(BR_DIR)/configs/$(BR_DEFCONFIG) ; \
+		sed -i /BR2_PACKAGE_WATCHDOG/d $(BR_DIR)/configs/$(BR_DEFCONFIG) ; \
+		sed -i /BR2_PACKAGE_OPENCV4/d $(BR_DIR)/configs/$(BR_DEFCONFIG) ; \
+		sed -i /BR2_PACKAGE_FFMPEG/d $(BR_DIR)/configs/$(BR_DEFCONFIG) ; \
+	else \
+		sed -i /BR2_PACKAGE_MAIX_CDK_ALL_DEPENDENCIES/d $(BR_DIR)/configs/$(BR_DEFCONFIG) ; \
+	fi
+	@if [ "X$(findstring kvm,$(VARIANT))" = "X" ]; then \
 		sed -i /BR2_PACKAGE_NANOKVM/d $(BR_DIR)/configs/$(BR_DEFCONFIG) ; \
 	fi
 	@if [ "$(BOARD)" = "duos" ]; then \
@@ -492,7 +504,7 @@ $(BUILDDIR)/uboot-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out U-Boot for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
 	@git clone -b licheervnano-cvisdk-2021.10 $(GIT_CLONE_OPTS) https://github.com/scpcom/u-boot $(BUILDDIR)/u-boot
-	@cd $(BUILDDIR)/u-boot && git checkout b77933a
+	@cd $(BUILDDIR)/u-boot && git checkout 3e300a4
 	@touch $@
 
 $(BUILDDIR)/uboot-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $(BUILDDIR)/uboot-prepare-checkout-stamp $(BUILDDIR)/$(BOARD)-$(VARIANT)/cvi_board_memmap.h

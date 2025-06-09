@@ -26,6 +26,7 @@ ifneq ("$(findstring kvm,$(VARIANT))","")
 IMAGE_ADDITIONS += "cvi-pinmux"
 IMAGE_ADDITIONS += "nanokvm"
 else
+IMAGE_ADDITIONS += "maixapp"
 IMAGE_ADDITIONS += "tpusdk"
 endif
 IMAGE_ADDITIONS += "usb-device"
