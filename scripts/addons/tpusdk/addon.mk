@@ -1,5 +1,5 @@
 ifneq ("$(findstring tpusdk,$(IMAGE_ADDITIONS))$(findstring cvitek-tpusdk-$(BOARD),$(PACKAGES))","")
-BSPDEPENDS += cvitek-tpusdk-$(BOARD)
+BSPRECOMMENDS += cvitek-tpusdk-$(BOARD)
 BSPFILTER += "tpusdk"
 TPU_REL = 1
 endif
