@@ -1,7 +1,7 @@
 ifneq ("$(findstring maixapp,$(IMAGE_ADDITIONS))$(findstring maixapp-$(BOARD),$(PACKAGES))","")
 BSPRECOMMENDS += maixapp-$(BOARD)
 BSPFILTER += "maixapp"
-MAIXAPP_PACKAGES = libasound2t64 libatopology2t64 libjpeg62-turbo libpng16-16t64 libtiff6 libtbb12 libwebp7
+MAIXAPP_PACKAGES = libasound2t64 libatopology2t64 libpng16-16t64
 MAIXAPP_DEPENDS = $(subst $(SPACE),$(COMMA)$(SPACE),$(sort $(MAIXAPP_PACKAGES))), ffmpeg-maixapp-$(BOARD), libjpeg-maixapp-$(BOARD), opencv-maixapp-$(BOARD)
 PACKAGES += " $(MAIXAPP_PACKAGES)"
 endif
