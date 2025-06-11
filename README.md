@@ -102,6 +102,8 @@ LicheeRV Nano
 
  - cvitek-fsbl-licheervnano (no LCD)
  - cvitek-fsbl-licheervnano-d240si31 (2.4 inch, a.k.a st7701_lct024bsi20)
+ - cvitek-fsbl-licheervnano-lt9611-1024x768-60hz (dsi to hdmi)
+ - cvitek-fsbl-licheervnano-lt9611-1280x720-60hz (dsi to hdmi)
  - cvitek-fsbl-licheervnano-mtd700920b (7 inch)
  - cvitek-fsbl-licheervnano-st7701-d300fpc9307a (3 inch)
  - cvitek-fsbl-licheervnano-st7701-d310t9362v1 (3.1 inch)
