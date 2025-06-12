@@ -67,8 +67,8 @@ systemctl enable usb-switch
 
 and reboot afterwards. 
 
-### Wifi on DuoS/LicheeRVNano
-For the LicheeRVNano/DuoS board, Wifi is enabled. To connect to your wifi network, execute the following command and select "Activate a connection" and select your wifi network:
+### WiFi on DuoS/LicheeRVNano
+For the LicheeRVNano/DuoS board, WiFi is enabled. To connect to your wifi network, execute the following command (example, use ssid and password of your wifi network):
 ```
 touch /boot/wifi.sta
 echo "My WiFi" | tee /boot/wifi.ssid
@@ -76,7 +76,7 @@ echo "Pa$$w0rd" /boot/wifi.pass
 ```
 
 ### Ethernet
-For Boards with eithernet, they should automatically get a IP address if your network has a DHCP Server. You can configure the 
+For Boards with ethernet, they should automatically get a IP address if your network has a DHCP Server. You can configure the 
 ethernet port in /etc/network/interfaces.d/end0
 
 ### Camera/ISP/Panel Support
@@ -102,6 +102,8 @@ LicheeRV Nano
 
  - cvitek-fsbl-licheervnano (no LCD)
  - cvitek-fsbl-licheervnano-d240si31 (2.4 inch, a.k.a st7701_lct024bsi20)
+ - cvitek-fsbl-licheervnano-lt9611-1024x768-60hz (dsi to hdmi)
+ - cvitek-fsbl-licheervnano-lt9611-1280x720-60hz (dsi to hdmi)
  - cvitek-fsbl-licheervnano-mtd700920b (7 inch)
  - cvitek-fsbl-licheervnano-st7701-d300fpc9307a (3 inch)
  - cvitek-fsbl-licheervnano-st7701-d310t9362v1 (3.1 inch)
@@ -150,7 +152,7 @@ Available debian packages:
  Libs and samples for the ISP (vi/vo/venc/vdec etc.).
  - cvitek-osdrv-licheervnano-kvm  
  Additional kernel drivers (required for camera support etc.).
- - cvitek-tpusdk-licheervnano
+ - cvitek-tpusdk-licheervnano  
  Libs and samples for the TPU (AI)
  - device-key-licheervnano  
  Startup script that sets the Ethernet MAC address and hostname based on the hash off the device uuid.
@@ -168,6 +170,8 @@ Available debian packages:
  The kernel customized for the board.
  - load-systemko-licheervnano  
  Startup script that loads the additional drivers (see cvitek-osdrv-licheervnano-kvm).
+ - maixapp-licheervnano  
+ App(s) built with MaixCDK.
  - nanokvm-licheervnano  
  NanoKVM Server that provides the web interface to control your device.
  - sensor-config-licheervnano  
@@ -178,7 +182,7 @@ Available debian packages:
  Startup script to enable the USB switch.
  - wifi-builtin-licheervnano  
  Startup scripts to initialize the on-board WiFi.
- - zram-config-licheervnano
+ - zram-config-licheervnano  
  Scripts to setup compressed ZRAM devices for overlayfs and zswap.
 
 The package names are depending on the board you are using (licheervnano, duo256 or duos) and the variant (kvm = NanoKVM, e = all others).
@@ -187,7 +191,7 @@ For example if you want the kernel for Milk-V Duo256 the package is called linux
 ## Building the Image
 To build a stock image with no modifications:
 ```
-podman run --privileged -it --rm -v ./configs/:/configs -v ./image:/output ghcr.io/scpcom/sophgo-sg200x-debian:master make BOARD=licheervnano image
+podman run --privileged -it --rm -v ./configs/:/configs -v ./image:/output ghcr.io/scpcom/sophgo-sg200x-debian:debian make BOARD=licheervnano image
 ```
 
 Replace the licheervnano with the board you want to build for:
@@ -197,12 +201,12 @@ Replace the licheervnano with the board you want to build for:
 
 If you want to create a image for the DuoS with EMMC, you can add "STORAGE_TYPE=emmc" to the make command:
 ```
-podman run --privileged -it --rm -v ./configs/:/configs -v ./image:/output ghcr.io/scpcom/sophgo-sg200x-debian:master make BOARD=duos STORAGE_TYPE=emmc image
+podman run --privileged -it --rm -v ./configs/:/configs -v ./image:/output ghcr.io/scpcom/sophgo-sg200x-debian:debian make BOARD=duos STORAGE_TYPE=emmc image
 ```
 
 If you want to create a image for the NanoKVM, you can add "VARIANT=kvm" to the make command:
 ```
-podman run --privileged -it --rm -v ./configs/:/configs -v ./image:/output ghcr.io/scpcom/sophgo-sg200x-debian:master make BOARD=licheervnano VARIANT=kvm image
+podman run --privileged -it --rm -v ./configs/:/configs -v ./image:/output ghcr.io/scpcom/sophgo-sg200x-debian:debian make BOARD=licheervnano VARIANT=kvm image
 ```
 
 The Docker image will build the image and place it in the image directory
