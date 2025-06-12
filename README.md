@@ -170,8 +170,8 @@ Available debian packages:
  The kernel customized for the board.
  - load-systemko-licheervnano  
  Startup script that loads the additional drivers (see cvitek-osdrv-licheervnano-kvm).
- - maixapp-licheervnano
- App(s) built with MaixCDK 
+ - maixapp-licheervnano 
+ App(s) built with MaixCDK.
  - nanokvm-licheervnano  
  NanoKVM Server that provides the web interface to control your device.
  - sensor-config-licheervnano  
