@@ -67,8 +67,8 @@ systemctl enable usb-switch
 
 and reboot afterwards. 
 
-### Wifi on DuoS/LicheeRVNano
-For the LicheeRVNano/DuoS board, Wifi is enabled. To connect to your wifi network, execute the following command and select "Activate a connection" and select your wifi network:
+### WiFi on DuoS/LicheeRVNano
+For the LicheeRVNano/DuoS board, WiFi is enabled. To connect to your wifi network, execute the following command (example, use ssid and password of your wifi network):
 ```
 touch /boot/wifi.sta
 echo "My WiFi" | tee /boot/wifi.ssid
