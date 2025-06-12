@@ -152,7 +152,7 @@ Available debian packages:
  Libs and samples for the ISP (vi/vo/venc/vdec etc.).
  - cvitek-osdrv-licheervnano-kvm  
  Additional kernel drivers (required for camera support etc.).
- - cvitek-tpusdk-licheervnano
+ - cvitek-tpusdk-licheervnano  
  Libs and samples for the TPU (AI)
  - device-key-licheervnano  
  Startup script that sets the Ethernet MAC address and hostname based on the hash off the device uuid.
