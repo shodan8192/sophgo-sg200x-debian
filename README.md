@@ -76,7 +76,7 @@ echo "Pa$$w0rd" /boot/wifi.pass
 ```
 
 ### Ethernet
-For Boards with eithernet, they should automatically get a IP address if your network has a DHCP Server. You can configure the 
+For Boards with ethernet, they should automatically get a IP address if your network has a DHCP Server. You can configure the 
 ethernet port in /etc/network/interfaces.d/end0
 
 ### Camera/ISP/Panel Support
