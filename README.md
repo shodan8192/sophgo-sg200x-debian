@@ -182,7 +182,7 @@ Available debian packages:
  Startup script to enable the USB switch.
  - wifi-builtin-licheervnano  
  Startup scripts to initialize the on-board WiFi.
- - zram-config-licheervnano
+ - zram-config-licheervnano  
  Scripts to setup compressed ZRAM devices for overlayfs and zswap.
 
 The package names are depending on the board you are using (licheervnano, duo256 or duos) and the variant (kvm = NanoKVM, e = all others).
