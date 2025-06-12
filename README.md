@@ -191,7 +191,7 @@ For example if you want the kernel for Milk-V Duo256 the package is called linux
 ## Building the Image
 To build a stock image with no modifications:
 ```
-podman run --privileged -it --rm -v ./configs/:/configs -v ./image:/output ghcr.io/scpcom/sophgo-sg200x-debian:master make BOARD=licheervnano image
+podman run --privileged -it --rm -v ./configs/:/configs -v ./image:/output ghcr.io/scpcom/sophgo-sg200x-debian:debian make BOARD=licheervnano image
 ```
 
 Replace the licheervnano with the board you want to build for:
@@ -201,12 +201,12 @@ Replace the licheervnano with the board you want to build for:
 
 If you want to create a image for the DuoS with EMMC, you can add "STORAGE_TYPE=emmc" to the make command:
 ```
-podman run --privileged -it --rm -v ./configs/:/configs -v ./image:/output ghcr.io/scpcom/sophgo-sg200x-debian:master make BOARD=duos STORAGE_TYPE=emmc image
+podman run --privileged -it --rm -v ./configs/:/configs -v ./image:/output ghcr.io/scpcom/sophgo-sg200x-debian:debian make BOARD=duos STORAGE_TYPE=emmc image
 ```
 
 If you want to create a image for the NanoKVM, you can add "VARIANT=kvm" to the make command:
 ```
-podman run --privileged -it --rm -v ./configs/:/configs -v ./image:/output ghcr.io/scpcom/sophgo-sg200x-debian:master make BOARD=licheervnano VARIANT=kvm image
+podman run --privileged -it --rm -v ./configs/:/configs -v ./image:/output ghcr.io/scpcom/sophgo-sg200x-debian:debian make BOARD=licheervnano VARIANT=kvm image
 ```
 
 The Docker image will build the image and place it in the image directory
