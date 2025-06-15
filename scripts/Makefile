@@ -247,7 +247,7 @@ $(BUILDDIR)/linux-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out Kernel for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
 	@git clone -b licheervnano-merged-5.10.y $(GIT_CLONE_OPTS) https://github.com/scpcom/linux.git $(BUILDDIR)/kernel
-	@cd $(BUILDDIR)/kernel && git checkout e3b55a8
+	@cd $(BUILDDIR)/kernel && git checkout 1ae0c14
 	@touch $@
 
 $(BUILDDIR)/linux-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $(BUILDDIR)/linux-prepare-checkout-stamp $(BUILDDIR)/$(BOARD)-$(VARIANT)/cvi_board_memmap.h
@@ -437,7 +437,7 @@ $(BUILDDIR)/buildroot-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out Buildroot for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
 	@git clone -b nanokvm-2025.02 $(GIT_CLONE_OPTS) --recursive https://github.com/scpcom/buildroot.git $(BUILDDIR)/buildroot
-	@cd $(BR_DIR) && git checkout 27239df
+	@cd $(BR_DIR) && git checkout 28b721a
 	@mkdir -p $(BUILDDIR)/ramdisk/tools
 	@git clone -b main https://github.com/scpcom/cvi-pinmux $(BUILDDIR)/ramdisk/tools/cvi_pinmux
 	@touch $@
@@ -505,7 +505,7 @@ $(BUILDDIR)/uboot-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out U-Boot for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
 	@git clone -b licheervnano-cvisdk-2021.10 $(GIT_CLONE_OPTS) https://github.com/scpcom/u-boot $(BUILDDIR)/u-boot
-	@cd $(BUILDDIR)/u-boot && git checkout 564b1c8
+	@cd $(BUILDDIR)/u-boot && git checkout c39be06
 	@touch $@
 
 $(BUILDDIR)/uboot-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $(BUILDDIR)/uboot-prepare-checkout-stamp $(BUILDDIR)/$(BOARD)-$(VARIANT)/cvi_board_memmap.h
@@ -611,7 +611,7 @@ $(BUILDDIR)/fsbl-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out FSBL for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
 	@git clone -b licheervnano-cvisdk $(GIT_CLONE_OPTS) https://github.com/scpcom/sophgo-fsbl $(BUILDDIR)/fsbl
-	@cd $(BUILDDIR)/fsbl && git checkout 24da299
+	@cd $(BUILDDIR)/fsbl && git checkout 1e73867
 	@touch $@
 
 $(BUILDDIR)/fsbl-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $(BUILDDIR)/fsbl-prepare-checkout-stamp $(BUILDDIR)/$(BOARD)-$(VARIANT)/cvi_board_memmap.h
