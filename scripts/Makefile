@@ -611,7 +611,7 @@ $(BUILDDIR)/fsbl-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out FSBL for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
 	@git clone -b licheervnano-cvisdk $(GIT_CLONE_OPTS) https://github.com/scpcom/sophgo-fsbl $(BUILDDIR)/fsbl
-	@cd $(BUILDDIR)/fsbl && git checkout 24da299
+	@cd $(BUILDDIR)/fsbl && git checkout 1e73867
 	@touch $@
 
 $(BUILDDIR)/fsbl-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $(BUILDDIR)/fsbl-prepare-checkout-stamp $(BUILDDIR)/$(BOARD)-$(VARIANT)/cvi_board_memmap.h
