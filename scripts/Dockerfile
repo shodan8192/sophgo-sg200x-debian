@@ -31,4 +31,4 @@ FROM builder as build_image
 WORKDIR /builder
 ADD scripts/ /builder/
 
-CMD /bin/bash
+CMD ["/bin/bash"]
