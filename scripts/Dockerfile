@@ -1,4 +1,4 @@
-FROM ubuntu:noble as builder
+FROM ubuntu:noble AS builder
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -27,7 +27,7 @@ RUN apt-get update \
 
 
 
-FROM builder as build_image
+FROM builder AS build_image
 WORKDIR /builder
 ADD scripts/ /builder/
 
