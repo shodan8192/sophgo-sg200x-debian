@@ -221,6 +221,7 @@ case "$1" in
   start)
     kvm_hw_detect
     kvm_hw_init
+    /kvmapp/kvm_system/kvm_system --oled-show-string "Booting"
   ;;
   re-detect)
     rm /etc/kvm/hw
