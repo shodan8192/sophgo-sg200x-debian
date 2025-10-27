@@ -1,6 +1,7 @@
 [Unit]
 Description=KVM OLED
-After=load-systemko.service
+Before=avahi-daemon.service
+Before=load-systemko.service
 Before=sensor-config.service
 Before=network.target
 StartLimitIntervalSec=0
