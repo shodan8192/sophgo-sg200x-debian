@@ -7,9 +7,6 @@ init_alpha_oled(){
     devmem 0x030010DC 32 0x2  # I2C1_SDA
     devmem 0x030010D4 32 0x3  # OLED_RST
 
-    devmem 0x03001070 32 0x2  # GPIOA 28 UART2 TX
-    devmem 0x03001074 32 0x2  # GPIOA 29 UART2 RX
-
     echo ${Alpha_OLED_RST_Pin} > /sys/class/gpio/export  # OLED_RST
     echo out > /sys/class/gpio/gpio${Alpha_OLED_RST_Pin}/direction
     echo 1 > /sys/class/gpio/gpio${Alpha_OLED_RST_Pin}/value
