@@ -19,6 +19,9 @@ init_beta_pcie_oled(){
     #Alpha_OLED_RST_Pin=371
     Beta_OLED_RST_Pin=502
 
+    rmmod spi_gpio
+    rmmod spi_bitbang
+
     devmem 0x0300103C 32 0x3  # GPIOA15 I2C5_SCL (bitbang)
     devmem 0x03001058 32 0x3  # GPIOA27 I2C5_SDA (bitbang)
     devmem 0x03001050 32 0x3  # GPIOA22 OLED_RST
