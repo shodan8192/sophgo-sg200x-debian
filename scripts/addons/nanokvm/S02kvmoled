@@ -5,10 +5,7 @@ init_alpha_oled(){
 
     devmem 0x030010D0 32 0x2  # I2C1_SCL
     devmem 0x030010DC 32 0x2  # I2C1_SDA
-    devmem 0x030010D4 32 0x3  # OLED_RST
-
-    devmem 0x03001070 32 0x2  # GPIOA 28 UART2 TX
-    devmem 0x03001074 32 0x2  # GPIOA 29 UART2 RX
+    devmem 0x030010D4 32 0x3  # GPIOE19 OLED_RST
 
     echo ${Alpha_OLED_RST_Pin} > /sys/class/gpio/export  # OLED_RST
     echo out > /sys/class/gpio/gpio${Alpha_OLED_RST_Pin}/direction
@@ -22,8 +19,12 @@ init_beta_pcie_oled(){
     #Alpha_OLED_RST_Pin=371
     Beta_OLED_RST_Pin=502
 
-    devmem 0x03001050 32 0x3  # GPIOA22
-    devmem 0x03001058 32 0x3  # GPIOA27
+    rmmod spi_gpio
+    rmmod spi_bitbang
+
+    devmem 0x0300103C 32 0x3  # GPIOA15 I2C5_SCL (bitbang)
+    devmem 0x03001058 32 0x3  # GPIOA27 I2C5_SDA (bitbang)
+    devmem 0x03001050 32 0x3  # GPIOA22 OLED_RST
 
     # beta/pcie hw
     #echo ${Alpha_OLED_RST_Pin} > /sys/class/gpio/unexport  # OLED_RST
