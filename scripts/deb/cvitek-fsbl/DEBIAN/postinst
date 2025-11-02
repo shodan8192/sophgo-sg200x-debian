@@ -21,6 +21,8 @@ if [ "X${panel}" != "X" ]; then
     echo "panel=${panel}" >> /boot/board
   fi
   grep -q showlogo /boot/uboot.env || mkenvimage -s 0x20000 -o /boot/uboot.env /etc/u-boot-initial-env
+elif [ -e /kvmapp ]; then
+  grep -q showlogo /boot/uboot.env || mkenvimage -s 0x20000 -o /boot/uboot.env /etc/u-boot-initial-env
 else
   ! grep -q showlogo /boot/uboot.env || mkenvimage -s 0x20000 -o /boot/uboot.env /etc/u-boot-initial-env
 fi
