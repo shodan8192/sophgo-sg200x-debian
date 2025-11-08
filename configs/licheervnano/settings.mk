@@ -16,14 +16,14 @@ PARTITION_FILE=partition_sd.xml
 STORAGE_TYPE=sd
 VARIANT?=e
 
-PACKAGES += " hostapd udhcpd wireless-regdb wpasupplicant cvi-pinmux-cv181x"
+PACKAGES += " hostapd udhcpd wireless-regdb wpasupplicant"
 
 IMAGE_ADDITIONS += "sensor-config"
 IMAGE_ADDITIONS += "device-key"
 IMAGE_ADDITIONS += "ethernet-builtin"
 IMAGE_ADDITIONS += "load-systemko"
-ifneq ("$(findstring kvm,$(VARIANT))","")
 IMAGE_ADDITIONS += "cvi-pinmux"
+ifneq ("$(findstring kvm,$(VARIANT))","")
 IMAGE_ADDITIONS += "nanokvm"
 else
 IMAGE_ADDITIONS += "maixapp"
