@@ -765,7 +765,7 @@ $(BUILDDIR)/image-customize-stamp: $(BUILDDIR)/image-addons-stamp $(BUILDDIR)/li
 
 $(BUILDDIR)/image-compile-stamp: $(BUILDDIR)/image-customize-stamp
 	@echo "$(COLOUR_GREEN)Compiling Image for $(BOARD)$(END_COLOUR)"
-	@[ "$(GIT_REF)" = "develop" ] ||rm -f $(BR_OUTPUT_DIR)/per-package
+	@[ "$(GIT_REF)" = "develop" ] || rm -rf $(BR_OUTPUT_DIR)/per-package
 	@rm -rf /tmp/genimage/
 	@cd $(BUILDDIR) && genimage --config /builder/genimage_$(STORAGE_TYPE).cfg --tmppath /tmp/genimage --rootpath /rootfs/
 	@rm -rf /tmp/genimage/
