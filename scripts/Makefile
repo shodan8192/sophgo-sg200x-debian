@@ -449,7 +449,7 @@ $(BUILDDIR)/buildroot-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out Buildroot for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
 	@git clone -b nanokvm-2025.02 $(GIT_CLONE_OPTS) --recursive https://github.com/scpcom/buildroot.git $(BUILDDIR)/buildroot
-	@cd $(BR_DIR) && git checkout 99b8839
+	@cd $(BR_DIR) && git checkout 49e6429
 	@mkdir -p $(BUILDDIR)/ramdisk/tools
 	@git clone -b main https://github.com/scpcom/cvi-pinmux $(BUILDDIR)/ramdisk/tools/cvi_pinmux
 	@touch $@
@@ -504,6 +504,10 @@ $(BUILDDIR)/buildroot-compile-stamp: $(BUILDDIR)/buildroot-prepare-configure-sta
 $(BUILDDIR)/buildroot-package-stamp: $(BUILDDIR)/buildroot-compile-stamp
 	@echo "$(COLOUR_GREEN)Packaging Buildroot for $(BOARD)$(END_COLOUR)"
 	@rm -rf $(BR_OUTPUT_DIR)/build/*/*/
+	@rm -f $(BR_OUTPUT_DIR)/build/*/*.a
+	@rm -f $(BR_OUTPUT_DIR)/build/*/*.o
+	@rm -f $(BR_OUTPUT_DIR)/build/*/*.so*
+	@rm -f $(BR_OUTPUT_DIR)/images/rootfs.tar*
 	@touch $@
 
 buildroot: $(BUILDDIR)/buildroot-package-stamp
@@ -761,6 +765,7 @@ $(BUILDDIR)/image-customize-stamp: $(BUILDDIR)/image-addons-stamp $(BUILDDIR)/li
 
 $(BUILDDIR)/image-compile-stamp: $(BUILDDIR)/image-customize-stamp
 	@echo "$(COLOUR_GREEN)Compiling Image for $(BOARD)$(END_COLOUR)"
+	@[ "$(GIT_REF)" = "develop" ] || rm -rf $(BR_OUTPUT_DIR)/per-package
 	@rm -rf /tmp/genimage/
 	@cd $(BUILDDIR) && genimage --config /builder/genimage_$(STORAGE_TYPE).cfg --tmppath /tmp/genimage --rootpath /rootfs/
 	@rm -rf /tmp/genimage/
