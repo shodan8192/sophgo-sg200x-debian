@@ -393,7 +393,7 @@ $(BUILDDIR)/middleware-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out Middleware for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
 	@git clone -b maix_mmf-cvisdk $(GIT_CLONE_OPTS) --recursive https://github.com/scpcom/sophgo-middleware.git $(BUILDDIR)/middleware
-	@cd $(BUILDDIR)/middleware && git checkout 3127d56
+	@cd $(BUILDDIR)/middleware && git checkout 0c2eb3c
 	@touch $@
 
 $(BUILDDIR)/middleware-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $(BUILDDIR)/middleware-prepare-checkout-stamp $(BUILDDIR)/osdrv-compile-stamp
