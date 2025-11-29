@@ -137,6 +137,7 @@ drivers/net/wireless \
 drivers/pwm \
 drivers/rtc \
 drivers/spi \
+drivers/staging/fbtft \
 drivers/video/backlight \
 fs/efivarfs \
 net/ipv4 \
