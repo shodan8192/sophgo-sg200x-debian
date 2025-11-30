@@ -96,7 +96,7 @@ The images, by default, allocate minimum amount of memory for the ION heap to us
 Support is disabled on my images because the small C906 core is used by ISP.
 
 ### LCD Panel Support
-If you have a LCD panel connected you can install the matching bootloader.
+If you have a DSI LCD panel connected you can install the matching bootloader.
 
 LicheeRV Nano
 
@@ -130,6 +130,19 @@ apt-get remove cvitek-fsbl-licheervnano
 You may also want to enable the FB driver:
 ```
 touch /boot/fb
+```
+
+If you have a SPI LCD panel connected you can enable the matching driver.
+Additional changes to the DTS file maybe required.
+
+st7789 on LicheeRV Nano:
+```
+echo st7789 > /boot/fb
+```
+
+milkv_st7789v on Milk-V DuoS:
+```
+echo milkv_st7789v > /boot/fb
 ```
 
 ### Additional Packages
