@@ -133,16 +133,22 @@ touch /boot/fb
 ```
 
 If you have a SPI LCD panel connected you can enable the matching driver.
-Additional changes to the DTS file maybe required.
 
-st7789 on LicheeRV Nano:
+Additional changes to the DTS file maybe required if not using ST7789x based panel.
+
+Available panel parameters for st7789x:
+ - st7789
+ - st7789v_milkv
+ - st7789v_weactstudio
+
+st7789 on spi2 of LicheeRV Nano:
 ```
-echo st7789 > /boot/fb
+echo "st7789x panel=st7789" > /boot/fb
 ```
 
-milkv_st7789v on Milk-V DuoS:
+milkv_st7789v on spi3 of Milk-V DuoS:
 ```
-echo milkv_st7789v > /boot/fb
+echo "st7789x panel=st7789v_milkv" > /boot/fb
 ```
 
 ### Additional Packages
