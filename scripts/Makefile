@@ -512,6 +512,7 @@ $(BUILDDIR)/buildroot-package-stamp: $(BUILDDIR)/buildroot-compile-stamp
 	@rm -f $(BR_OUTPUT_DIR)/build/*/*.a
 	@rm -f $(BR_OUTPUT_DIR)/build/*/*.o
 	@rm -f $(BR_OUTPUT_DIR)/build/*/*.so*
+	@[ "$(GIT_REF)" = "develop" ] || rm -rf $(BR_OUTPUT_DIR)/host/lib/go*/
 	@rm -f $(BR_OUTPUT_DIR)/images/rootfs.tar*
 	@touch $@
 
