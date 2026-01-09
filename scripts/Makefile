@@ -234,7 +234,7 @@ endef
 $(BUILDDIR)/$(BOARD)-$(VARIANT)/memmap.py:
 	@$(eval ISP_MEM_BASE_SIZE=$(shell expr $(ION_SIZE) - 4))
 	@mkdir -p $(BUILDDIR)/$(BOARD)-$(VARIANT)
-	@cp -p /configs/$(BOARD_CFG)/memmap.py $@
+	@cp /configs/$(BOARD_CFG)/memmap.py $@
 	@sed -i s/'ION_SIZE = .* . SIZE_1M'/'ION_SIZE = $(ION_SIZE) * SIZE_1M'/g $@
 	@if [ $(ISP_MEM_BASE_SIZE) -le 0 ]; then \
 		sed -i s/'H26X_BITSTREAM_SIZE = .* . SIZE_1M'/'H26X_BITSTREAM_SIZE = 0 * SIZE_1M'/g $@ ; \
