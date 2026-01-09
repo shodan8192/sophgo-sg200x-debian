@@ -120,15 +120,6 @@ CONFIG_SENSOR_OV_OV5647=y \
 CONFIG_SENSOR_SMS_SC035GS=y \
 CONFIG_SENSOR_LONTIUM_LT6911=y
 
-BR_BOARD = cvitek_$(SDK_CHIP)_$(SDK_VER)
-BR_DEFCONFIG = $(BR_BOARD)_defconfig
-BR_DIR = $(BUILDDIR)/buildroot
-BR_OUTPUT_DIR = $(BR_DIR)/output/$(BR_BOARD)
-
-BUILDROOT_ENV = CROSS_COMPILE_KERNEL=$(patsubst "%",%,$(SDK_CROSS_COMPILE_PREFIX)) \
-CROSS_COMPILE_SDK=$(patsubst "%",%,$(SDK_CROSS_COMPILE_PREFIX)) \
-TARGET_OUTPUT_DIR=$(BR_OUTPUT_DIR)
-
 KO_DIRS = drivers/i2c \
 drivers/input/touchscreen \
 drivers/media/usb/gspca \
@@ -163,6 +154,17 @@ endif
 
 BOARD_EXT ?= $(BOARD)
 
+CHIP_VENDOR ?= cvitek
+
+BR_BOARD = $(CHIP_VENDOR)_$(SDK_CHIP)_$(SDK_VER)
+BR_DEFCONFIG = $(BR_BOARD)_defconfig
+BR_DIR = $(BUILDDIR)/buildroot
+BR_OUTPUT_DIR = $(BR_DIR)/output/$(BR_BOARD)
+
+BUILDROOT_ENV = CROSS_COMPILE_KERNEL=$(patsubst "%",%,$(SDK_CROSS_COMPILE_PREFIX)) \
+CROSS_COMPILE_SDK=$(patsubst "%",%,$(SDK_CROSS_COMPILE_PREFIX)) \
+TARGET_OUTPUT_DIR=$(BR_OUTPUT_DIR)
+
 FSBL_MAKE_OPTS = $(UBOOT_MAKE_OPTS) \
 CHIP_ARCH=$(CHIP) \
 BOOT_CPU=$(BOOT_CPU) \
@@ -184,11 +186,11 @@ endif
 
 MIDDLEWARE_ENV = $(OSDRV_ENV) $(SENSOR_ENV)
 
-BSPDEPENDS = cvitek-middleware-$(BOARD)\
- cvitek-osdrv-$(BOARD)-$(VARIANT)\
+BSPDEPENDS = $(CHIP_VENDOR)-middleware-$(BOARD)\
+ $(CHIP_VENDOR)-osdrv-$(BOARD)-$(VARIANT)\
  linux-headers-$(BOARD)-$(VARIANT)\
  linux-image-$(BOARD)-$(VARIANT)
-BSPRECOMMENDS = cvitek-fsbl-$(BOARD_EXT)
+BSPRECOMMENDS = $(CHIP_VENDOR)-fsbl-$(BOARD_EXT)
 BSPFILTER =
 
 include $(wildcard /builder/addons/*/addon.mk)
@@ -267,10 +269,10 @@ $(BUILDDIR)/linux-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp
 	@$(foreach file, $(wildcard /configs/common/patches/linux/*.patch), cd $(BUILDDIR)/kernel && git apply --ignore-whitespace $(file);)
 	@$(foreach file, $(wildcard /configs/$(BOARD_CFG)/patches/linux/*.patch), cd $(BUILDDIR)/kernel && git apply --ignore-whitespace $(file);)
 	@cp /configs/$(BOARD_CFG)/linux/defconfig $(BUILDDIR)/kernel/arch/$(KERNEL_ARCH)/configs/${BOARD}_defconfig
-	@$(foreach file, $(wildcard /configs/common/dts/$(CHIP)/*), cp $(file) $(BUILDDIR)/kernel/arch/$(KERNEL_ARCH)/boot/dts/cvitek/;)
-	@$(foreach file, $(wildcard /configs/common/dts/$(CHIP)_$(UBOOT_ARCH)/*), cp $(file) $(BUILDDIR)/kernel/arch/$(KERNEL_ARCH)/boot/dts/cvitek/;)
-	@$(foreach file, $(wildcard /configs/$(BOARD_CFG)/dts/*), cp $(file) $(BUILDDIR)/kernel/arch/$(KERNEL_ARCH)/boot/dts/cvitek/;)
-	@cp -p $(BUILDDIR)/$(BOARD)-$(VARIANT)/cvi_board_memmap.h $(BUILDDIR)/kernel/arch/$(KERNEL_ARCH)/boot/dts/cvitek/cvi_board_memmap.h
+	@$(foreach file, $(wildcard /configs/common/dts/$(CHIP)/*), cp $(file) $(BUILDDIR)/kernel/arch/$(KERNEL_ARCH)/boot/dts/$(CHIP_VENDOR)/;)
+	@$(foreach file, $(wildcard /configs/common/dts/$(CHIP)_$(UBOOT_ARCH)/*), cp $(file) $(BUILDDIR)/kernel/arch/$(KERNEL_ARCH)/boot/dts/$(CHIP_VENDOR)/;)
+	@$(foreach file, $(wildcard /configs/$(BOARD_CFG)/dts/*), cp $(file) $(BUILDDIR)/kernel/arch/$(KERNEL_ARCH)/boot/dts/$(CHIP_VENDOR)/;)
+	@cp -p $(BUILDDIR)/$(BOARD)-$(VARIANT)/cvi_board_memmap.h $(BUILDDIR)/kernel/arch/$(KERNEL_ARCH)/boot/dts/$(CHIP_VENDOR)/cvi_board_memmap.h
 	@touch $@
 
 $(BUILDDIR)/linux-prepare-configure-stamp: $(BUILDDIR)/linux-prepare-patch-stamp
@@ -313,7 +315,7 @@ $(BUILDDIR)/linux-package-stamp: $(BUILDDIR)/linux-compile-stamp
 	@sed -i 's/Version: 1.0.0-1/Version: $(LINUXMETAVERSION)/' $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/DEBIAN/control
 	@sed -i 's/Package: linux-image-sg200x/Package: linux-image-$(BOARD)-$(VARIANT)/' $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/DEBIAN/control
 	@sed -i 's/Depends: linux-image-.*/Depends: linux-image-$(LINUXMETAVERSION)/' $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/DEBIAN/control
-	@sed -i 's/Recommends: cvitek-osdrv-.*/Recommends: cvitek-fsbl-$(BOARD_EXT), cvitek-osdrv-$(LINUXMETAVERSION)/' $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/DEBIAN/control
+	@sed -i 's/Recommends: cvitek-osdrv-.*/Recommends: $(CHIP_VENDOR)-fsbl-$(BOARD_EXT), $(CHIP_VENDOR)-osdrv-$(LINUXMETAVERSION)/' $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/DEBIAN/control
 	@sed -i 's/linux-latest-modules-.*licheervnano,/linux-latest-modules-$(LINUXMETAVERSION),/' $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION)/DEBIAN/control
 	@cd $(BUILDDIR)/package/ && dpkg-deb --build linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION) linux-image-$(BOARD)-$(VARIANT)_$(LINUXMETAVERSION)_$(KERNEL_DEB_ARCH).deb
 	@cp $(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)_$(LINUXMETAVERSION)_$(KERNEL_DEB_ARCH).deb /output/
@@ -354,35 +356,38 @@ $(BUILDDIR)/osdrv-package-stamp: $(BUILDDIR)/osdrv-compile-stamp
 	@echo "$(COLOUR_GREEN)Packaging OSdrv for $(BOARD)$(END_COLOUR)"
 	@$(eval KERNEL_DEB_ARCH=$(shell grep -m1 '^Architecture: ' $(KERNEL_OUTPUT_DIR)/debian/control | cut -d ' ' -f 2))
 	@$(eval KERNELRELEASE=$(shell basename $(KERNEL_OUTPUT_DIR)/debian/linux-headers/usr/share/doc/linux-headers-* | cut -d '-' -f 3-))
-	@mkdir -p $(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION)
-	@cp -r /builder/deb/cvitek-osdrv/* $(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION)/
-	@mkdir -pv $(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION)/mnt/system/ko/$(KERNELRELEASE)/
-	@cp -p $(BUILDDIR)/osdrv/ko/*.ko $(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION)/mnt/system/ko/$(KERNELRELEASE)/
-	@rm -f $(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION)/mnt/system/ko/$(KERNELRELEASE)/soph_clock_cooling.ko
-	@rm -f $(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION)/mnt/system/ko/$(KERNELRELEASE)/soph_pwm.ko
-	@rm -f $(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION)/mnt/system/ko/$(KERNELRELEASE)/soph_rtc.ko
-	@rm -f $(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION)/mnt/system/ko/$(KERNELRELEASE)/soph_saradc.ko
-	@rm -f $(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION)/mnt/system/ko/$(KERNELRELEASE)/soph_wdt.ko
-	@mkdir -pv $(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION)/mnt/system/ko/$(KERNELRELEASE)/3rd/
-	@cp -p $(BUILDDIR)/osdrv/ko/3rd/*.ko $(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION)/mnt/system/ko/$(KERNELRELEASE)/3rd/
-	@sed -i 's/Architecture: riscv64/Architecture: $(KERNEL_DEB_ARCH)/' $(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION)/DEBIAN/control
-	@sed -i 's/Version: 1.0.0/Version: $(OSDRVVERSION)-$(KERNELRELEASE)/' $(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION)/DEBIAN/control
-	@sed -i 's/Package: cvitek-osdrv/Package: cvitek-osdrv-$(KERNELRELEASE)/' $(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION)/DEBIAN/control
-	@cd $(BUILDDIR)/package/ && dpkg-deb --build cvitek-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION) cvitek-osdrv-$(KERNELRELEASE)_$(OSDRVVERSION)-$(KERNELRELEASE)_$(KERNEL_DEB_ARCH).deb
-	@cp $(BUILDDIR)/package/cvitek-osdrv-$(KERNELRELEASE)_$(OSDRVVERSION)-$(KERNELRELEASE)_$(KERNEL_DEB_ARCH).deb /output/
-	@echo "$(COLOUR_GREEN)Packaging cvitek-osdrv-sg200x for $(BOARD)$(END_COLOUR)"
-	@mkdir -p $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(VARIANT)-$(KERNELRELEASE)
-	@cp -r /builder/deb/linux-image-sg200x/* $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(VARIANT)-$(KERNELRELEASE)/
-	@mkdir -pv $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(VARIANT)-$(KERNELRELEASE)/usr/share/doc/cvitek-osdrv-$(BOARD)-$(VARIANT)/
-	@cp -p $(KERNEL_OUTPUT_DIR)/debian/linux-image/usr/share/doc/linux-image-*/* $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(VARIANT)-$(KERNELRELEASE)/usr/share/doc/cvitek-osdrv-$(BOARD)-$(VARIANT)/
-	@sed -i 's/Architecture: riscv64/Architecture: $(KERNEL_DEB_ARCH)/' $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(VARIANT)-$(KERNELRELEASE)/DEBIAN/control
-	@sed -i 's/Version: 1.0.0-1/Version: $(OSDRVVERSION)-$(KERNELRELEASE)/' $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(VARIANT)-$(KERNELRELEASE)/DEBIAN/control
-	@sed -i 's/Package: linux-image-sg200x/Package: cvitek-osdrv-$(BOARD)-$(VARIANT)/' $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(VARIANT)-$(KERNELRELEASE)/DEBIAN/control
-	@sed -i 's/Depends: linux-image-.*/Depends: cvitek-osdrv-$(KERNELRELEASE)/' $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(VARIANT)-$(KERNELRELEASE)/DEBIAN/control
-	@sed -i 's/Recommends: cvitek-osdrv-.*/Recommends: linux-image-$(KERNELRELEASE)/' $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(VARIANT)-$(KERNELRELEASE)/DEBIAN/control
-	@sed -i  '/Provides: .*/d' $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(VARIANT)-$(KERNELRELEASE)/DEBIAN/control
-	@cd $(BUILDDIR)/package/ && dpkg-deb --build cvitek-osdrv-$(BOARD)-$(VARIANT)-$(KERNELRELEASE) cvitek-osdrv-$(BOARD)-$(VARIANT)_$(OSDRVVERSION)-$(KERNELRELEASE)_$(KERNEL_DEB_ARCH).deb
-	@cp $(BUILDDIR)/package/cvitek-osdrv-$(BOARD)-$(VARIANT)_$(OSDRVVERSION)-$(KERNELRELEASE)_$(KERNEL_DEB_ARCH).deb /output/
+	@$(eval OSDRV_PACKAGE_DIR=$(BUILDDIR)/package/$(CHIP_VENDOR)-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION))
+	@$(eval OSDRV_META_DIR=$(BUILDDIR)/package/$(CHIP_VENDOR)-osdrv-$(BOARD)-$(VARIANT)-$(KERNELRELEASE))
+	@$(eval OSDRV_TARGET_DIR=/mnt/system/ko/$(KERNELRELEASE))
+	@mkdir -p $(OSDRV_PACKAGE_DIR)
+	@cp -r /builder/deb/cvitek-osdrv/* $(OSDRV_PACKAGE_DIR)/
+	@mkdir -pv $(OSDRV_PACKAGE_DIR)$(OSDRV_TARGET_DIR)/
+	@cp -p $(BUILDDIR)/osdrv/ko/*.ko $(OSDRV_PACKAGE_DIR)$(OSDRV_TARGET_DIR)/
+	@rm -f $(OSDRV_PACKAGE_DIR)$(OSDRV_TARGET_DIR)/soph_clock_cooling.ko
+	@rm -f $(OSDRV_PACKAGE_DIR)$(OSDRV_TARGET_DIR)/soph_pwm.ko
+	@rm -f $(OSDRV_PACKAGE_DIR)$(OSDRV_TARGET_DIR)/soph_rtc.ko
+	@rm -f $(OSDRV_PACKAGE_DIR)$(OSDRV_TARGET_DIR)/soph_saradc.ko
+	@rm -f $(OSDRV_PACKAGE_DIR)$(OSDRV_TARGET_DIR)/soph_wdt.ko
+	@mkdir -pv $(OSDRV_PACKAGE_DIR)$(OSDRV_TARGET_DIR)/3rd/
+	@cp -p $(BUILDDIR)/osdrv/ko/3rd/*.ko $(OSDRV_PACKAGE_DIR)$(OSDRV_TARGET_DIR)/3rd/
+	@sed -i 's/Architecture: riscv64/Architecture: $(KERNEL_DEB_ARCH)/' $(OSDRV_PACKAGE_DIR)/DEBIAN/control
+	@sed -i 's/Version: 1.0.0/Version: $(OSDRVVERSION)-$(KERNELRELEASE)/' $(OSDRV_PACKAGE_DIR)/DEBIAN/control
+	@sed -i 's/Package: cvitek-osdrv/Package: $(CHIP_VENDOR)-osdrv-$(KERNELRELEASE)/' $(OSDRV_PACKAGE_DIR)/DEBIAN/control
+	@cd $(BUILDDIR)/package/ && dpkg-deb --build $(CHIP_VENDOR)-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION) $(CHIP_VENDOR)-osdrv-$(KERNELRELEASE)_$(OSDRVVERSION)-$(KERNELRELEASE)_$(KERNEL_DEB_ARCH).deb
+	@cp $(BUILDDIR)/package/$(CHIP_VENDOR)-osdrv-$(KERNELRELEASE)_$(OSDRVVERSION)-$(KERNELRELEASE)_$(KERNEL_DEB_ARCH).deb /output/
+	@echo "$(COLOUR_GREEN)Packaging $(CHIP_VENDOR)-osdrv-$(CHIP) for $(BOARD)$(END_COLOUR)"
+	@mkdir -p $(OSDRV_META_DIR)
+	@cp -r /builder/deb/linux-image-sg200x/* $(OSDRV_META_DIR)/
+	@mkdir -pv $(OSDRV_META_DIR)/usr/share/doc/$(CHIP_VENDOR)-osdrv-$(BOARD)-$(VARIANT)/
+	@cp -p $(KERNEL_OUTPUT_DIR)/debian/linux-image/usr/share/doc/linux-image-*/* $(OSDRV_META_DIR)/usr/share/doc/$(CHIP_VENDOR)-osdrv-$(BOARD)-$(VARIANT)/
+	@sed -i 's/Architecture: riscv64/Architecture: $(KERNEL_DEB_ARCH)/' $(OSDRV_META_DIR)/DEBIAN/control
+	@sed -i 's/Version: 1.0.0-1/Version: $(OSDRVVERSION)-$(KERNELRELEASE)/' $(OSDRV_META_DIR)/DEBIAN/control
+	@sed -i 's/Package: linux-image-sg200x/Package: $(CHIP_VENDOR)-osdrv-$(BOARD)-$(VARIANT)/' $(OSDRV_META_DIR)/DEBIAN/control
+	@sed -i 's/Depends: linux-image-.*/Depends: $(CHIP_VENDOR)-osdrv-$(KERNELRELEASE)/' $(OSDRV_META_DIR)/DEBIAN/control
+	@sed -i 's/Recommends: cvitek-osdrv-.*/Recommends: linux-image-$(KERNELRELEASE)/' $(OSDRV_META_DIR)/DEBIAN/control
+	@sed -i  '/Provides: .*/d' $(OSDRV_META_DIR)/DEBIAN/control
+	@cd $(BUILDDIR)/package/ && dpkg-deb --build $(CHIP_VENDOR)-osdrv-$(BOARD)-$(VARIANT)-$(KERNELRELEASE) $(CHIP_VENDOR)-osdrv-$(BOARD)-$(VARIANT)_$(OSDRVVERSION)-$(KERNELRELEASE)_$(KERNEL_DEB_ARCH).deb
+	@cp $(BUILDDIR)/package/$(CHIP_VENDOR)-osdrv-$(BOARD)-$(VARIANT)_$(OSDRVVERSION)-$(KERNELRELEASE)_$(KERNEL_DEB_ARCH).deb /output/
 	@touch $@
 
 osdrv: $(BUILDDIR)/osdrv-package-stamp
@@ -431,15 +436,16 @@ $(BUILDDIR)/middleware-package-stamp: $(BUILDDIR)/middleware-compile-stamp
 	@echo "$(COLOUR_GREEN)Packaging Middleware for $(BOARD)$(END_COLOUR)"
 	@rm -rf $(BUILDDIR)/middleware/3rdparty/tmp/
 	@$(eval MV=$(shell cd $(BUILDDIR)/middleware && git log -1 --format="%at" | xargs -I{} date -d @{} +-%Y%m%d-${KERNELREV}))
-	@mkdir -p $(BUILDDIR)/package/cvitek-middleware-$(BOARD)-$(MIDDLEWAREVERSION)
-	@cp -r /builder/deb/cvitek-middleware/* $(BUILDDIR)/package/cvitek-middleware-$(BOARD)-$(MIDDLEWAREVERSION)/
-	@mkdir -pv $(BUILDDIR)/package/cvitek-middleware-$(BOARD)-$(MIDDLEWAREVERSION)/mnt/system/
-	@rsync -avpPxH $(BUILDDIR)/middleware/install/system/ $(BUILDDIR)/package/cvitek-middleware-$(BOARD)-$(MIDDLEWAREVERSION)/mnt/system/
-	@sed -i 's/Architecture: riscv64/Architecture: $(DEB_ARCH)/' $(BUILDDIR)/package/cvitek-middleware-$(BOARD)-$(MIDDLEWAREVERSION)/DEBIAN/control
-	@sed -i 's/Version: 1.0.0/Version: $(MIDDLEWAREVERSION)$(MV)/' $(BUILDDIR)/package/cvitek-middleware-$(BOARD)-$(MIDDLEWAREVERSION)/DEBIAN/control
-	@sed -i 's/Package: cvitek-middleware/Package: cvitek-middleware-$(BOARD)/' $(BUILDDIR)/package/cvitek-middleware-$(BOARD)-$(MIDDLEWAREVERSION)/DEBIAN/control
-	@cd $(BUILDDIR)/package/ && dpkg-deb --build cvitek-middleware-$(BOARD)-$(MIDDLEWAREVERSION) cvitek-middleware-$(BOARD)_$(MIDDLEWAREVERSION)$(MV)_$(DEB_ARCH).deb
-	@cp $(BUILDDIR)/package/cvitek-middleware-$(BOARD)_$(MIDDLEWAREVERSION)$(MV)_$(DEB_ARCH).deb /output/
+	@$(eval MIDDLEWARE_PACKAGE_DIR=$(BUILDDIR)/package/$(CHIP_VENDOR)-middleware-$(BOARD)-$(MIDDLEWAREVERSION))
+	@mkdir -p $(MIDDLEWARE_PACKAGE_DIR)
+	@cp -r /builder/deb/cvitek-middleware/* $(MIDDLEWARE_PACKAGE_DIR)/
+	@mkdir -pv $(MIDDLEWARE_PACKAGE_DIR)/mnt/system/
+	@rsync -avpPxH $(BUILDDIR)/middleware/install/system/ $(MIDDLEWARE_PACKAGE_DIR)/mnt/system/
+	@sed -i 's/Architecture: riscv64/Architecture: $(DEB_ARCH)/' $(MIDDLEWARE_PACKAGE_DIR)/DEBIAN/control
+	@sed -i 's/Version: 1.0.0/Version: $(MIDDLEWAREVERSION)$(MV)/' $(MIDDLEWARE_PACKAGE_DIR)/DEBIAN/control
+	@sed -i 's/Package: cvitek-middleware/Package: $(CHIP_VENDOR)-middleware-$(BOARD)/' $(MIDDLEWARE_PACKAGE_DIR)/DEBIAN/control
+	@cd $(BUILDDIR)/package/ && dpkg-deb --build $(CHIP_VENDOR)-middleware-$(BOARD)-$(MIDDLEWAREVERSION) $(CHIP_VENDOR)-middleware-$(BOARD)_$(MIDDLEWAREVERSION)$(MV)_$(DEB_ARCH).deb
+	@cp $(BUILDDIR)/package/$(CHIP_VENDOR)-middleware-$(BOARD)_$(MIDDLEWAREVERSION)$(MV)_$(DEB_ARCH).deb /output/
 	@touch $@
 
 middleware: $(BUILDDIR)/middleware-package-stamp
@@ -491,7 +497,7 @@ $(BUILDDIR)/buildroot-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-s
 	@if [ "$(BOARD)" = "duos" ]; then \
 		sed -i s/'BR2_PACKAGE_DUO_PINMUX_DUO256M=y'/'BR2_PACKAGE_DUO_PINMUX_DUOS=y'/g $(BR_DIR)/configs/$(BR_DEFCONFIG) ; \
 	fi
-	@mkdir -pv $(BUILDDIR)/buildroot/board/cvitek/$(SDK_CHIP)/overlay/usr/share/fw_vcodec
+	@mkdir -pv $(BUILDDIR)/buildroot/board/$(CHIP_VENDOR)/$(SDK_CHIP)/overlay/usr/share/fw_vcodec
 	@mkdir -pv $(BUILDDIR)/ramdisk/tools/cvi_pinmux
 	@touch $@
 
@@ -538,7 +544,7 @@ $(BUILDDIR)/uboot-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp
 	@$(foreach file, $(wildcard /configs/common/dts/$(CHIP)_$(UBOOT_ARCH)/*), cp $(file) $(BUILDDIR)/u-boot/arch/$(UBOOT_ARCH)/dts/;)
 	@$(foreach file, $(wildcard /configs/$(BOARD_CFG)/dts/*), cp $(file) $(BUILDDIR)/u-boot/arch/$(UBOOT_ARCH)/dts/;)
 	@cp /configs/$(BOARD_CFG)/u-boot/cvitek.h $(BUILDDIR)/u-boot/include/cvitek.h
-	@cp /configs/$(BOARD_CFG)/u-boot/cvi_board_init.c $(BUILDDIR)/u-boot/board/cvitek/cvi_board_init.c
+	@cp /configs/$(BOARD_CFG)/u-boot/cvi_board_init.c $(BUILDDIR)/u-boot/board/$(CHIP_VENDOR)/cvi_board_init.c
 	@cp -p $(BUILDDIR)/$(BOARD)-$(VARIANT)/cvi_board_memmap.h $(BUILDDIR)/u-boot/include/cvi_board_memmap.h
 	@python3 /builder/python/mkcvipart.py /configs/$(BOARD_CFG)/$(PARTITION_FILE) $(BUILDDIR)/u-boot/include/
 	@python3 /builder/python/mk_imgHeader.py /configs/$(BOARD_CFG)/$(PARTITION_FILE) $(BUILDDIR)/u-boot/include/ 
@@ -655,16 +661,16 @@ endef
 define fsbl_package_action
 	@echo "$(COLOUR_GREEN)Packaging FSBL for $(BOARD) ${1}$(END_COLOUR)"
 	@$(eval UV=$(shell cd $(BUILDDIR)/u-boot && git log -1 --format="%at" | xargs -I{} date -d @{} +-%Y%m%d-${KERNELREV}))
-	@$(eval FSBL_PACKAGE_NAME=$(shell echo "cvitek-fsbl-$(BOARD_EXT)${2}"))
-	@$(eval FSBL_PACKAGE_DIR=$(shell echo "$(BUILDDIR)/package/$(FSBL_PACKAGE_NAME)-$(FSBLVERSION)"))
+	@$(eval FSBL_PACKAGE_NAME=$(CHIP_VENDOR)-fsbl-$(BOARD_EXT)${2})
+	@$(eval FSBL_PACKAGE_DIR=$(BUILDDIR)/package/$(FSBL_PACKAGE_NAME)-$(FSBLVERSION))
 	@$(eval PANEL_NAME_FSBL=$(shell echo '${2}' | cut -d '-' -f 2- | tr '-' '_'))
 	@mkdir -p $(FSBL_PACKAGE_DIR)
 	@cp -r /builder/deb/cvitek-fsbl/* $(FSBL_PACKAGE_DIR)/
-	@mkdir -p $(FSBL_PACKAGE_DIR)/usr/lib/cvitek-fsbl/$(BOARD_EXT)${2}/
-	@cp $(BUILDDIR)/fip.bin $(FSBL_PACKAGE_DIR)/usr/lib/cvitek-fsbl/$(BOARD_EXT)${2}/
-	@cp $(BUILDDIR)/u-boot-initial-env $(FSBL_PACKAGE_DIR)/usr/lib/cvitek-fsbl/$(BOARD_EXT)${2}/
-	@[ ! -e /configs/$(BOARD_CFG)/logo.jpeg ] || cp /configs/$(BOARD_CFG)/logo.jpeg $(FSBL_PACKAGE_DIR)/usr/lib/cvitek-fsbl/$(BOARD_EXT)${2}/
-	@sed -i 's|cvitek-fsbl/licheervnano|cvitek-fsbl/$(BOARD_EXT)${2}|g' $(FSBL_PACKAGE_DIR)/DEBIAN/postinst
+	@mkdir -p $(FSBL_PACKAGE_DIR)/usr/lib/$(CHIP_VENDOR)-fsbl/$(BOARD_EXT)${2}/
+	@cp $(BUILDDIR)/fip.bin $(FSBL_PACKAGE_DIR)/usr/lib/$(CHIP_VENDOR)-fsbl/$(BOARD_EXT)${2}/
+	@cp $(BUILDDIR)/u-boot-initial-env $(FSBL_PACKAGE_DIR)/usr/lib/$(CHIP_VENDOR)-fsbl/$(BOARD_EXT)${2}/
+	@[ ! -e /configs/$(BOARD_CFG)/logo.jpeg ] || cp /configs/$(BOARD_CFG)/logo.jpeg $(FSBL_PACKAGE_DIR)/usr/lib/$(CHIP_VENDOR)-fsbl/$(BOARD_EXT)${2}/
+	@sed -i 's|cvitek-fsbl/licheervnano|$(CHIP_VENDOR)-fsbl/$(BOARD_EXT)${2}|g' $(FSBL_PACKAGE_DIR)/DEBIAN/postinst
 	@[ "X$(PANEL_NAME_FSBL)" = "X" ] || sed -i s/'^panel='/'panel='$(PANEL_NAME_FSBL)/g $(FSBL_PACKAGE_DIR)/DEBIAN/postinst
 	@chmod ugo+rx $(FSBL_PACKAGE_DIR)/DEBIAN/postinst
 	@sed -i 's/Architecture: riscv64/Architecture: $(DEB_ARCH)/' $(FSBL_PACKAGE_DIR)/DEBIAN/control
@@ -674,8 +680,8 @@ define fsbl_package_action
 		sed -i '/Provides: .*/d' $(FSBL_PACKAGE_DIR)/DEBIAN/control && \
 		sed -i '/Replaces: .*/d' $(FSBL_PACKAGE_DIR)/DEBIAN/control ; \
 	else \
-		sed -i 's/Provides: .*/Provides: cvitek-fsbl-$(BOARD)/' $(FSBL_PACKAGE_DIR)/DEBIAN/control && \
-		sed -i 's/Replaces: .*/Replaces: cvitek-fsbl-$(BOARD)/' $(FSBL_PACKAGE_DIR)/DEBIAN/control ; \
+		sed -i 's/Provides: .*/Provides: $(CHIP_VENDOR)-fsbl-$(BOARD)/' $(FSBL_PACKAGE_DIR)/DEBIAN/control && \
+		sed -i 's/Replaces: .*/Replaces: $(CHIP_VENDOR)-fsbl-$(BOARD)/' $(FSBL_PACKAGE_DIR)/DEBIAN/control ; \
 	fi
 	@cd $(BUILDDIR)/package/ && dpkg-deb --build $(FSBL_PACKAGE_NAME)-$(FSBLVERSION) $(FSBL_PACKAGE_NAME)_$(FSBLVERSION)$(UV)_$(DEB_ARCH).deb
 	@cp $(BUILDDIR)/package/$(FSBL_PACKAGE_NAME)_$(FSBLVERSION)$(UV)_$(DEB_ARCH).deb /output/
@@ -701,7 +707,7 @@ fsbl: $(FSBL_TARGETS)
 
 fsbl-clean:
 	@rm -rf $(BUILDDIR)/fsbl
-	@rm -rf $(BUILDDIR)/package/cvitek-fsbl-*
+	@rm -rf $(BUILDDIR)/package/$(CHIP_VENDOR)-fsbl-*
 	@rm -f $(BUILDDIR)/fsbl-*-stamp
 
 
@@ -726,7 +732,7 @@ $(BUILDDIR)/image-addons-stamp: $(BUILDDIR)/image-prepare-stamp $(FSBL_TARGETS) 
 	@sed -i 's/Version: 1.0.0-1/Version: $(BSPVERSION)/' $(BUILDDIR)/package/board-support-$(BOARD)-$(VARIANT)-$(BSPVERSION)/DEBIAN/control
 	@sed -i 's/Package: board-support-sg200x/Package: board-support-$(BOARD)-$(VARIANT)/' $(BUILDDIR)/package/board-support-$(BOARD)-$(VARIANT)-$(BSPVERSION)/DEBIAN/control
 	@sed -i 's/Depends: .*/Depends: $(_BSPDEPENDS)/' $(BUILDDIR)/package/board-support-$(BOARD)-$(VARIANT)-$(BSPVERSION)/DEBIAN/control
-	@sed -i 's|cvitek-osdrv-$(BOARD)-$(VARIANT)|cvitek-osdrv-$(BOARD)-$(VARIANT):$(KERNEL_DEB_ARCH)|g' $(BUILDDIR)/package/board-support-$(BOARD)-$(VARIANT)-$(BSPVERSION)/DEBIAN/control
+	@sed -i 's|$(CHIP_VENDOR)-osdrv-$(BOARD)-$(VARIANT)|$(CHIP_VENDOR)-osdrv-$(BOARD)-$(VARIANT):$(KERNEL_DEB_ARCH)|g' $(BUILDDIR)/package/board-support-$(BOARD)-$(VARIANT)-$(BSPVERSION)/DEBIAN/control
 	@sed -i 's|linux-headers-$(BOARD)-$(VARIANT)|linux-headers-$(BOARD)-$(VARIANT):$(KERNEL_DEB_ARCH)|g' $(BUILDDIR)/package/board-support-$(BOARD)-$(VARIANT)-$(BSPVERSION)/DEBIAN/control
 	@sed -i 's|linux-image-$(BOARD)-$(VARIANT)|linux-image-$(BOARD)-$(VARIANT):$(KERNEL_DEB_ARCH)|g' $(BUILDDIR)/package/board-support-$(BOARD)-$(VARIANT)-$(BSPVERSION)/DEBIAN/control
 	@sed -i 's/Recommends: .*/Recommends: $(_BSPRECOMMENDS)/' $(BUILDDIR)/package/board-support-$(BOARD)-$(VARIANT)-$(BSPVERSION)/DEBIAN/control
@@ -739,9 +745,9 @@ $(BUILDDIR)/image-addons-stamp: $(BUILDDIR)/image-prepare-stamp $(FSBL_TARGETS) 
 	@mkdir -p /rootfs/tmp/install/
 	@cp /output/board-support-$(BOARD)-$(VARIANT)*.deb /rootfs/tmp/install/
 	@echo "$(COLOUR_GREEN)Copying Deb files for installation on $(BOARD)$(END_COLOUR)"
-	@cp /output/cvitek-fsbl-$(BOARD_EXT)_*.deb /rootfs/tmp/install/
-	@cp /output/cvitek-osdrv-*$(BOARD)*.deb /rootfs/tmp/install/
-	@cp /output/cvitek-middleware-$(BOARD)_*.deb /rootfs/tmp/install/
+	@cp /output/$(CHIP_VENDOR)-fsbl-$(BOARD_EXT)_*.deb /rootfs/tmp/install/
+	@cp /output/$(CHIP_VENDOR)-osdrv-*$(BOARD)*.deb /rootfs/tmp/install/
+	@cp /output/$(CHIP_VENDOR)-middleware-$(BOARD)_*.deb /rootfs/tmp/install/
 	@cp /output/linux-image-*$(BOARD)*.deb /rootfs/tmp/install/
 	@cp /output/linux-headers-*.deb /rootfs/tmp/install/
 	@cp /output/linux-libc-dev*.deb /rootfs/tmp/install/
@@ -755,6 +761,7 @@ $(BUILDDIR)/image-customize-stamp: $(BUILDDIR)/image-addons-stamp $(BUILDDIR)/li
 	@echo $(GIT_REF) > /rootfs/tmp/install/gitref
 	@echo $(BOARD) > /rootfs/tmp/install/hostname
 	@echo $(BOARD) > /rootfs/tmp/install/board
+	@echo $(CHIP_VENDOR) > /rootfs/tmp/install/chip_vendor
 	@echo $(VARIANT) > /rootfs/tmp/install/variant
 	@echo $(STORAGE_TYPE) > /rootfs/tmp/install/storage
 	@cp -v /usr/bin/qemu-$(QEMU_ARCH)-static /rootfs/tmp/install/
