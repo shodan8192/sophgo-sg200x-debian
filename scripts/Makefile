@@ -284,6 +284,7 @@ $(BUILDDIR)/linux-prepare-configure-stamp: $(BUILDDIR)/linux-prepare-patch-stamp
 
 $(BUILDDIR)/linux-compile-stamp: $(BUILDDIR)/linux-prepare-configure-stamp
 	@echo "$(COLOUR_GREEN)Building Kernel for $(BOARD)$(END_COLOUR)"
+	@cd $(BUILDDIR)/kernel && KCFLAGS=-Wno-attribute-alias $(MAKE) -j$(NPROCS) O=$(KERNEL_OUTPUT_DIR)/ $(KERNEL_MAKE_OPTS)
 	@cd $(BUILDDIR)/kernel && KCFLAGS=-Wno-attribute-alias $(MAKE) -j$(NPROCS) O=$(KERNEL_OUTPUT_DIR)/ $(KERNEL_MAKE_OPTS) bindeb-pkg
 	@cd $(BUILDDIR)/kernel && KCFLAGS=-Wno-attribute-alias $(MAKE) -j$(NPROCS) O=$(KERNEL_OUTPUT_DIR)/ $(KERNEL_MAKE_OPTS) modules_install INSTALL_MOD_PATH=$(KERNEL_OUTPUT_DIR)/ko headers_install INSTALL_HDR_PATH=$(KERNEL_OUTPUT_DIR)/$(KERNEL_ARCH)/usr
 	@cp $(BUILDDIR)/kernel/build/*.deb /output/
