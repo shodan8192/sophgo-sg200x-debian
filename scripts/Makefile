@@ -291,14 +291,16 @@ $(BUILDDIR)/linux-compile-stamp: $(BUILDDIR)/linux-prepare-configure-stamp
 
 $(BUILDDIR)/linux-package-stamp: $(BUILDDIR)/linux-compile-stamp
 	@echo "$(COLOUR_GREEN)Packaging linux-headers-sg200x for $(BOARD)$(END_COLOUR)"
+	@$(eval KERNEL_DEB_TMP_IMAGE=$(KERNEL_OUTPUT_DIR)/debian/linux-image)
+	@$(eval KERNEL_DEB_TMP_HEADERS=$(KERNEL_OUTPUT_DIR)/debian/linux-headers)
 	@$(eval KERNEL_DEB_ARCH=$(shell grep -m1 '^Architecture: ' $(KERNEL_OUTPUT_DIR)/debian/control | cut -d ' ' -f 2))
-	@$(eval LINUXMETAVERSION=$(shell basename $(KERNEL_OUTPUT_DIR)/debian/linux-headers/usr/share/doc/linux-headers-* | cut -d '-' -f 3-))
+	@$(eval LINUXMETAVERSION=$(shell basename $(KERNEL_DEB_TMP_HEADERS)/usr/share/doc/linux-headers-* | cut -d '-' -f 3-))
 	@$(eval LINUX_HEADERS_META_DIR=$(BUILDDIR)/package/linux-headers-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION))
 	@$(eval LINUX_IMAGE_META_DIR=$(BUILDDIR)/package/linux-image-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION))
 	@mkdir -p $(LINUX_HEADERS_META_DIR)
 	@cp -r /builder/deb/linux-image-sg200x/* $(LINUX_HEADERS_META_DIR)/
 	@mkdir -pv $(LINUX_HEADERS_META_DIR)/usr/share/doc/linux-headers-$(BOARD)-$(VARIANT)/
-	@cp -p $(KERNEL_OUTPUT_DIR)/debian/linux-headers/usr/share/doc/linux-headers-*/* $(LINUX_HEADERS_META_DIR)/usr/share/doc/linux-headers-$(BOARD)-$(VARIANT)/
+	@cp -p $(KERNEL_DEB_TMP_HEADERS)/usr/share/doc/linux-headers-*/* $(LINUX_HEADERS_META_DIR)/usr/share/doc/linux-headers-$(BOARD)-$(VARIANT)/
 	@sed -i 's/Architecture: riscv64/Architecture: $(KERNEL_DEB_ARCH)/' $(LINUX_HEADERS_META_DIR)/DEBIAN/control
 	@sed -i 's/Version: 1.0.0-1/Version: $(LINUXMETAVERSION)/' $(LINUX_HEADERS_META_DIR)/DEBIAN/control
 	@sed -i 's/Package: linux-image-sg200x/Package: linux-headers-$(BOARD)-$(VARIANT)/' $(LINUX_HEADERS_META_DIR)/DEBIAN/control
@@ -308,11 +310,11 @@ $(BUILDDIR)/linux-package-stamp: $(BUILDDIR)/linux-compile-stamp
 	@cd $(BUILDDIR)/package/ && dpkg-deb --build linux-headers-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION) linux-headers-$(BOARD)-$(VARIANT)_$(LINUXMETAVERSION)_$(KERNEL_DEB_ARCH).deb
 	@cp $(BUILDDIR)/package/linux-headers-$(BOARD)-$(VARIANT)_$(LINUXMETAVERSION)_$(KERNEL_DEB_ARCH).deb /output/
 	@echo "$(COLOUR_GREEN)Packaging linux-image-sg200x for $(BOARD)$(END_COLOUR)"
-	@$(eval LINUXMETAVERSION=$(shell basename $(KERNEL_OUTPUT_DIR)/debian/linux-image/usr/share/doc/linux-image-* | cut -d '-' -f 3-))
+	@$(eval LINUXMETAVERSION=$(shell basename $(KERNEL_DEB_TMP_IMAGE)/usr/share/doc/linux-image-* | cut -d '-' -f 3-))
 	@mkdir -p $(LINUX_IMAGE_META_DIR)
 	@cp -r /builder/deb/linux-image-sg200x/* $(LINUX_IMAGE_META_DIR)/
 	@mkdir -pv $(LINUX_IMAGE_META_DIR)/usr/share/doc/linux-image-$(BOARD)-$(VARIANT)/
-	@cp -p $(KERNEL_OUTPUT_DIR)/debian/linux-image/usr/share/doc/linux-image-*/* $(LINUX_IMAGE_META_DIR)/usr/share/doc/linux-image-$(BOARD)-$(VARIANT)/
+	@cp -p $(KERNEL_DEB_TMP_IMAGE)/usr/share/doc/linux-image-*/* $(LINUX_IMAGE_META_DIR)/usr/share/doc/linux-image-$(BOARD)-$(VARIANT)/
 	@sed -i 's/Architecture: riscv64/Architecture: $(KERNEL_DEB_ARCH)/' $(LINUX_IMAGE_META_DIR)/DEBIAN/control
 	@sed -i 's/Version: 1.0.0-1/Version: $(LINUXMETAVERSION)/' $(LINUX_IMAGE_META_DIR)/DEBIAN/control
 	@sed -i 's/Package: linux-image-sg200x/Package: linux-image-$(BOARD)-$(VARIANT)/' $(LINUX_IMAGE_META_DIR)/DEBIAN/control
@@ -356,8 +358,10 @@ $(BUILDDIR)/osdrv-compile-stamp: $(BUILDDIR)/osdrv-prepare-configure-stamp
 
 $(BUILDDIR)/osdrv-package-stamp: $(BUILDDIR)/osdrv-compile-stamp
 	@echo "$(COLOUR_GREEN)Packaging OSdrv for $(BOARD)$(END_COLOUR)"
+	@$(eval KERNEL_DEB_TMP_IMAGE=$(KERNEL_OUTPUT_DIR)/debian/linux-image)
+	@$(eval KERNEL_DEB_TMP_HEADERS=$(KERNEL_OUTPUT_DIR)/debian/linux-headers)
 	@$(eval KERNEL_DEB_ARCH=$(shell grep -m1 '^Architecture: ' $(KERNEL_OUTPUT_DIR)/debian/control | cut -d ' ' -f 2))
-	@$(eval KERNELRELEASE=$(shell basename $(KERNEL_OUTPUT_DIR)/debian/linux-headers/usr/share/doc/linux-headers-* | cut -d '-' -f 3-))
+	@$(eval KERNELRELEASE=$(shell basename $(KERNEL_DEB_TMP_HEADERS)/usr/share/doc/linux-headers-* | cut -d '-' -f 3-))
 	@$(eval OSDRV_PACKAGE_DIR=$(BUILDDIR)/package/$(CHIP_VENDOR)-osdrv-$(KERNELRELEASE)-$(OSDRVVERSION))
 	@$(eval OSDRV_META_DIR=$(BUILDDIR)/package/$(CHIP_VENDOR)-osdrv-$(BOARD)-$(VARIANT)-$(KERNELRELEASE))
 	@$(eval OSDRV_TARGET_DIR=/mnt/system/ko/$(KERNELRELEASE))
@@ -381,7 +385,7 @@ $(BUILDDIR)/osdrv-package-stamp: $(BUILDDIR)/osdrv-compile-stamp
 	@mkdir -p $(OSDRV_META_DIR)
 	@cp -r /builder/deb/linux-image-sg200x/* $(OSDRV_META_DIR)/
 	@mkdir -pv $(OSDRV_META_DIR)/usr/share/doc/$(CHIP_VENDOR)-osdrv-$(BOARD)-$(VARIANT)/
-	@cp -p $(KERNEL_OUTPUT_DIR)/debian/linux-image/usr/share/doc/linux-image-*/* $(OSDRV_META_DIR)/usr/share/doc/$(CHIP_VENDOR)-osdrv-$(BOARD)-$(VARIANT)/
+	@cp -p $(KERNEL_DEB_TMP_IMAGE)/usr/share/doc/linux-image-*/* $(OSDRV_META_DIR)/usr/share/doc/$(CHIP_VENDOR)-osdrv-$(BOARD)-$(VARIANT)/
 	@sed -i 's/Architecture: riscv64/Architecture: $(KERNEL_DEB_ARCH)/' $(OSDRV_META_DIR)/DEBIAN/control
 	@sed -i 's/Version: 1.0.0-1/Version: $(OSDRVVERSION)-$(KERNELRELEASE)/' $(OSDRV_META_DIR)/DEBIAN/control
 	@sed -i 's/Package: linux-image-sg200x/Package: $(CHIP_VENDOR)-osdrv-$(BOARD)-$(VARIANT)/' $(OSDRV_META_DIR)/DEBIAN/control
