@@ -20,7 +20,7 @@ RUN apt-get update \
         systemd-container texinfo zlib1g-dev wget arch-test \
         genimage joe lz4 lzip mc unzip zip \
         fakeroot git kernel-wedge quilt ccache cmake flex bison \
-        libssl-dev dh-exec rsync libelf-dev bc gcc-riscv64-unknown-elf \
+        libssl-dev dh-exec jq rsync libelf-dev bc gcc-riscv64-unknown-elf \
     && mkdir -p /host-tools/gcc \
     && wget -O - https://github.com/scpcom/riscv-gnu-toolchain/releases/download/riscv64-gcc-thead_20241206-10.4.0-x86_64/riscv64-linux-gcc-thead_20241206-10.4.0-x86_64.tar.gz | tar -C /host-tools/gcc -xz
 
