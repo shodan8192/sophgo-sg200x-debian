@@ -155,6 +155,7 @@ endif
 BOARD_EXT ?= $(BOARD)
 
 CHIP_VENDOR ?= cvitek
+CHIP_FAMILY ?= sg200x
 
 BR_BOARD = $(CHIP_VENDOR)_$(SDK_CHIP)_$(SDK_VER)
 BR_DEFCONFIG = $(BR_BOARD)_defconfig
@@ -291,7 +292,7 @@ $(BUILDDIR)/linux-compile-stamp: $(BUILDDIR)/linux-prepare-configure-stamp
 	@touch $@
 
 $(BUILDDIR)/linux-package-stamp: $(BUILDDIR)/linux-compile-stamp
-	@echo "$(COLOUR_GREEN)Packaging linux-headers-sg200x for $(BOARD)$(END_COLOUR)"
+	@echo "$(COLOUR_GREEN)Packaging linux-headers-$(CHIP_FAMILY) for $(BOARD)$(END_COLOUR)"
 	@$(eval KERNEL_DEB_TMP_IMAGE=$(KERNEL_OUTPUT_DIR)/debian/linux-image)
 	@$(eval KERNEL_DEB_TMP_HEADERS=$(KERNEL_OUTPUT_DIR)/debian/linux-headers)
 	@$(eval KERNEL_DEB_ARCH=$(shell grep -m1 '^Architecture: ' $(KERNEL_OUTPUT_DIR)/debian/control | cut -d ' ' -f 2))
@@ -310,7 +311,7 @@ $(BUILDDIR)/linux-package-stamp: $(BUILDDIR)/linux-compile-stamp
 	@sed -i 's/Provides: linux-image-.*/Provides: linux-headers-generic/' $(LINUX_HEADERS_META_DIR)/DEBIAN/control
 	@cd $(BUILDDIR)/package/ && dpkg-deb --build linux-headers-$(BOARD)-$(VARIANT)-$(LINUXMETAVERSION) linux-headers-$(BOARD)-$(VARIANT)_$(LINUXMETAVERSION)_$(KERNEL_DEB_ARCH).deb
 	@cp $(BUILDDIR)/package/linux-headers-$(BOARD)-$(VARIANT)_$(LINUXMETAVERSION)_$(KERNEL_DEB_ARCH).deb /output/
-	@echo "$(COLOUR_GREEN)Packaging linux-image-sg200x for $(BOARD)$(END_COLOUR)"
+	@echo "$(COLOUR_GREEN)Packaging linux-image-$(CHIP_FAMILY) for $(BOARD)$(END_COLOUR)"
 	@$(eval LINUXMETAVERSION=$(shell basename $(KERNEL_DEB_TMP_IMAGE)/usr/share/doc/linux-image-* | cut -d '-' -f 3-))
 	@mkdir -p $(LINUX_IMAGE_META_DIR)
 	@cp -r /builder/deb/linux-image-sg200x/* $(LINUX_IMAGE_META_DIR)/
@@ -725,11 +726,11 @@ $(BUILDDIR)/image-prepare-stamp:
 	@-rm $(addon-targets)
 	@mkdir -p /rootfs/
 	@curl -v -L https://scpcom.github.io/scpcom-packages.asc -o $(BUILDDIR)/public-key.asc
-	@mmdebstrap -v --architectures=$(DEB_ARCH) --include="$(_PACKAGES)" noble "/rootfs/" "deb http://ports.ubuntu.com/ubuntu-ports/ noble main universe" "deb [signed-by=$(BUILDDIR)/public-key.asc] https://scpcom.github.io/deb stable sg200x $(BOARD)-$(VARIANT)"
+	@mmdebstrap -v --architectures=$(DEB_ARCH) --include="$(_PACKAGES)" noble "/rootfs/" "deb http://ports.ubuntu.com/ubuntu-ports/ noble main universe" "deb [signed-by=$(BUILDDIR)/public-key.asc] https://scpcom.github.io/deb stable $(CHIP_FAMILY) $(BOARD)-$(VARIANT)"
 	@touch $@
 
 $(BUILDDIR)/image-addons-stamp: $(BUILDDIR)/image-prepare-stamp $(FSBL_TARGETS) $(BUILDDIR)/linux-package-stamp $(BUILDDIR)/osdrv-package-stamp $(BUILDDIR)/middleware-package-stamp $(addon-targets)
-	@echo "$(COLOUR_GREEN)Packaging board-support-sg200x for $(BOARD)$(END_COLOUR)"
+	@echo "$(COLOUR_GREEN)Packaging board-support-$(CHIP_FAMILY) for $(BOARD)$(END_COLOUR)"
 	@$(eval KERNEL_DEB_ARCH=$(shell grep -m1 '^Architecture: ' $(KERNEL_OUTPUT_DIR)/debian/control | cut -d ' ' -f 2))
 	@$(eval BOARD_SUPPORT_PACKAGE_DIR=$(BUILDDIR)/package/board-support-$(BOARD)-$(VARIANT)-$(BSPVERSION))
 	@mkdir -p $(BOARD_SUPPORT_PACKAGE_DIR)
