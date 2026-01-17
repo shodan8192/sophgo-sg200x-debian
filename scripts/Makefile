@@ -14,10 +14,13 @@ BUILDDIR := /build
 ARCH ?= riscv
 
 ifeq ($(ARCH),arm64)
+ARCH_NAME ?= ARM
 SDK_VER ?= 64bit
 else ifeq ($(ARCH),arm)
+ARCH_NAME ?= ARM
 SDK_VER ?= 32bit
 else
+ARCH_NAME ?= RISC-V
 SDK_VER ?= glibc_riscv64
 endif
 
