@@ -11,3 +11,4 @@ for l in ld-linux-riscv64v0p7_xthead-lp64d.so.1 ld-linux-riscv64v_xthead-lp64d.s
     ln -s riscv64-linux-gnu/ld-linux-riscv64-lp64d.so.1 /usr/lib/$l
   fi
 done
+[ -e /usr/bin/devmem ] || ln -s busybox /usr/bin/devmem
