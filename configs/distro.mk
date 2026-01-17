@@ -1,4 +1,4 @@
-DEB_URL ?= http://ports.ubuntu.com/ubuntu-ports
-DEB_DISTRO ?= noble
-DEB_COMPONENTS ?= main universe
-DEB_COMPONENTS_FULL ?= main restricted universe multiverse
+DEB_URL ?= http://deb.debian.org/debian
+DEB_DISTRO ?= trixie
+DEB_COMPONENTS ?= main
+DEB_COMPONENTS_FULL ?= main non-free-firmware
