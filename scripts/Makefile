@@ -394,6 +394,7 @@ $(BUILDDIR)/osdrv-package-stamp: $(BUILDDIR)/osdrv-compile-stamp
 	@sed -i 's/Depends: linux-image-.*/Depends: $(CHIP_VENDOR)-osdrv-$(KERNELRELEASE)/' $(OSDRV_META_DIR)/DEBIAN/control
 	@sed -i 's/Recommends: cvitek-osdrv-.*/Recommends: linux-image-$(KERNELRELEASE)/' $(OSDRV_META_DIR)/DEBIAN/control
 	@sed -i  '/Provides: .*/d' $(OSDRV_META_DIR)/DEBIAN/control
+	@sed -i 's/Linux Image/OS drivers/' $(OSDRV_META_DIR)/DEBIAN/control
 	@cd $(BUILDDIR)/package/ && dpkg-deb --build $(CHIP_VENDOR)-osdrv-$(BOARD)-$(VARIANT)-$(KERNELRELEASE) $(CHIP_VENDOR)-osdrv-$(BOARD)-$(VARIANT)_$(OSDRVVERSION)-$(KERNELRELEASE)_$(KERNEL_DEB_ARCH).deb
 	@cp $(BUILDDIR)/package/$(CHIP_VENDOR)-osdrv-$(BOARD)-$(VARIANT)_$(OSDRVVERSION)-$(KERNELRELEASE)_$(KERNEL_DEB_ARCH).deb /output/
 	@touch $@
