@@ -158,9 +158,7 @@ rm -rf /etc/apt/sources.list.d/multistrap-debian.list
 gpg --dearmor /tmp/install/public-key.asc
 cp /tmp/install/public-key.asc.gpg /etc/apt/trusted.gpg.d/scpcom-packages.gpg
 
-cat > /etc/apt/sources.list <<EOF
-deb http://ports.ubuntu.com/ubuntu-ports noble main restricted universe multiverse
-EOF
+cat > /etc/apt/sources.list < /tmp/install/deb_sources
 
 mkdir -p /etc/apt/sources.list.d
 
