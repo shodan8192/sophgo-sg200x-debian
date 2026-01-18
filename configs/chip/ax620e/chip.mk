@@ -624,6 +624,9 @@ $(BUILDDIR)/image-compile-stamp: $(BUILDDIR)/image-customize-stamp
 	@$(eval NANOKVM_PRO_LATEST_VER=$(shell cat $(BUILDDIR)/nanokvm-pro/nanokvm_pro_latest.json | jq -c '.version' | cut -d '"' -f 2))
 	@[ "$(GIT_REF)" = "develop" ] || rm -rf $(BR_DIR)/dl
 	@[ "$(GIT_REF)" = "develop" ] || rm -rf $(BR_OUTPUT_DIR)/per-package
+	@[ "$(GIT_REF)" = "develop" ] || rm -rf $(BUILDDIR)/bsp/build/dl/
+	@[ "$(GIT_REF)" = "develop" ] || rm -f /builder/gcc-*.tar.*
+	@[ "$(GIT_REF)" = "develop" ] || rm -rf /host-tools/gcc/
 	@rm -rf /tmp/genimage/
 	@mkdir -p $(BUILDDIR)/input/
 	@cp -p $(BSP_INSTALL_DIR)/$(STORAGE_TYPE).img $(BUILDDIR)/input/
