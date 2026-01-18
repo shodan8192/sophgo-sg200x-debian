@@ -289,6 +289,7 @@ $(BUILDDIR)/middleware-compile-stamp: $(BUILDDIR)/middleware-prepare-configure-s
 	@touch $@
 
 $(BUILDDIR)/middleware-package-stamp: $(BUILDDIR)/middleware-compile-stamp
+	@cd $(BUILDDIR)/bsp && [ "$(GIT_REF)" = "develop" ] || ./scripts/build-linux.sh clean
 	@echo "$(COLOUR_GREEN)Packaging Middleware for $(BOARD)$(END_COLOUR)"
 	@rm -rf $(BUILDDIR)/middleware/3rdparty/tmp/
 	@$(eval MV=$(shell cd $(BUILDDIR)/middleware && git log -1 --format="%at" | xargs -I{} date -d @{} +-%Y%m%d-${KERNELREV}))
