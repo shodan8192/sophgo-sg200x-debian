@@ -60,6 +60,10 @@ jobs:
         storage: [sd]
         archs: [riscv]
         include: 
+          - boards: nanokvmpro
+            variant: kvm
+            storage: emmc
+            archs: arm64
           - boards: licheervnano
             variant: kvm
             storage: sd
