@@ -20,6 +20,7 @@ $(BUILDDIR)/nanokvm-pro-stamp: $(BUILDDIR)/nanokvm-pro/nanokvm_pro_latest.json
 	@$(eval NANOKVM_PRO_LATEST_FILE=$(shell cat $(BUILDDIR)/nanokvm-pro/nanokvm_pro_latest.json | jq -c '.name' | cut -d '"' -f 2))
 	@cd $(BUILDDIR)/nanokvm-pro ; wget -N "$(NANOKVM_PRO_BASE_URL)/$(NANOKVM_PRO_LATEST_FILE)"
 	@cd $(BUILDDIR)/nanokvm-pro ; tar xzf "$(NANOKVM_PRO_LATEST_FILE)"
+	@cd $(BUILDDIR)/nanokvm-pro/nanokvm_pro_* ; [ "$(DEB_DISTRO)" != "trixie" ] || wget -N http://launchpadlibrarian.net/723774273/libjpeg-turbo8_2.1.5-2ubuntu2_arm64.deb
 	@cp -p $(BUILDDIR)/nanokvm-pro/nanokvm_pro_*/*.deb /output/
 	@mkdir -p /rootfs/tmp/install/
 	@cp -p $(BUILDDIR)/nanokvm-pro/nanokvm_pro_*/*.deb /rootfs/tmp/install/
