@@ -569,6 +569,7 @@ $(BUILDDIR)/image-addons-stamp: $(BUILDDIR)/image-prepare-stamp $(FSBL_TARGETS) 
 	@sed -i 's/CVITEK/$(CHIP_VENDOR)/' $(BOARD_SUPPORT_PACKAGE_DIR)/DEBIAN/control
 	@sed -i 's/CV18xx and SG200X/$(CHIP)/' $(BOARD_SUPPORT_PACKAGE_DIR)/DEBIAN/control
 	@sed -i 's/cv181x/$(CHIP)/' $(BOARD_SUPPORT_PACKAGE_DIR)/DEBIAN/control
+	@[ "X$(findstring kvm,$(VARIANT))" = "X" ] || echo 'rm -f /etc/nginx/sites-enabled/default' >> $(BOARD_SUPPORT_PACKAGE_DIR)/DEBIAN/postinst
 	@if [ -f /rootfs/tmp/install/systemd-enable ]; then \
 		echo "systemctl enable `cat /rootfs/tmp/install/systemd-enable | tr -d '\n'`" >> $(BOARD_SUPPORT_PACKAGE_DIR)/DEBIAN/postinst ; \
 	fi
