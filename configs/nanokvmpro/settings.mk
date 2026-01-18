@@ -1,0 +1,32 @@
+CHIP_VENDOR=axera
+CHIP=ax630c
+CHIP_FAMILY=ax620e
+UBOOT_CHIP=ax620e_emmc
+UBOOT_BOARD=emmc_arm64_k419_sipeed_nanokvm
+BOARD_DTS=nanokvm_pro_arm64_k419
+BOOT_CPU=aarch64
+ARCH=arm64
+DDR_CFG=ddr3_1866_x16
+ION_SIZE=320
+PARTITION_FILE=partition_sd.xml
+STORAGE_TYPE=emmc
+VARIANT?=kvm
+
+PACKAGES += " hostapd udhcpd wireless-regdb wpasupplicant"
+
+#IMAGE_ADDITIONS += "sensor-config"
+IMAGE_ADDITIONS += "device-key"
+IMAGE_ADDITIONS += "ethernet-builtin"
+#IMAGE_ADDITIONS += "load-systemko"
+#IMAGE_ADDITIONS += "cvi-pinmux"
+#ifneq ("$(findstring kvm,$(VARIANT))","")
+#IMAGE_ADDITIONS += "nanokvm"
+IMAGE_ADDITIONS += "nanokvm-pro"
+#else
+#IMAGE_ADDITIONS += "maixapp"
+#IMAGE_ADDITIONS += "tpusdk"
+#endif
+#IMAGE_ADDITIONS += "usb-device"
+#IMAGE_ADDITIONS += "zram-config"
+#IMAGE_ADDITIONS += "wifi-builtin"
+IMAGE_ADDITIONS += "aic8800-firmware"
