@@ -103,6 +103,7 @@ endef
 $(BUILDDIR)/toolchain-prepare-patch-stamp:
 	@echo "$(COLOUR_GREEN)Patching Toolchain for $(BOARD)$(END_COLOUR)"
 	@if [ "$(UBOOT_ARCH)" = "arm" ]; then \
+		rm -rf /host-tools/gcc/riscv64-*/ ; \
 		cd / && /builder/replace-all-arm-toolchains.sh ; \
 		mv /ramdisk $(BUILDDIR)/ ; \
 	else \
@@ -288,6 +289,7 @@ $(BUILDDIR)/middleware-compile-stamp: $(BUILDDIR)/middleware-prepare-configure-s
 	@touch $@
 
 $(BUILDDIR)/middleware-package-stamp: $(BUILDDIR)/middleware-compile-stamp
+	@cd $(BUILDDIR)/bsp && [ "$(GIT_REF)" = "develop" ] || ./scripts/build-linux.sh clean
 	@echo "$(COLOUR_GREEN)Packaging Middleware for $(BOARD)$(END_COLOUR)"
 	@rm -rf $(BUILDDIR)/middleware/3rdparty/tmp/
 	@$(eval MV=$(shell cd $(BUILDDIR)/middleware && git log -1 --format="%at" | xargs -I{} date -d @{} +-%Y%m%d-${KERNELREV}))
@@ -622,6 +624,9 @@ $(BUILDDIR)/image-compile-stamp: $(BUILDDIR)/image-customize-stamp
 	@$(eval NANOKVM_PRO_LATEST_VER=$(shell cat $(BUILDDIR)/nanokvm-pro/nanokvm_pro_latest.json | jq -c '.version' | cut -d '"' -f 2))
 	@[ "$(GIT_REF)" = "develop" ] || rm -rf $(BR_DIR)/dl
 	@[ "$(GIT_REF)" = "develop" ] || rm -rf $(BR_OUTPUT_DIR)/per-package
+	@[ "$(GIT_REF)" = "develop" ] || rm -rf $(BUILDDIR)/bsp/build/dl/
+	@[ "$(GIT_REF)" = "develop" ] || rm -f /builder/gcc-*.tar.*
+	@[ "$(GIT_REF)" = "develop" ] || rm -rf /host-tools/gcc/
 	@rm -rf /tmp/genimage/
 	@mkdir -p $(BUILDDIR)/input/
 	@cp -p $(BSP_INSTALL_DIR)/$(STORAGE_TYPE).img $(BUILDDIR)/input/
