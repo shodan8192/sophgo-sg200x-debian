@@ -13,7 +13,7 @@ STORAGE_TYPE=emmc
 VARIANT?=kvm
 
 PACKAGES += " hostapd udhcpd wireless-regdb wpasupplicant"
-PACKAGES += " libcjson-dev libdrm-dev libevent-dev libjpeg-dev libxkbcommon-dev nginx"
+PACKAGES += " libasound2-dev libcjson-dev libconfig-dev libdrm-dev libevent-dev libjpeg-dev libjson-c5 libnice-dev libopus-dev libspeexdsp-dev libsrtp2-dev libwebsockets-dev libxkbcommon-dev nginx"
 PACKAGES += " python3-aiofiles python3-aiohttp python3-async-lru python3-dbus-next python3-evdev python3-mako python3-netifaces python3-passlib python3-pil python3-psutil python3-pyghmi python3-pygments python3-pyotp python3-serial python3-setproctitle python3-systemd python3-xlib python3-yaml python3-zstandard python-is-python3 tesseract-ocr"
 
 #IMAGE_ADDITIONS += "sensor-config"
