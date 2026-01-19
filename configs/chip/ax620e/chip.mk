@@ -396,7 +396,7 @@ $(BUILDDIR)/bsp-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out BSP for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
 	@git clone -b main $(GIT_CLONE_OPTS) --recursive https://github.com/scpcom/ax620e-bsp-build $(BUILDDIR)/bsp
-	@cd $(BUILDDIR)/bsp && git checkout e75c860
+	@cd $(BUILDDIR)/bsp && git checkout 2417c4b
 	@touch $@
 
 $(BUILDDIR)/bsp-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $(BUILDDIR)/bsp-prepare-checkout-stamp
@@ -569,6 +569,7 @@ $(BUILDDIR)/image-addons-stamp: $(BUILDDIR)/image-prepare-stamp $(FSBL_TARGETS) 
 	@sed -i 's/CVITEK/$(CHIP_VENDOR)/' $(BOARD_SUPPORT_PACKAGE_DIR)/DEBIAN/control
 	@sed -i 's/CV18xx and SG200X/$(CHIP)/' $(BOARD_SUPPORT_PACKAGE_DIR)/DEBIAN/control
 	@sed -i 's/cv181x/$(CHIP)/' $(BOARD_SUPPORT_PACKAGE_DIR)/DEBIAN/control
+	@[ "X$(findstring kvm,$(VARIANT))" = "X" ] || echo 'rm -f /etc/nginx/sites-enabled/default' >> $(BOARD_SUPPORT_PACKAGE_DIR)/DEBIAN/postinst
 	@if [ -f /rootfs/tmp/install/systemd-enable ]; then \
 		echo "systemctl enable `cat /rootfs/tmp/install/systemd-enable | tr -d '\n'`" >> $(BOARD_SUPPORT_PACKAGE_DIR)/DEBIAN/postinst ; \
 	fi
@@ -625,6 +626,7 @@ $(BUILDDIR)/image-compile-stamp: $(BUILDDIR)/image-customize-stamp
 	@[ "$(GIT_REF)" = "develop" ] || rm -rf $(BR_DIR)/dl
 	@[ "$(GIT_REF)" = "develop" ] || rm -rf $(BR_OUTPUT_DIR)/per-package
 	@[ "$(GIT_REF)" = "develop" ] || rm -rf $(BUILDDIR)/bsp/build/dl/
+	@[ "$(GIT_REF)" = "develop" ] || rm -rf $(BUILDDIR)/bsp/toolchain/gcc-*/
 	@[ "$(GIT_REF)" = "develop" ] || rm -f /builder/gcc-*.tar.*
 	@[ "$(GIT_REF)" = "develop" ] || rm -rf /host-tools/gcc/
 	@rm -rf /tmp/genimage/
