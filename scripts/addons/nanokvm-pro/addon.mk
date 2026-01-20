@@ -22,7 +22,7 @@ $(BUILDDIR)/nanokvm-pro-stamp: $(BUILDDIR)/nanokvm-pro/nanokvm_pro_latest.json
 	@cd $(BUILDDIR)/nanokvm-pro ; tar xzf "$(NANOKVM_PRO_LATEST_FILE)"
 	@cd $(BUILDDIR)/nanokvm-pro/nanokvm_pro_* ; [ "$(DEB_DISTRO)" != "trixie" ] || wget -N https://launchpadlibrarian.net/723774273/libjpeg-turbo8_2.1.5-2ubuntu2_arm64.deb
 	@cd $(BUILDDIR)/nanokvm-pro/nanokvm_pro_* ; [ "$(DEB_DISTRO)" != "trixie" ] || wget -N https://launchpadlibrarian.net/725377717/libconfig9_1.5-0.4build2_arm64.deb
-	@cd $(BUILDDIR)/nanokvm-pro/nanokvm_pro_* ; [ "$(DEB_DISTRO)" != "trixie" ] || wget -N https://launchpadlibrarian.net/571748137/libwebsockets16_4.0.20-2ubuntu1_arm64.deb
+	@cd $(BUILDDIR)/nanokvm-pro/nanokvm_pro_* ; [ "$(DEB_DISTRO)" = "jammy" ] || wget -N https://launchpadlibrarian.net/571748137/libwebsockets16_4.0.20-2ubuntu1_arm64.deb
 	@cd $(BUILDDIR)/nanokvm-pro/nanokvm_pro_* ; [ "$(DEB_DISTRO)" != "trixie" ] || wget -N https://launchpadlibrarian.net/572052652/ttyd_1.6.3+20210924-1build1_arm64.deb
 	@cp -p $(BUILDDIR)/nanokvm-pro/nanokvm_pro_*/*.deb /output/
 	@mkdir -p /rootfs/tmp/install/
