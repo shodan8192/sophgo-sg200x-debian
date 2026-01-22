@@ -599,6 +599,8 @@ $(BUILDDIR)/image-customize-stamp: $(BUILDDIR)/image-addons-stamp $(BUILDDIR)/li
 	@echo $(VARIANT) > /rootfs/tmp/install/variant
 	@echo $(STORAGE_TYPE) > /rootfs/tmp/install/storage
 	@echo "deb $(DEB_URL) $(DEB_DISTRO) $(DEB_COMPONENTS_FULL)" > /rootfs/tmp/install/deb_sources
+	@[ "$(DEB_DISTRO)" != "jammy" -o -e /rootfs/etc/resolv.conf-dist ] || mv /rootfs/etc/resolv.conf /rootfs/etc/resolv.conf-dist
+	@[ "$(DEB_DISTRO)" != "jammy" ] || cp -p /etc/resolv.conf /rootfs/etc/
 	@cp -v /usr/bin/qemu-$(QEMU_ARCH)-static /rootfs/tmp/install/
 	@cp -v /configs/chip/$(CHIP_FAMILY)/setup_rootfs.sh /rootfs/tmp/install/
 	@cp -v $(BUILDDIR)/public-key.asc /rootfs/tmp/install/
