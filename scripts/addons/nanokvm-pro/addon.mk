@@ -41,6 +41,8 @@ $(BUILDDIR)/nanokvm-pro-stamp: $(BUILDDIR)/nanokvm-pro/nanokvm_pro_latest.json
 	@cd $(BUILDDIR)/nanokvm-pro ; rm -f nanokvm_pro_$(NANOKVM_PRO_VERSION)/nanokvmpro_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb
 	@cd $(BUILDDIR)/package/ && dpkg-deb --build nanokvmpro-$(NANOKVM_PRO_VERSION) nanokvmpro_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb
 	@cp $(BUILDDIR)/package/nanokvmpro_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb /output/
+	@mkdir -p /rootfs/tmp/install/
+	@cp /output/nanokvmpro_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb /rootfs/tmp/install/
 	@cp -p $(BUILDDIR)/nanokvm-pro/nanokvm_pro_$(NANOKVM_PRO_VERSION)/*.deb /output/
 	@mkdir -p /rootfs/tmp/install/
 	@cp -p $(BUILDDIR)/nanokvm-pro/nanokvm_pro_$(NANOKVM_PRO_VERSION)/*.deb /rootfs/tmp/install/
