@@ -2,6 +2,9 @@ ifneq ("$(findstring nanokvm-pro,$(IMAGE_ADDITIONS))","")
 BSPFILTER += "nanokvm-pro"
 endif
 
+NANOKVM_PRO_GIT_REF = c6ba5c8a0313d7817db9fe63f3a308d0f21c2996
+NANOKVM_PRO_GIT_URL = https://github.com/sipeed/NanoKVM-Pro
+
 NANOKVM_PRO_STABLE_URL = https://cdn.sipeed.com/nanokvm
 NANOKVM_PRO_BASE_URL ?= $(NANOKVM_PRO_STABLE_URL)
 
@@ -38,7 +41,8 @@ $(BUILDDIR)/nanokvm-pro-stamp: $(BUILDDIR)/nanokvm-pro/nanokvm_pro_latest.json
 	@cd $(BUILDDIR)/nanokvm-pro/nanokvm_pro_$(NANOKVM_PRO_VERSION) ; [ "$(findstring ubuntu,$(DEB_URL))" != "" ] || wget -N https://launchpadlibrarian.net/572052652/ttyd_1.6.3+20210924-1build1_arm64.deb
 	@apt-get install -y golang-go npm
 	@npm install -g pnpm
-	@cd $(BUILDDIR)/nanokvm-pro ; git clone https://github.com/sipeed/NanoKVM-Pro
+	@cd $(BUILDDIR)/nanokvm-pro && git clone $(NANOKVM_PRO_GIT_URL)
+	@cd $(NANOKVM_PRO_BUILD_DIR) && git checkout $(NANOKVM_PRO_GIT_REF)
 	@cd $(NANOKVM_PRO_BUILD_DIR)/support/scripts ; ./toolchain_setup.sh
 	@cd $(NANOKVM_PRO_BUILD_DIR)/server/ ; ./build.sh
 	@cd $(NANOKVM_PRO_BUILD_DIR)/web/ ; pnpm install
