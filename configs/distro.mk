@@ -9,4 +9,5 @@ else
 DEB_URL ?= http://ports.ubuntu.com/ubuntu-ports
 DEB_COMPONENTS ?= main universe
 DEB_COMPONENTS_FULL ?= main restricted universe multiverse
+DEB_PUBKEY ?= 871920D1991BC93C
 endif
