@@ -5,6 +5,13 @@ endif
 NANOKVM_PRO_STABLE_URL = https://cdn.sipeed.com/nanokvm
 NANOKVM_PRO_BASE_URL ?= $(NANOKVM_PRO_STABLE_URL)
 
+NANOKVM_PRO_KVMCOMM_MODULES = f_udisp_drv.ko \
+fbtft.ko \
+fb_jd9853.ko \
+gpio_keys.ko \
+lt6911_manage.ko \
+rotary_encoder.ko
+
 $(BUILDDIR)/nanokvm-pro/nanokvm_pro_latest.json:
 	@mkdir -p $(BUILDDIR)/nanokvm-pro
 	@cd $(BUILDDIR)/nanokvm-pro ; wget -q -O nanokvm_pro_latest.json "$(NANOKVM_PRO_BASE_URL)/nanokvm_pro_latest.json?now=$(shell date +%s)"
@@ -43,6 +50,16 @@ $(BUILDDIR)/nanokvm-pro-stamp: $(BUILDDIR)/nanokvm-pro/nanokvm_pro_latest.json
 	@cp $(BUILDDIR)/package/nanokvmpro_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb /output/
 	@mkdir -p /rootfs/tmp/install/
 	@cp /output/nanokvmpro_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb /rootfs/tmp/install/
+	@$(eval NANOKVM_PRO_KVMCOMM_PACKAGE_DIR=$(BUILDDIR)/package/kvmcomm-$(NANOKVM_PRO_VERSION))
+	@cd $(BUILDDIR)/nanokvm-pro ; dpkg-deb -R nanokvm_pro_$(NANOKVM_PRO_VERSION)/kvmcomm_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb $(NANOKVM_PRO_KVMCOMM_PACKAGE_DIR)
+	@for f in $(NANOKVM_PRO_KVMCOMM_MODULES) ; do \
+		cp -p $(BSP_INSTALL_DIR)/ko/$$f $(NANOKVM_PRO_KVMCOMM_PACKAGE_DIR)/kvmcomm/ko/ ; \
+	done
+	@cd $(BUILDDIR)/nanokvm-pro ; rm -f nanokvm_pro_$(NANOKVM_PRO_VERSION)/kvmcomm_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb
+	@cd $(BUILDDIR)/package/ && dpkg-deb --build kvmcomm-$(NANOKVM_PRO_VERSION) kvmcomm_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb
+	@cp $(BUILDDIR)/package/kvmcomm_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb /output/
+	@mkdir -p /rootfs/tmp/install/
+	@cp /output/kvmcomm_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb /rootfs/tmp/install/
 	@cp -p $(BUILDDIR)/nanokvm-pro/nanokvm_pro_$(NANOKVM_PRO_VERSION)/*.deb /output/
 	@mkdir -p /rootfs/tmp/install/
 	@cp -p $(BUILDDIR)/nanokvm-pro/nanokvm_pro_$(NANOKVM_PRO_VERSION)/*.deb /rootfs/tmp/install/
