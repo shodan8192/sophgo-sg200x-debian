@@ -5,6 +5,8 @@ endif
 NANOKVM_PRO_STABLE_URL = https://cdn.sipeed.com/nanokvm
 NANOKVM_PRO_BASE_URL ?= $(NANOKVM_PRO_STABLE_URL)
 
+NANOKVM_PRO_BUILD_DIR = $(BUILDDIR)/nanokvm-pro/NanoKVM-Pro
+
 NANOKVM_PRO_KVMCOMM_MODULES = f_udisp_drv.ko \
 fbtft.ko \
 fb_jd9853.ko \
@@ -37,14 +39,14 @@ $(BUILDDIR)/nanokvm-pro-stamp: $(BUILDDIR)/nanokvm-pro/nanokvm_pro_latest.json
 	@apt-get install -y golang-go npm
 	@npm install -g pnpm
 	@cd $(BUILDDIR)/nanokvm-pro ; git clone https://github.com/sipeed/NanoKVM-Pro
-	@cd $(BUILDDIR)/nanokvm-pro/NanoKVM-Pro/support/scripts ; ./toolchain_setup.sh
-	@cd $(BUILDDIR)/nanokvm-pro/NanoKVM-Pro/server/ ; ./build.sh
-	@cd $(BUILDDIR)/nanokvm-pro/NanoKVM-Pro/web/ ; pnpm install
-	@cd $(BUILDDIR)/nanokvm-pro/NanoKVM-Pro/web/ ; pnpm build
-	@cp -p $(BUILDDIR)/nanokvm-pro/NanoKVM-Pro/server/NanoKVM-Server $(NANOKVM_PRO_PACKAGE_DIR)/kvmapp/server/
+	@cd $(NANOKVM_PRO_BUILD_DIR)/support/scripts ; ./toolchain_setup.sh
+	@cd $(NANOKVM_PRO_BUILD_DIR)/server/ ; ./build.sh
+	@cd $(NANOKVM_PRO_BUILD_DIR)/web/ ; pnpm install
+	@cd $(NANOKVM_PRO_BUILD_DIR)/web/ ; pnpm build
+	@cp -p $(NANOKVM_PRO_BUILD_DIR)/server/NanoKVM-Server $(NANOKVM_PRO_PACKAGE_DIR)/kvmapp/server/
 	@rm -rf $(NANOKVM_PRO_PACKAGE_DIR)/kvmapp/server/web/
 	@mkdir $(NANOKVM_PRO_PACKAGE_DIR)/kvmapp/server/web/
-	@cp -r $(BUILDDIR)/nanokvm-pro/NanoKVM-Pro/web/dist/* $(NANOKVM_PRO_PACKAGE_DIR)/kvmapp/server/web/
+	@cp -r $(NANOKVM_PRO_BUILD_DIR)/web/dist/* $(NANOKVM_PRO_PACKAGE_DIR)/kvmapp/server/web/
 	@cd $(BUILDDIR)/nanokvm-pro ; rm -f nanokvm_pro_$(NANOKVM_PRO_VERSION)/nanokvmpro_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb
 	@cd $(BUILDDIR)/package/ && dpkg-deb --build nanokvmpro-$(NANOKVM_PRO_VERSION) nanokvmpro_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb
 	@cp $(BUILDDIR)/package/nanokvmpro_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb /output/
