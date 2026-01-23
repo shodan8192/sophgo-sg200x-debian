@@ -153,6 +153,15 @@ docker run --privileged -it --rm -v ./configs/:/configs -v ./image:/output -v ./
 ```
 inside the container, packages are build in the /builder/ directory, and the rootfs is placed at /rootfs/ directory
 
+## Other Images
+You can build images with a different Debian/Ubuntu version by adding DEB_DISTRO to make.
+
+Use podman/docker run like described above and choose one of the supported boards:
+```
+make ARCH=arm64 BOARD=nanokvmpro DEB_DISTRO=jammy image
+```
+In this example we build Ubuntu 22.04 for nanokvmpro.
+
 # TODO
 - DeviceTree Overlay Support
 - Possibly newer kernel support via the axera bsps
