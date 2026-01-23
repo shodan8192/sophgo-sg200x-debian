@@ -401,6 +401,9 @@ $(BUILDDIR)/bsp-prepare-checkout-stamp:
 
 $(BUILDDIR)/bsp-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $(BUILDDIR)/bsp-prepare-checkout-stamp
 	@echo "$(COLOUR_GREEN)Patching BSP for $(BOARD)$(END_COLOUR)"
+	@sed -i '/get-toolchain.sh/d' $(BUILDDIR)/bsp/build.sh
+	@sed -i 's|^CROSS_COMPILE_PATH=.*|CROSS_COMPILE_PATH=$(SBL_CROSS_COMPILE_PATH)|g' $(BUILDDIR)/bsp/scripts/envsetup_pack.sh
+	@sed -i 's|^CROSS_COMPILE=.*|CROSS_COMPILE=$(SBL_CROSS_COMPILE_PREFIX)|g' $(BUILDDIR)/bsp/scripts/envsetup_pack.sh
 	@sed -i 's|dtb EXTRA_CFLAGS|dtb BOARD=$(UBOOT_FAMILY) EXTRA_CFLAGS|g' $(BUILDDIR)/bsp/scripts/build-u-boot.sh
 	@touch $@
 
