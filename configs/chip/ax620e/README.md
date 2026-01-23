@@ -27,6 +27,12 @@ Logins: root/rv and debian/rv
 
 (root login is disabled via SSH, login via debian, and SU to root if needed)
 
+NanoKVM-Pro
+
+Web login: admin/admin
+
+SSH login: root/sipeed (if you change the web admin password the root password will be changed too)
+
 ### USB Gadget Support
 by default, a rndis interface is started on the USB port, and the IP address is
 10.x.y.1 - It also starts a DHCP Server on that interface, so your PC should automatically get an IP address in the 10.x.y.z range
