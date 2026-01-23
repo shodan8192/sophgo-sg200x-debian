@@ -104,7 +104,7 @@ $(BUILDDIR)/toolchain-prepare-patch-stamp:
 	@echo "$(COLOUR_GREEN)Patching Toolchain for $(BOARD)$(END_COLOUR)"
 	@if [ "$(UBOOT_ARCH)" = "arm" ]; then \
 		rm -rf /host-tools/gcc/riscv64-*/ ; \
-		cd / && /builder/replace-all-arm-toolchains.sh ; \
+		cd / && /builder/replace-all-arm-a-toolchains.sh ; \
 		mv /ramdisk $(BUILDDIR)/ ; \
 	else \
 		mkdir -p /host-tools/gcc ; \
