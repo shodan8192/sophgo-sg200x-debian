@@ -20,10 +20,10 @@ $(BUILDDIR)/nanokvm-pro-stamp: $(BUILDDIR)/nanokvm-pro/nanokvm_pro_latest.json
 	@$(eval NANOKVM_PRO_LATEST_FILE=$(shell cat $(BUILDDIR)/nanokvm-pro/nanokvm_pro_latest.json | jq -c '.name' | cut -d '"' -f 2))
 	@cd $(BUILDDIR)/nanokvm-pro ; wget -N "$(NANOKVM_PRO_BASE_URL)/$(NANOKVM_PRO_LATEST_FILE)"
 	@cd $(BUILDDIR)/nanokvm-pro ; tar xzf "$(NANOKVM_PRO_LATEST_FILE)"
-	@cd $(BUILDDIR)/nanokvm-pro/nanokvm_pro_* ; [ "$(DEB_DISTRO)" != "trixie" ] || wget -N https://launchpadlibrarian.net/723774273/libjpeg-turbo8_2.1.5-2ubuntu2_arm64.deb
+	@cd $(BUILDDIR)/nanokvm-pro/nanokvm_pro_* ; [ "$(findstring ubuntu,$(DEB_URL))" != "" ] || wget -N https://launchpadlibrarian.net/587202705/libjpeg-turbo8_2.1.2-0ubuntu1_arm64.deb
 	@cd $(BUILDDIR)/nanokvm-pro/nanokvm_pro_* ; [ "$(DEB_DISTRO)" != "trixie" ] || wget -N https://launchpadlibrarian.net/725377717/libconfig9_1.5-0.4build2_arm64.deb
-	@cd $(BUILDDIR)/nanokvm-pro/nanokvm_pro_* ; [ "$(DEB_DISTRO)" != "trixie" ] || wget -N https://launchpadlibrarian.net/571748137/libwebsockets16_4.0.20-2ubuntu1_arm64.deb
-	@cd $(BUILDDIR)/nanokvm-pro/nanokvm_pro_* ; [ "$(DEB_DISTRO)" != "trixie" ] || wget -N https://launchpadlibrarian.net/572052652/ttyd_1.6.3+20210924-1build1_arm64.deb
+	@cd $(BUILDDIR)/nanokvm-pro/nanokvm_pro_* ; [ "$(DEB_DISTRO)" = "jammy" ] || wget -N https://launchpadlibrarian.net/571748137/libwebsockets16_4.0.20-2ubuntu1_arm64.deb
+	@cd $(BUILDDIR)/nanokvm-pro/nanokvm_pro_* ; [ "$(findstring ubuntu,$(DEB_URL))" != "" ] || wget -N https://launchpadlibrarian.net/572052652/ttyd_1.6.3+20210924-1build1_arm64.deb
 	@cp -p $(BUILDDIR)/nanokvm-pro/nanokvm_pro_*/*.deb /output/
 	@mkdir -p /rootfs/tmp/install/
 	@cp -p $(BUILDDIR)/nanokvm-pro/nanokvm_pro_*/*.deb /rootfs/tmp/install/

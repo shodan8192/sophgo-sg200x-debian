@@ -545,6 +545,8 @@ $(BUILDDIR)/image-prepare-stamp:
 	@rm -rf /rootfs/
 	@-rm $(addon-targets)
 	@mkdir -p /rootfs/
+	@[ "X$(DEB_PUBKEY)" = "X" ] || gpg --recv-key --keyserver $(DEB_KEYSERVER) $(DEB_PUBKEY)
+	@[ "X$(DEB_PUBKEY)" = "X" ] || gpg --export $(DEB_PUBKEY) > /etc/apt/trusted.gpg.d/distro-archive-keyring.gpg
 	@curl -v -L https://scpcom.github.io/scpcom-packages.asc -o $(BUILDDIR)/public-key.asc
 	@mmdebstrap -v --architectures=$(DEB_ARCH) --include="$(_PACKAGES)" $(DEB_DISTRO) "/rootfs/" "deb $(DEB_URL)/ $(DEB_DISTRO) $(DEB_COMPONENTS)" "deb [signed-by=$(BUILDDIR)/public-key.asc] https://scpcom.github.io/deb stable $(CHIP_FAMILY) $(BOARD)-$(VARIANT)"
 	@touch $@
@@ -599,6 +601,8 @@ $(BUILDDIR)/image-customize-stamp: $(BUILDDIR)/image-addons-stamp $(BUILDDIR)/li
 	@echo $(VARIANT) > /rootfs/tmp/install/variant
 	@echo $(STORAGE_TYPE) > /rootfs/tmp/install/storage
 	@echo "deb $(DEB_URL) $(DEB_DISTRO) $(DEB_COMPONENTS_FULL)" > /rootfs/tmp/install/deb_sources
+	@[ "$(DEB_DISTRO)" != "jammy" -o -e /rootfs/etc/resolv.conf-dist ] || mv /rootfs/etc/resolv.conf /rootfs/etc/resolv.conf-dist
+	@[ "$(DEB_DISTRO)" != "jammy" ] || cp -p /etc/resolv.conf /rootfs/etc/
 	@cp -v /usr/bin/qemu-$(QEMU_ARCH)-static /rootfs/tmp/install/
 	@cp -v /configs/chip/$(CHIP_FAMILY)/setup_rootfs.sh /rootfs/tmp/install/
 	@cp -v $(BUILDDIR)/public-key.asc /rootfs/tmp/install/

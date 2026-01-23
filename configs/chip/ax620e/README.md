@@ -27,6 +27,12 @@ Logins: root/rv and debian/rv
 
 (root login is disabled via SSH, login via debian, and SU to root if needed)
 
+NanoKVM-Pro
+
+Web login: admin/admin
+
+SSH login: root/sipeed (if you change the web admin password the root password will be changed too)
+
 ### USB Gadget Support
 by default, a rndis interface is started on the USB port, and the IP address is
 10.x.y.1 - It also starts a DHCP Server on that interface, so your PC should automatically get an IP address in the 10.x.y.z range
@@ -146,6 +152,15 @@ To assist with developing the image, you can get a shell in the docker container
 docker run --privileged -it --rm -v ./configs/:/configs -v ./image:/output -v ./scripts/:/builder builder /bin/bash
 ```
 inside the container, packages are build in the /builder/ directory, and the rootfs is placed at /rootfs/ directory
+
+## Other Images
+You can build images with a different Debian/Ubuntu version by adding DEB_DISTRO to make.
+
+Use podman/docker run like described above and choose one of the supported boards:
+```
+make ARCH=arm64 BOARD=nanokvmpro DEB_DISTRO=jammy image
+```
+In this example we build Ubuntu 22.04 for nanokvmpro.
 
 # TODO
 - DeviceTree Overlay Support
