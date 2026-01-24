@@ -625,6 +625,9 @@ $(BUILDDIR)/image-compile-stamp: $(BUILDDIR)/image-customize-stamp
 	@[ "$(GIT_REF)" = "develop" ] || rm -rf $(BR_OUTPUT_DIR)/per-package
 	@[ "$(GIT_REF)" = "develop" ] || rm -rf $(BUILDDIR)/bsp/build/dl/
 	@[ "$(GIT_REF)" = "develop" ] || rm -rf $(BUILDDIR)/bsp/toolchain/gcc-*/
+	@[ "$(GIT_REF)" = "develop" ] || rm -rf $(BUILDDIR)/nanokvm-pro/NanoKVM-Pro/server/vendor/
+	@[ "$(GIT_REF)" = "develop" ] || rm -rf $(BUILDDIR)/nanokvm-pro/NanoKVM-Pro/support/toolchains/
+	@[ "$(GIT_REF)" = "develop" ] || rm -rf $(BUILDDIR)/nanokvm-pro/NanoKVM-Pro/web/node_modules
 	@[ "$(GIT_REF)" = "develop" ] || rm -f /builder/gcc-*.tar.*
 	@[ "$(GIT_REF)" = "develop" ] || rm -rf /host-tools/gcc/
 	@rm -rf /tmp/genimage/
