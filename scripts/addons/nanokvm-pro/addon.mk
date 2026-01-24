@@ -19,7 +19,8 @@ fbtft.ko \
 fb_jd9853.ko \
 gpio_keys.ko \
 lt6911_manage.ko \
-rotary_encoder.ko
+rotary_encoder.ko \
+wireguard.ko
 
 $(BUILDDIR)/nanokvm-pro/nanokvm_pro_latest.json:
 	@mkdir -p $(BUILDDIR)/nanokvm-pro
