@@ -104,7 +104,7 @@ $(BUILDDIR)/toolchain-prepare-patch-stamp:
 	@echo "$(COLOUR_GREEN)Patching Toolchain for $(BOARD)$(END_COLOUR)"
 	@if [ "$(UBOOT_ARCH)" = "arm" ]; then \
 		rm -rf /host-tools/gcc/riscv64-*/ ; \
-		cd / && /builder/replace-all-arm-toolchains.sh ; \
+		cd / && /builder/replace-all-arm-a-toolchains.sh ; \
 		mv /ramdisk $(BUILDDIR)/ ; \
 	else \
 		mkdir -p /host-tools/gcc ; \
@@ -616,15 +616,6 @@ $(BUILDDIR)/image-customize-stamp: $(BUILDDIR)/image-addons-stamp $(BUILDDIR)/li
 	@umount /rootfs/sys || true 
 	@umount /rootfs/run || true 
 	@umount /rootfs/dev || true
-	@mkdir -p /rootfs/kvmcomm/ko/
-	@cp -p $(BSP_INSTALL_DIR)/ko/f_udisp_drv.ko /rootfs/kvmcomm/ko/
-	@cp -p $(BSP_INSTALL_DIR)/ko/fbtft.ko /rootfs/kvmcomm/ko/
-	@cp -p $(BSP_INSTALL_DIR)/ko/fb_jd9853.ko /rootfs/kvmcomm/ko/
-	@cp -p $(BSP_INSTALL_DIR)/ko/gpio_keys.ko /rootfs/kvmcomm/ko/
-	@cp -p $(BSP_INSTALL_DIR)/ko/lt6911_manage.ko /rootfs/kvmcomm/ko/
-	@cp -p $(BSP_INSTALL_DIR)/ko/rotary_encoder.ko /rootfs/kvmcomm/ko/
-	@cp -p $(BSP_INSTALL_DIR)/ko/aic8800_*.ko /rootfs/soc/ko/
-	@cp -p $(BSP_INSTALL_DIR)/ko/hynitron_touch.ko /rootfs/soc/ko/
 	@touch $@
 
 $(BUILDDIR)/image-compile-stamp: $(BUILDDIR)/image-customize-stamp
