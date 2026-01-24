@@ -641,7 +641,8 @@ $(BUILDDIR)/image-compile-stamp: $(BUILDDIR)/image-customize-stamp
 		mkdir -p /tmp/rom/; \
 		rm -f $(BUILDDIR)/images/boot.vfat ; \
 		rm -f $(BUILDDIR)/images/root.ext4 ; \
-		mv $(BUILDDIR)/images/sdcard.img /tmp/rom/$(BOARD)_$(GIT_REF).img; \
+		mkdir -p /tmp/rom/root/ ; \
+		mv $(BUILDDIR)/images/sdcard.img /tmp/rom/root/$(BOARD)_$(GIT_REF).img; \
 		mkdir -p /tmp/rom/boot/ ; \
 		cp -p $(BSP_INSTALL_DIR)/atf.img /tmp/rom/boot/ ; \
 		cp -p $(BSP_INSTALL_DIR)/boot.bin.tmp /tmp/rom/boot/boot.bin ; \
