@@ -5,6 +5,10 @@ endif
 NANOKVM_PRO_GIT_REF = c6ba5c8a0313d7817db9fe63f3a308d0f21c2996
 NANOKVM_PRO_GIT_URL = https://github.com/sipeed/NanoKVM-Pro
 
+NANOKVM_PRO_GO_VENDOR_REF = f573cc27f239da8ce24646e4dbe91410c88b1c03
+NANOKVM_PRO_GO_VENDOR_URL = https://github.com/scpcom/nanokvm-pro-server-vendor
+NANOKVM_PRO_GOMOD = server
+
 NANOKVM_PRO_STABLE_URL = https://cdn.sipeed.com/nanokvm
 NANOKVM_PRO_BASE_URL ?= $(NANOKVM_PRO_STABLE_URL)
 
@@ -43,6 +47,8 @@ $(BUILDDIR)/nanokvm-pro-stamp: $(BUILDDIR)/nanokvm-pro/nanokvm_pro_latest.json
 	@npm install -g pnpm
 	@cd $(BUILDDIR)/nanokvm-pro && git clone $(NANOKVM_PRO_GIT_URL)
 	@cd $(NANOKVM_PRO_BUILD_DIR) && git checkout $(NANOKVM_PRO_GIT_REF)
+	@cd $(NANOKVM_PRO_BUILD_DIR)/$(NANOKVM_PRO_GOMOD) && git clone --depth 1 $(NANOKVM_PRO_GO_VENDOR_URL) vendor
+	@cd $(NANOKVM_PRO_BUILD_DIR)/$(NANOKVM_PRO_GOMOD)/vendor && git checkout $(NANOKVM_PRO_GO_VENDOR_REF)
 	@$(foreach file, $(wildcard /configs/common/patches/nanokvm-pro/*.patch), cd $(NANOKVM_PRO_BUILD_DIR) && git apply --ignore-whitespace $(file);)
 	@$(foreach file, $(wildcard /configs/chip/$(CHIP_CFG)/patches/nanokvm-pro/*.patch), cd $(NANOKVM_PRO_BUILD_DIR) && git apply --ignore-whitespace $(file);)
 	@$(foreach file, $(wildcard /configs/$(BOARD_CFG)/patches/nanokvm-pro/*.patch), cd $(NANOKVM_PRO_BUILD_DIR) && git apply --ignore-whitespace $(file);)
