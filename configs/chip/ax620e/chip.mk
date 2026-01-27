@@ -396,7 +396,7 @@ $(BUILDDIR)/bsp-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out BSP for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
 	@git clone -b main $(GIT_CLONE_OPTS) --recursive https://github.com/scpcom/ax620e-bsp-build $(BUILDDIR)/bsp
-	@cd $(BUILDDIR)/bsp && git checkout 1593ec3
+	@cd $(BUILDDIR)/bsp && git checkout 0db36f9
 	@touch $@
 
 $(BUILDDIR)/bsp-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $(BUILDDIR)/bsp-prepare-checkout-stamp
