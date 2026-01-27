@@ -210,7 +210,7 @@ $(BUILDDIR)/osdrv-prepare-configure-stamp: $(BUILDDIR)/osdrv-prepare-patch-stamp
 $(BUILDDIR)/osdrv-compile-stamp: $(BUILDDIR)/bsp-compile-stamp $(BUILDDIR)/osdrv-prepare-configure-stamp
 	@echo "$(COLOUR_GREEN)Building OSdrv for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)/osdrv/ko
-	@cp -p $(BUILDDIR)/bsp/axerabin/ax630c/rootfs/soc/ko/ax_*.ko $(BUILDDIR)/osdrv/ko/
+	@cp -p $(BUILDDIR)/bsp/axerabin/$(CHIP)/rootfs/soc/ko/ax_*.ko $(BUILDDIR)/osdrv/ko/
 	@touch $@
 
 $(BUILDDIR)/osdrv-package-stamp: $(BUILDDIR)/osdrv-compile-stamp
@@ -285,7 +285,7 @@ $(BUILDDIR)/middleware-prepare-configure-stamp: $(BUILDDIR)/middleware-prepare-p
 $(BUILDDIR)/middleware-compile-stamp: $(BUILDDIR)/middleware-prepare-configure-stamp
 	@echo "$(COLOUR_GREEN)Building Middleware for $(BOARD)$(END_COLOUR)"
 	@mkdir -pv $(BUILDDIR)/middleware/install/system/lib/
-	@cp -p $(BUILDDIR)/bsp/axerabin/ax630c/rootfs/opt/lib/*.so* $(BUILDDIR)/middleware/install/system/lib/
+	@cp -p $(BUILDDIR)/bsp/axerabin/$(CHIP)/rootfs/opt/lib/*.so* $(BUILDDIR)/middleware/install/system/lib/
 	@touch $@
 
 $(BUILDDIR)/middleware-package-stamp: $(BUILDDIR)/middleware-compile-stamp
@@ -419,14 +419,14 @@ $(BUILDDIR)/bsp-package-stamp: $(BUILDDIR)/bsp-compile-stamp
 	@mkdir -p $(BSP_PACKAGE_DIR)
 	@cp -r /builder/deb/linux-image-sg200x/* $(BSP_PACKAGE_DIR)/
 	@mkdir -pv $(BSP_PACKAGE_DIR)/etc/
-	@cp -p -r $(BUILDDIR)/bsp/axerabin/ax630c/rootfs/etc/* $(BSP_PACKAGE_DIR)/etc/
+	@cp -p -r $(BUILDDIR)/bsp/axerabin/$(CHIP)/rootfs/etc/* $(BSP_PACKAGE_DIR)/etc/
 	@mv $(BSP_PACKAGE_DIR)/etc/rc.local $(BSP_PACKAGE_DIR)/etc/rc.local.$(CHIP_VENDOR)
 	@mkdir -pv $(BSP_PACKAGE_DIR)/opt/scripts/
-	@cp -p -r $(BUILDDIR)/bsp/axerabin/ax630c/rootfs/opt/scripts/* $(BSP_PACKAGE_DIR)/opt/scripts/
+	@cp -p -r $(BUILDDIR)/bsp/axerabin/$(CHIP)/rootfs/opt/scripts/* $(BSP_PACKAGE_DIR)/opt/scripts/
 	@mkdir -pv $(BSP_PACKAGE_DIR)/soc/scripts/
-	@cp -p -r $(BUILDDIR)/bsp/axerabin/ax630c/rootfs/soc/scripts/* $(BSP_PACKAGE_DIR)/soc/scripts/
+	@cp -p -r $(BUILDDIR)/bsp/axerabin/$(CHIP)/rootfs/soc/scripts/* $(BSP_PACKAGE_DIR)/soc/scripts/
 	@mkdir -pv $(BSP_PACKAGE_DIR)/usr/
-	@cp -p -r $(BUILDDIR)/bsp/axerabin/ax630c/rootfs/usr/* $(BSP_PACKAGE_DIR)/usr/
+	@cp -p -r $(BUILDDIR)/bsp/axerabin/$(CHIP)/rootfs/usr/* $(BSP_PACKAGE_DIR)/usr/
 	@rm -f $(BSP_PACKAGE_DIR)/usr/bin/fw_*env
 	@sed -i 's/Architecture: riscv64/Architecture: $(DEB_ARCH)/' $(BSP_PACKAGE_DIR)/DEBIAN/control
 	@sed -i 's/Version: 1.0.0-1/Version: $(OSDRVVERSION)$(BSPRELEASE)/' $(BSP_PACKAGE_DIR)/DEBIAN/control
@@ -441,7 +441,7 @@ $(BUILDDIR)/bsp-package-stamp: $(BUILDDIR)/bsp-compile-stamp
 	@cd $(BUILDDIR)/package/ && dpkg-deb --build $(CHIP_VENDOR)-bsp-$(BOARD)-$(VARIANT) $(CHIP_VENDOR)-bsp-$(BOARD)-$(VARIANT)_$(OSDRVVERSION)$(BSPRELEASE)_$(DEB_ARCH).deb
 	@cp $(BUILDDIR)/package/$(CHIP_VENDOR)-bsp-$(BOARD)-$(VARIANT)_$(OSDRVVERSION)$(BSPRELEASE)_$(DEB_ARCH).deb /output/
 	@mkdir -p /rootfs/etc/
-	@cp -p $(BUILDDIR)/bsp/axerabin/ax630c/rootfs/etc/rc.local /rootfs/etc/
+	@cp -p $(BUILDDIR)/bsp/axerabin/$(CHIP)/rootfs/etc/rc.local /rootfs/etc/
 	@mkdir -p /rootfs/tmp/install/
 	@cp /output/$(CHIP_VENDOR)-bsp-*.deb /rootfs/tmp/install/
 	@echo " wifi" >> /rootfs/tmp/install/systemd-enable
