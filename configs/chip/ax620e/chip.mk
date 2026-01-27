@@ -402,9 +402,15 @@ $(BUILDDIR)/bsp-prepare-checkout-stamp:
 $(BUILDDIR)/bsp-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $(BUILDDIR)/bsp-prepare-checkout-stamp
 	@echo "$(COLOUR_GREEN)Patching BSP for $(BOARD)$(END_COLOUR)"
 	@sed -i '/get-toolchain.sh/d' $(BUILDDIR)/bsp/build.sh
+	@sed -i 's|^BOARD_DTS=.*|BOARD_DTS=$(BOARD_DTS)|g' $(BUILDDIR)/bsp/scripts/envsetup_pack.sh
 	@sed -i 's|^CROSS_COMPILE_PATH=.*|CROSS_COMPILE_PATH=$(SBL_CROSS_COMPILE_PATH)|g' $(BUILDDIR)/bsp/scripts/envsetup_pack.sh
 	@sed -i 's|^CROSS_COMPILE=.*|CROSS_COMPILE=$(SBL_CROSS_COMPILE_PREFIX)|g' $(BUILDDIR)/bsp/scripts/envsetup_pack.sh
 	@sed -i 's|dtb EXTRA_CFLAGS|dtb BOARD=$(UBOOT_FAMILY) EXTRA_CFLAGS|g' $(BUILDDIR)/bsp/scripts/build-u-boot.sh
+	@if [ "X$(findstring kvm,$(VARIANT))" = "X" ]; then \
+		sed -i /'devmem 0x10030028'/d $(BUILDDIR)/bsp/axerabin/$(CHIP)/rootfs/etc/rc.local ; \
+		sed -i s/'if ! systemctl is-active --quiet sysdev.service'/'if false'/g $(BUILDDIR)/bsp/axerabin/$(CHIP)/rootfs/etc/rc.local ; \
+		sed -i s/'systemctl enable --now sysdev.service'/'true # no sysdev.service'/g $(BUILDDIR)/bsp/axerabin/$(CHIP)/rootfs/etc/rc.local ; \
+	fi
 	@touch $@
 
 $(BUILDDIR)/bsp-compile-stamp: $(BUILDDIR)/bsp-prepare-patch-stamp
@@ -618,9 +624,15 @@ $(BUILDDIR)/image-customize-stamp: $(BUILDDIR)/image-addons-stamp $(BUILDDIR)/li
 	@umount /rootfs/dev || true
 	@touch $@
 
+ifneq ("$(findstring kvm,$(VARIANT))","")
+IMAGE_APP_VERSION ?= $(NANOKVM_PRO_VERSION)
+else
+MAIX_PY_VERSION ?= 4.12.4
+IMAGE_APP_VERSION ?= $(MAIX_PY_VERSION)
+endif
+
 $(BUILDDIR)/image-compile-stamp: $(BUILDDIR)/image-customize-stamp
 	@echo "$(COLOUR_GREEN)Compiling Image for $(BOARD)$(END_COLOUR)"
-	@$(eval NANOKVM_PRO_LATEST_VER=$(shell cat $(BUILDDIR)/nanokvm-pro/nanokvm_pro_latest.json | jq -c '.version' | cut -d '"' -f 2))
 	@[ "$(GIT_REF)" = "develop" ] || rm -rf $(BR_DIR)/dl
 	@[ "$(GIT_REF)" = "develop" ] || rm -rf $(BR_OUTPUT_DIR)/per-package
 	@[ "$(GIT_REF)" = "develop" ] || rm -rf $(BUILDDIR)/bsp/build/dl/
@@ -653,7 +665,7 @@ $(BUILDDIR)/image-compile-stamp: $(BUILDDIR)/image-customize-stamp
 		cd $(BUILDDIR) && genimage --config /configs/chip/$(CHIP_FAMILY)/genimage_sd.cfg --tmppath /tmp/genimage --rootpath /tmp/rom/ ; \
 		mv $(BUILDDIR)/images/sdcard.img $(BUILDDIR)/images/$(BOARD)_sdcard.img ; \
 		echo "Image Version: $(GIT_REF)" > $(BUILDDIR)/images/README.md ; \
-		echo "App Version: $(NANOKVM_PRO_LATEST_VER)" >> $(BUILDDIR)/images/README.md ; \
+		echo "App Version: $(IMAGE_APP_VERSION)" >> $(BUILDDIR)/images/README.md ; \
 		cd $(BUILDDIR)/images && zip /output/$(BOARD)_sdcard.zip $(BOARD)_sdcard.img README.md ; \
 		echo "$(COLOUR_GREEN)Image for $(BOARD) is $(BOARD)_sdcard.zip$(END_COLOUR)"; \
 	fi
