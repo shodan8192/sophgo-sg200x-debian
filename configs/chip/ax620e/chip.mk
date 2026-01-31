@@ -436,7 +436,7 @@ $(BUILDDIR)/bsp-prepare-checkout-stamp:
 	@cd $(BUILDDIR)/bsp && git checkout 8d73032
 	@touch $@
 
-$(BUILDDIR)/bsp-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $(BUILDDIR)/bsp-prepare-checkout-stamp
+$(BUILDDIR)/bsp-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $(BUILDDIR)/bsp-prepare-checkout-stamp $(BUILDDIR)/uboot-prepare-patch-stamp $(BUILDDIR)/linux-prepare-patch-stamp
 	@echo "$(COLOUR_GREEN)Patching BSP for $(BOARD)$(END_COLOUR)"
 	@$(eval BSP_ROOTFS_SOURCE_DIR=$(BUILDDIR)/bsp/axerabin/$(CHIP)/rootfs)
 	@sed -i '/get-toolchain.sh/d' $(BUILDDIR)/bsp/build.sh
