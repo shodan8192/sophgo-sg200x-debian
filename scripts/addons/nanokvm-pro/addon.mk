@@ -106,7 +106,7 @@ $(BUILDDIR)/nanokvm-pro/firmware_latest.json: $(BUILDDIR)/nanokvm-pro-kvmcomm-st
 	@cd $(BUILDDIR)/nanokvm-pro ; wget -N "$(NANOKVM_PRO_BASE_URL)/pro/$(NANOKVM_PRO_FIRMWARE_JSON)" || wget -N "$(NANOKVM_PRO_BASE_URL)/pro/preview/$(NANOKVM_PRO_FIRMWARE_JSON)"
 	@cd $(BUILDDIR)/nanokvm-pro ; cp -p "$(NANOKVM_PRO_FIRMWARE_JSON)" firmware_latest.json
 
-$(BUILDDIR)/nanokvm-pro-firmware-stamp: $(BUILDDIR)/nanokvm-pro/firmware_latest.json
+$(BUILDDIR)/nanokvm-pro-firmware-stamp: $(BUILDDIR)/aic8800-firmware-stamp $(BUILDDIR)/nanokvm-pro/firmware_latest.json
 	@$(eval NANOKVM_PRO_FIRMWARE_FILE=$(shell cat $(BUILDDIR)/nanokvm-pro/$(NANOKVM_PRO_FIRMWARE_JSON) | jq -c '.name' | cut -d '"' -f 2))
 	@$(eval NANOKVM_PRO_FIRMWARE_PACKAGE_DIR=$(BUILDDIR)/nanokvm-pro/axera_firmware_v$(NANOKVM_PRO_FIRMWARE_VERSION))
 	@cd $(BUILDDIR)/nanokvm-pro ; wget -N "$(NANOKVM_PRO_BASE_URL)/pro/$(NANOKVM_PRO_FIRMWARE_FILE)" || wget -N "$(NANOKVM_PRO_BASE_URL)/pro/preview/$(NANOKVM_PRO_FIRMWARE_FILE)"
@@ -117,6 +117,7 @@ $(BUILDDIR)/nanokvm-pro-firmware-stamp: $(BUILDDIR)/nanokvm-pro/firmware_latest.
 		cp $(BSP_INSTALL_DIR)/dtb.img $$f ; \
 	done
 	@cp $(BSP_INSTALL_DIR)/kernel.img $(NANOKVM_PRO_FIRMWARE_PACKAGE_DIR)/firmware/boot_signed.bin
+	@cp -a $(AIC8800_PACKAGE_DIR)$(AIC8800_TARGET_DIR)/* $(NANOKVM_PRO_FIRMWARE_PACKAGE_DIR)/overlay/opt/firmware/
 	@cp -p $(BSP_INSTALL_DIR)/ko/aic8800_*.ko $(NANOKVM_PRO_FIRMWARE_PACKAGE_DIR)/overlay/soc/ko/
 	@cp /configs/$(BOARD_CFG)/boot/configs $(NANOKVM_PRO_FIRMWARE_PACKAGE_DIR)/overlay/boot/
 	@echo "nanokvm-pro-$$(date +%Y-%m-%d)-v$(NANOKVM_PRO_FIRMWARE_VERSION)" > $(NANOKVM_PRO_FIRMWARE_PACKAGE_DIR)/overlay/boot/ver
