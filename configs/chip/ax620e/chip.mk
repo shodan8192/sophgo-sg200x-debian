@@ -433,8 +433,9 @@ endef
 $(BUILDDIR)/bsp-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out BSP for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
-	@git clone -b main $(GIT_CLONE_OPTS) --recursive https://github.com/scpcom/ax620e-bsp-build $(BUILDDIR)/bsp
+	@git clone -b main $(GIT_CLONE_OPTS) --shallow-submodules https://github.com/scpcom/ax620e-bsp-build $(BUILDDIR)/bsp
 	@cd $(BUILDDIR)/bsp && git checkout 89c7d70
+	@cd $(BUILDDIR)/bsp && git submodule update --init --recursive --depth=1
 	@touch $@
 
 $(BUILDDIR)/bsp-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $(BUILDDIR)/bsp-prepare-checkout-stamp $(BUILDDIR)/uboot-prepare-patch-stamp $(BUILDDIR)/linux-prepare-patch-stamp
