@@ -116,6 +116,7 @@ $(BUILDDIR)/nanokvm-pro-firmware-stamp: $(BUILDDIR)/nanokvm-pro/firmware_latest.
 	done
 	@cp $(BSP_INSTALL_DIR)/kernel.img $(NANOKVM_PRO_FIRMWARE_PACKAGE_DIR)/firmware/boot_signed.bin
 	@cp -p $(BSP_INSTALL_DIR)/ko/aic8800_*.ko $(NANOKVM_PRO_FIRMWARE_PACKAGE_DIR)/overlay/soc/ko/
+	@echo "nanokvm-pro-$$(date +%Y-%m-%d)-v$(NANOKVM_PRO_FIRMWARE_VERSION)" > $(NANOKVM_PRO_FIRMWARE_PACKAGE_DIR)/overlay/boot/ver
 	@cd $(NANOKVM_PRO_FIRMWARE_PACKAGE_DIR) && $(NANOKVM_PRO_KVMCOMM_PACKAGE_DIR)/kvmcomm/scripts/firmware_update.sh gen_b2sum
 	@cd $(NANOKVM_PRO_FIRMWARE_PACKAGE_DIR) && tar cJf /output/"$(BOARD)-$(NANOKVM_PRO_FIRMWARE_FILE)" .
 	#@cp -p $(BUILDDIR)/nanokvm-pro/$(NANOKVM_PRO_FIRMWARE_FILE) /output/
