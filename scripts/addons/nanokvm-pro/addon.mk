@@ -118,6 +118,7 @@ $(BUILDDIR)/nanokvm-pro-firmware-stamp: $(BUILDDIR)/aic8800-firmware-stamp $(BUI
 	@cp -p $(BSP_INSTALL_DIR)/ko/aic8800_*.ko $(NANOKVM_PRO_FIRMWARE_PACKAGE_DIR)/overlay/soc/ko/
 	@mkdir -p $(NANOKVM_PRO_FIRMWARE_PACKAGE_DIR)/overlay/boot/
 	@cp /configs/$(BOARD_CFG)/boot/configs $(NANOKVM_PRO_FIRMWARE_PACKAGE_DIR)/overlay/boot/
+	sed -i s/'^maix_memory_cmm=.*'/'maix_memory_cmm=$(ION_SIZE)'/g $(NANOKVM_PRO_FIRMWARE_PACKAGE_DIR)/overlay/boot/configs
 	@echo "nanokvm-pro-$$(date +%Y-%m-%d)-v$(NANOKVM_PRO_FIRMWARE_VERSION)" > $(NANOKVM_PRO_FIRMWARE_PACKAGE_DIR)/overlay/boot/ver
 	@cd $(NANOKVM_PRO_FIRMWARE_PACKAGE_DIR) && $(NANOKVM_PRO_KVMCOMM_PACKAGE_DIR)/kvmcomm/scripts/firmware_update.sh gen_b2sum
 	@cd $(NANOKVM_PRO_FIRMWARE_PACKAGE_DIR) && tar cJf /output/"$(BOARD)-$(NANOKVM_PRO_FIRMWARE_FILE)" *
