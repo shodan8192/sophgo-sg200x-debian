@@ -112,6 +112,7 @@ $(BUILDDIR)/nanokvm-pro-firmware-stamp: $(BUILDDIR)/aic8800-firmware-stamp $(BUI
 	@cd $(BUILDDIR)/nanokvm-pro ; wget -N "$(NANOKVM_PRO_BASE_URL)/pro/$(NANOKVM_PRO_FIRMWARE_FILE)" || wget -N "$(NANOKVM_PRO_BASE_URL)/pro/preview/$(NANOKVM_PRO_FIRMWARE_FILE)"
 	@mkdir -p $(NANOKVM_PRO_FIRMWARE_PACKAGE_DIR)
 	@cd $(NANOKVM_PRO_FIRMWARE_PACKAGE_DIR) && tar xJf ../"$(NANOKVM_PRO_FIRMWARE_FILE)"
+	@cp -p $(NANOKVM_PRO_KVMCOMM_PACKAGE_DIR)/kvmcomm/scripts/firmware_update.sh $(NANOKVM_PRO_FIRMWARE_PACKAGE_DIR)/
 	@cp $(BSP_INSTALL_DIR)/uboot.bin $(NANOKVM_PRO_FIRMWARE_PACKAGE_DIR)/firmware/u-boot_signed.bin
 	@for f in $(NANOKVM_PRO_FIRMWARE_PACKAGE_DIR)/firmware/*.dtb ; do \
 		cp $(BSP_INSTALL_DIR)/dtb.img $$f ; \
