@@ -28,6 +28,8 @@ lt6911_manage.ko \
 rotary_encoder.ko \
 wireguard.ko
 
+NANOKVM_PRO_KVMCOMM_PACKAGE_DIR = $(BUILDDIR)/package/kvmcomm-$(NANOKVM_PRO_VERSION)
+
 $(BUILDDIR)/nanokvm-pro/nanokvm_pro_latest.json:
 	@mkdir -p $(BUILDDIR)/nanokvm-pro
 	@cd $(BUILDDIR)/nanokvm-pro ; wget -q -O nanokvm_pro_latest.json "$(NANOKVM_PRO_BASE_URL)/nanokvm_pro_latest.json?now=$(shell date +%s)"
@@ -85,7 +87,6 @@ $(BUILDDIR)/nanokvm-pro-package-stamp: $(BUILDDIR)/nanokvm-pro-prepare-stamp
 	@touch $@
 
 $(BUILDDIR)/nanokvm-pro-kvmcomm-stamp: $(BUILDDIR)/nanokvm-pro-prepare-stamp
-	@$(eval NANOKVM_PRO_KVMCOMM_PACKAGE_DIR=$(BUILDDIR)/package/kvmcomm-$(NANOKVM_PRO_VERSION))
 	@cd $(BUILDDIR)/nanokvm-pro ; dpkg-deb -R nanokvm_pro_$(NANOKVM_PRO_VERSION)/kvmcomm_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb $(NANOKVM_PRO_KVMCOMM_PACKAGE_DIR)
 	@for f in $(NANOKVM_PRO_KVMCOMM_MODULES) ; do \
 		cp -p $(BSP_INSTALL_DIR)/ko/$$f $(NANOKVM_PRO_KVMCOMM_PACKAGE_DIR)/kvmcomm/ko/ ; \
