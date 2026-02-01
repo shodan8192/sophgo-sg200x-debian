@@ -107,9 +107,6 @@ $(BUILDDIR)/toolchain-prepare-patch-stamp:
 		rm -rf /host-tools/gcc/riscv64-*/ ; \
 		cd / && /builder/replace-all-arm-a-toolchains.sh ; \
 		mv /ramdisk $(BUILDDIR)/ ; \
-	else \
-		mkdir -p /host-tools/gcc ; \
-		wget -O - https://github.com/scpcom/riscv-gnu-toolchain/releases/download/riscv64-gcc-thead_20241206-10.4.0-x86_64/riscv64-linux-gcc-thead_20241206-10.4.0-x86_64.tar.gz | tar -C /host-tools/gcc -xz ; \
 	fi
 	@#cd / && /builder/fix-thead-glibc-toolchain.sh
 	@touch $@
