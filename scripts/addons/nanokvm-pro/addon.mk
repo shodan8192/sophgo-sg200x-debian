@@ -9,7 +9,7 @@ NANOKVM_PRO_SHA256 = 4e914ea0fc1980132314f782c062bd7b61352017c39ccd590625696d0f5
 NANOKVM_PRO_VERSION = 1.2.13
 
 NANOKVM_PRO_GO_VENDOR_REF = f573cc27f239da8ce24646e4dbe91410c88b1c03
-NANOKVM_PRO_GO_VENDOR_URL = https://github.com/scpcom/nanokvm-pro-server-vendor
+NANOKVM_PRO_GO_VENDOR_URL = $(GIT_USER_URL)/nanokvm-pro-server-vendor
 NANOKVM_PRO_GOMOD = server
 
 NANOKVM_PRO_STABLE_URL = https://cdn.sipeed.com/nanokvm

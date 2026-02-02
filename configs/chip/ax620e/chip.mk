@@ -318,10 +318,10 @@ middleware-clean:
 $(BUILDDIR)/buildroot-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out Buildroot for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
-	@git clone -b nanokvm-2025.02 $(GIT_CLONE_OPTS) --recursive https://github.com/scpcom/buildroot.git $(BUILDDIR)/buildroot
+	@git clone -b nanokvm-2025.02 $(GIT_CLONE_OPTS) --recursive $(GIT_USER_URL)/buildroot.git $(BUILDDIR)/buildroot
 	@cd $(BR_DIR) && git checkout 1ef3acd
 	@mkdir -p $(BUILDDIR)/ramdisk/tools
-	@git clone -b main https://github.com/scpcom/cvi-pinmux $(BUILDDIR)/ramdisk/tools/cvi_pinmux
+	@git clone -b main $(GIT_USER_URL)/cvi-pinmux $(BUILDDIR)/ramdisk/tools/cvi_pinmux
 	@touch $@
 
 $(BUILDDIR)/buildroot-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $(BUILDDIR)/buildroot-prepare-checkout-stamp $(BUILDDIR)/middleware-compile-stamp
@@ -430,7 +430,7 @@ endef
 $(BUILDDIR)/bsp-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out BSP for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
-	@git clone -b main $(GIT_CLONE_OPTS) --shallow-submodules https://github.com/scpcom/ax620e-bsp-build $(BUILDDIR)/bsp
+	@git clone -b main $(GIT_CLONE_OPTS) --shallow-submodules $(GIT_USER_URL)/ax620e-bsp-build $(BUILDDIR)/bsp
 	@cd $(BUILDDIR)/bsp && git checkout 89c7d70
 	@cd $(BUILDDIR)/bsp && git submodule update --init --recursive --depth=1
 	@touch $@

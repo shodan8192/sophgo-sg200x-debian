@@ -11,7 +11,7 @@ $(BUILDDIR)/aic8800-firmware-stamp:
 	@$(eval AIC8800RELEASE=$(shell echo "2"))
 	@rm -rf $(BUILDDIR)/aic8800-firmware
 	@git clone --depth 1 https://github.com/armbian/firmware.git $(BUILDDIR)/aic8800-firmware
-	@git clone --depth 1 https://github.com/scpcom/aic8800-sdio-firmware $(BUILDDIR)/aic8800-sdio-firmware
+	@git clone --depth 1 $(GIT_USER_URL)/aic8800-sdio-firmware $(BUILDDIR)/aic8800-sdio-firmware
 	@echo "$(COLOUR_GREEN)Packaging aic8800-firmware for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(AIC8800_PACKAGE_DIR)
 	@cp -r /builder/deb/firmware-aic8800-cv181x/* $(AIC8800_PACKAGE_DIR)/
