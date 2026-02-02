@@ -1,3 +1,5 @@
+ZRAM_CONFIG_GIT_URL ?= https://github.com/ecdye/zram-config
+
 ZRAM_CONFIG_VERSION = 1.7.0
 
 ZRAM_CONFIG_PACKAGE_DIR = $(BUILDDIR)/package/zram-config-$(BOARD)-$(ZRAM_CONFIG_VERSION)
@@ -8,7 +10,7 @@ $(BUILDDIR)/zram-config-stamp: $(BUILDDIR)/buildroot-package-stamp
 	@mkdir -p $(ZRAM_CONFIG_PACKAGE_DIR)
 	@cp -r /builder/deb/zram-config/* $(ZRAM_CONFIG_PACKAGE_DIR)/
 	@mkdir -pv $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/zram-config/
-	@cd $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/ && wget -N https://github.com/ecdye/zram-config/releases/download/v$(ZRAM_CONFIG_VERSION)/zram-config-v$(ZRAM_CONFIG_VERSION).tar.lz
+	@cd $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/ && wget -N $(ZRAM_CONFIG_GIT_URL)/releases/download/v$(ZRAM_CONFIG_VERSION)/zram-config-v$(ZRAM_CONFIG_VERSION).tar.lz
 	@cd $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/ && tar -xf zram-config-v$(ZRAM_CONFIG_VERSION).tar.lz --strip-components=1 --directory=zram-config
 	@cd $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/ && rm zram-config-v$(ZRAM_CONFIG_VERSION).tar.lz
 	$(foreach file, $(wildcard /configs/common/patches/zram-config/*.patch), cd $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/zram-config && git apply --ignore-whitespace $(file);)
