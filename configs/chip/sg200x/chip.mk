@@ -181,6 +181,12 @@ $(BUILDDIR)/toolchain-prepare-patch-stamp:
 	@if [ "$(UBOOT_ARCH)" = "arm" ]; then \
 		cd / && /builder/replace-all-linaro-toolchains.sh ; \
 		mv /ramdisk $(BUILDDIR)/ ; \
+	else \
+		apt-get install -y gcc-riscv64-unknown-elf ; \
+		cd / && /builder/replace-all-thead-toolchains.sh ; \
+		rm -rf /host-tools/gcc/riscv64-elf-x86_64 ; \
+		[ "$(SDK_VER)" = "glibc_riscv64" ] || rm -rf $(CROSS_COMPILE_PATH_GLIBC_RISCV64) ; \
+		[ "$(SDK_VER)" = "musl_riscv64" ] || rm -rf $(CROSS_COMPILE_PATH_MUSL_RISCV64) ; \
 	fi
 	@cd / && /builder/fix-thead-glibc-toolchain.sh
 	@touch $@
@@ -731,6 +737,8 @@ $(BUILDDIR)/image-compile-stamp: $(BUILDDIR)/image-customize-stamp
 	@echo "$(COLOUR_GREEN)Compiling Image for $(BOARD)$(END_COLOUR)"
 	@[ "$(GIT_REF)" = "develop" ] || rm -rf $(BR_DIR)/dl
 	@[ "$(GIT_REF)" = "develop" ] || rm -rf $(BR_OUTPUT_DIR)/per-package
+	@[ "$(GIT_REF)" = "develop" ] || rm -f /builder/*gcc-*.tar.*
+	@[ "$(GIT_REF)" = "develop" ] || rm -rf /host-tools/gcc/
 	@rm -rf /tmp/genimage/
 	@cd $(BUILDDIR) && genimage --config /configs/chip/$(CHIP_FAMILY)/genimage_$(STORAGE_TYPE).cfg --tmppath /tmp/genimage --rootpath /rootfs/
 	@rm -rf /tmp/genimage/
