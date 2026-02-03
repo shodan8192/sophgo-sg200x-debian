@@ -344,8 +344,35 @@ osdrv-clean:
 $(BUILDDIR)/middleware-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out Middleware for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
-	@git clone -b maix_mmf-cvisdk $(GIT_CLONE_OPTS) --recursive $(GIT_USER_URL)/sophgo-middleware.git $(BUILDDIR)/middleware
+	@git clone -b maix_mmf-cvisdk $(GIT_CLONE_OPTS) --shallow-submodules $(GIT_USER_URL)/sophgo-middleware.git $(BUILDDIR)/middleware
 	@cd $(BUILDDIR)/middleware && git checkout 8a46b21
+	@cd $(BUILDDIR)/middleware && git submodule set-url 3rdparty/ffmpeg/ffmpeg $(GIT_USER_URL)/FFmpeg
+	@cd $(BUILDDIR)/middleware && git submodule set-url 3rdparty/flatbuffers/flatbuffers $(GIT_USER_URL)/flatbuffers
+	@cd $(BUILDDIR)/middleware && git submodule set-url 3rdparty/glog/glog $(GIT_USER_URL)/glog
+	@cd $(BUILDDIR)/middleware && git submodule set-url 3rdparty/json-c/json-c $(GIT_USER_URL)/json-c
+	@cd $(BUILDDIR)/middleware && git submodule set-url 3rdparty/libwebsockets/libwebsockets $(GIT_USER_URL)/libwebsockets
+	@cd $(BUILDDIR)/middleware && git submodule set-url 3rdparty/live/live555 $(GIT_USER_URL)/live555
+	@cd $(BUILDDIR)/middleware && git submodule set-url 3rdparty/miniz/miniz $(GIT_USER_URL)/miniz
+	@cd $(BUILDDIR)/middleware && git submodule set-url 3rdparty/nanomsg/nanomsg $(GIT_USER_URL)/nanomsg
+	@cd $(BUILDDIR)/middleware && git submodule set-url 3rdparty/opencv/opencv $(GIT_USER_URL)/opencv
+	@cd $(BUILDDIR)/middleware && git submodule set-url 3rdparty/openssl/openssl $(GIT_USER_URL)/openssl
+	@cd $(BUILDDIR)/middleware && git submodule set-url 3rdparty/sqlite/sqlite $(GIT_USER_URL)/sqlite
+	@cd $(BUILDDIR)/middleware && git submodule set-url 3rdparty/uv/uv $(GIT_USER_URL)/libuv
+	@cd $(BUILDDIR)/middleware && git submodule set-url 3rdparty/zlib/zlib $(GIT_USER_URL)/zlib
+	@cd $(BUILDDIR)/middleware && git submodule set-url component/isp $(GIT_USER_URL)/sophgo-SensorSupportList
+	@cd $(BUILDDIR)/middleware && git submodule set-url modules/bin/json-c $(GIT_USER_URL)/json-c
+	@cd $(BUILDDIR)/middleware && git submodule set-url modules/bin/miniz $(GIT_USER_URL)/miniz
+	@cd $(BUILDDIR)/middleware && git submodule set-url sample/kvm_stream $(GIT_USER_URL)/streameye
+	@cd $(BUILDDIR)/middleware && git submodule set-url sample/test_mmf/media_server-1.0.x $(GIT_USER_URL)/ireader
+	@cd $(BUILDDIR)/middleware && git submodule update --init --depth=1
+	@cd $(BUILDDIR)/middleware/3rdparty/openssl/openssl && git submodule set-url boringssl $(GIT_USER_URL)/boringssl
+	@cd $(BUILDDIR)/middleware/3rdparty/openssl/openssl && git submodule set-url krb5 $(GIT_USER_URL)/krb5
+	@cd $(BUILDDIR)/middleware/3rdparty/openssl/openssl && git submodule set-url pyca-cryptography $(GIT_USER_URL)/pyca-cryptography
+	@cd $(BUILDDIR)/middleware/3rdparty/openssl/openssl && git submodule update --init --depth=1
+	@cd $(BUILDDIR)/middleware/sample/test_mmf/media_server-1.0.x && git submodule set-url avcodec $(GIT_USER_URL)/ireader-avcodec
+	@cd $(BUILDDIR)/middleware/sample/test_mmf/media_server-1.0.x && git submodule set-url media-server $(GIT_USER_URL)/ireader-media-server
+	@cd $(BUILDDIR)/middleware/sample/test_mmf/media_server-1.0.x && git submodule set-url sdk $(GIT_USER_URL)/ireader-sdk
+	@cd $(BUILDDIR)/middleware/sample/test_mmf/media_server-1.0.x && git submodule update --init --depth=1
 	@touch $@
 
 $(BUILDDIR)/middleware-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $(BUILDDIR)/middleware-prepare-checkout-stamp $(BUILDDIR)/osdrv-compile-stamp
