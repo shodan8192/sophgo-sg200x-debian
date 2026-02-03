@@ -1,9 +1,11 @@
 ZRAM_CONFIG_GIT_REF = 038333b5e33a6b3ac3a73faf3696d1608155fa85
-ZRAM_CONFIG_GIT_URL ?= https://github.com/ecdye/zram-config
+ZRAM_CONFIG_GIT_URL ?= $(GIT_USER_URL)/zram-config
 
 ZRAM_CONFIG_VERSION = 1.7.0
 
 ZRAM_CONFIG_PACKAGE_DIR = $(BUILDDIR)/package/zram-config-$(BOARD)-$(ZRAM_CONFIG_VERSION)
+
+OVERLAYFS_TOOLS_GIT_URL ?= $(GIT_USER_URL)/overlayfs-tools
 
 $(BUILDDIR)/zram-config-stamp: $(BUILDDIR)/buildroot-package-stamp
 	@echo "$(COLOUR_GREEN)Packaging zram-config for $(BOARD)$(END_COLOUR)"
@@ -13,6 +15,7 @@ $(BUILDDIR)/zram-config-stamp: $(BUILDDIR)/buildroot-package-stamp
 	@mkdir -pv $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/
 	@cd $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/ && git clone -b main $(GIT_CLONE_OPTS) --shallow-submodules $(ZRAM_CONFIG_GIT_URL) zram-config
 	@cd $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/zram-config/ && git checkout $(ZRAM_CONFIG_GIT_REF)
+	@cd $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/zram-config/ && git submodule set-url overlayfs-tools $(OVERLAYFS_TOOLS_GIT_URL)
 	@cd $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/zram-config/ && git submodule update --init --recursive --depth=1
 	@cd $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/zram-config/ && rm -rf .git overlayfs-tools/.git
 	$(foreach file, $(wildcard /configs/common/patches/zram-config/*.patch), cd $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/zram-config && git apply --ignore-whitespace $(file);)
