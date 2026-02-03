@@ -1,3 +1,4 @@
+ZRAM_CONFIG_GIT_REF = 038333b5e33a6b3ac3a73faf3696d1608155fa85
 ZRAM_CONFIG_GIT_URL ?= https://github.com/ecdye/zram-config
 
 ZRAM_CONFIG_VERSION = 1.7.0
@@ -9,10 +10,11 @@ $(BUILDDIR)/zram-config-stamp: $(BUILDDIR)/buildroot-package-stamp
 	@$(eval BV=$(shell cd $(BUILDDIR)/buildroot && git log -1 --format="%at" | xargs -I{} date -d @{} +-%Y%m%d-${KERNELREV}))
 	@mkdir -p $(ZRAM_CONFIG_PACKAGE_DIR)
 	@cp -r /builder/deb/zram-config/* $(ZRAM_CONFIG_PACKAGE_DIR)/
-	@mkdir -pv $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/zram-config/
-	@cd $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/ && wget -N $(ZRAM_CONFIG_GIT_URL)/releases/download/v$(ZRAM_CONFIG_VERSION)/zram-config-v$(ZRAM_CONFIG_VERSION).tar.lz
-	@cd $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/ && tar -xf zram-config-v$(ZRAM_CONFIG_VERSION).tar.lz --strip-components=1 --directory=zram-config
-	@cd $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/ && rm zram-config-v$(ZRAM_CONFIG_VERSION).tar.lz
+	@mkdir -pv $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/
+	@cd $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/ && git clone -b main $(GIT_CLONE_OPTS) --shallow-submodules $(ZRAM_CONFIG_GIT_URL) zram-config
+	@cd $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/zram-config/ && git checkout $(ZRAM_CONFIG_GIT_REF)
+	@cd $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/zram-config/ && git submodule update --init --recursive --depth=1
+	@cd $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/zram-config/ && rm -rf .git overlayfs-tools/.git
 	$(foreach file, $(wildcard /configs/common/patches/zram-config/*.patch), cd $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/zram-config && git apply --ignore-whitespace $(file);)
 	@sed -i s/250M/100M/g $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/zram-config/ztab
 	@sed -i s/750M/300M/g $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/zram-config/ztab
