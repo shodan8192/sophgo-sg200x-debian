@@ -55,6 +55,9 @@ $(BUILDDIR)/tpusdk-prepare-checkout-stamp:
 	@cd $(BUILDDIR)/tpusdk && git submodule set-url ive $(GIT_USER_URL)/sophgo-ive
 	@cd $(BUILDDIR)/tpusdk && git submodule set-url tdl_sdk $(GIT_USER_URL)/sophgo-tdl_sdk
 	@cd $(BUILDDIR)/tpusdk && git submodule update --init --depth=1
+	@cd $(BUILDDIR)/tpusdk && sed -i 's|GIT_REPOSITORY https://github.com/google/googletest|GIT_REPOSITORY $(GIT_USER_URL)/googletest|g' tdl_sdk/cmake/thirdparty.cmake
+	@cd $(BUILDDIR)/tpusdk && sed -i 's|GIT_REPOSITORY https://github.com/nothings/stb|GIT_REPOSITORY $(GIT_USER_URL)/stb|g' tdl_sdk/cmake/thirdparty.cmake
+	@cd $(BUILDDIR)/tpusdk && sed -i 's|GIT_REPOSITORY https://gitlab.com/libeigen/eigen|GIT_REPOSITORY $(GIT_USER_URL)/eigen|g' tdl_sdk/cmake/thirdparty.cmake
 	@touch $@
 
 $(BUILDDIR)/tpusdk-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $(BUILDDIR)/tpusdk-prepare-checkout-stamp $(BUILDDIR)/middleware-compile-stamp
