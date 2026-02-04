@@ -44,7 +44,17 @@ $(BUILDDIR)/tpusdk-prepare-checkout-stamp:
 	@git clone -b develop $(GIT_CLONE_OPTS) --shallow-submodules $(GIT_USER_URL)/LicheeSG-Nano-Build.git $(BUILDDIR)/tpusdk
 	@cd $(BUILDDIR)/tpusdk && git checkout df4ccf2
 	@cd $(BUILDDIR)/tpusdk && git rm -r buildroot freertos fsbl isp_tuning linux_5.10 middleware opensbi osdrv ramdisk u-boot-2021.10
-	@cd $(BUILDDIR)/tpusdk && git submodule update --init --recursive --depth=1
+	@cd $(BUILDDIR)/tpusdk && git submodule set-url build $(GIT_USER_URL)/sophgo-build
+	@cd $(BUILDDIR)/tpusdk && git submodule set-url cnpy $(GIT_USER_URL)/cnpy
+	@cd $(BUILDDIR)/tpusdk && git submodule set-url cvi_rtsp $(GIT_USER_URL)/cvi_rtsp
+	@cd $(BUILDDIR)/tpusdk && git submodule set-url cvibuilder $(GIT_USER_URL)/cvibuilder
+	@cd $(BUILDDIR)/tpusdk && git submodule set-url cvikernel $(GIT_USER_URL)/cvikernel
+	@cd $(BUILDDIR)/tpusdk && git submodule set-url cvimath $(GIT_USER_URL)/cvimath
+	@cd $(BUILDDIR)/tpusdk && git submodule set-url cviruntime $(GIT_USER_URL)/cviruntime
+	@cd $(BUILDDIR)/tpusdk && git submodule set-url flatbuffers $(GIT_USER_URL)/flatbuffers
+	@cd $(BUILDDIR)/tpusdk && git submodule set-url ive $(GIT_USER_URL)/sophgo-ive
+	@cd $(BUILDDIR)/tpusdk && git submodule set-url tdl_sdk $(GIT_USER_URL)/sophgo-tdl_sdk
+	@cd $(BUILDDIR)/tpusdk && git submodule update --init --depth=1
 	@touch $@
 
 $(BUILDDIR)/tpusdk-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $(BUILDDIR)/tpusdk-prepare-checkout-stamp $(BUILDDIR)/middleware-compile-stamp
