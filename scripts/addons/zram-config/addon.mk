@@ -10,15 +10,16 @@ OVERLAYFS_TOOLS_GIT_URL ?= $(GIT_USER_URL)/overlayfs-tools
 $(BUILDDIR)/zram-config-stamp: $(BUILDDIR)/buildroot-package-stamp
 	@echo "$(COLOUR_GREEN)Packaging zram-config for $(BOARD)$(END_COLOUR)"
 	@$(eval BV=$(shell cd $(BUILDDIR)/buildroot && git log -1 --format="%at" | xargs -I{} date -d @{} +-%Y%m%d-${KERNELREV}))
+	@cd $(BUILDDIR)/ && git clone -b main $(GIT_CLONE_OPTS) --shallow-submodules $(ZRAM_CONFIG_GIT_URL) zram-config
+	@cd $(BUILDDIR)/zram-config/ && git checkout $(ZRAM_CONFIG_GIT_REF)
+	@cd $(BUILDDIR)/zram-config/ && git submodule set-url overlayfs-tools $(OVERLAYFS_TOOLS_GIT_URL)
+	@cd $(BUILDDIR)/zram-config/ && git submodule update --init --recursive --depth=1
+	$(foreach file, $(wildcard /configs/common/patches/zram-config/*.patch), cd $(BUILDDIR)/zram-config && git apply --ignore-whitespace $(file);)
 	@mkdir -p $(ZRAM_CONFIG_PACKAGE_DIR)
 	@cp -r /builder/deb/zram-config/* $(ZRAM_CONFIG_PACKAGE_DIR)/
-	@mkdir -pv $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/
-	@cd $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/ && git clone -b main $(GIT_CLONE_OPTS) --shallow-submodules $(ZRAM_CONFIG_GIT_URL) zram-config
-	@cd $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/zram-config/ && git checkout $(ZRAM_CONFIG_GIT_REF)
-	@cd $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/zram-config/ && git submodule set-url overlayfs-tools $(OVERLAYFS_TOOLS_GIT_URL)
-	@cd $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/zram-config/ && git submodule update --init --recursive --depth=1
+	@mkdir -p $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/zram-config/
+	@cp -a $(BUILDDIR)/zram-config/ $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/
 	@cd $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/zram-config/ && rm -rf .git overlayfs-tools/.git
-	$(foreach file, $(wildcard /configs/common/patches/zram-config/*.patch), cd $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/zram-config && git apply --ignore-whitespace $(file);)
 	@sed -i s/250M/100M/g $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/zram-config/ztab
 	@sed -i s/750M/300M/g $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/zram-config/ztab
 	@sed -i s/150M/60M/g $(ZRAM_CONFIG_PACKAGE_DIR)/usr/src/zram-config/ztab
