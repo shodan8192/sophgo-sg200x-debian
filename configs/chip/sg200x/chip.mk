@@ -435,6 +435,7 @@ $(BUILDDIR)/buildroot-prepare-checkout-stamp:
 	@cd $(BR_DIR) && git checkout fa17154
 	@mkdir -p $(BUILDDIR)/ramdisk/tools
 	@git clone -b main $(GIT_USER_URL)/cvi-pinmux $(BUILDDIR)/ramdisk/tools/cvi_pinmux
+	@cd $(BUILDDIR)/ramdisk/tools/cvi_pinmux && git checkout 5b90da9
 	@touch $@
 
 $(BUILDDIR)/buildroot-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $(BUILDDIR)/buildroot-prepare-checkout-stamp $(BUILDDIR)/middleware-compile-stamp
