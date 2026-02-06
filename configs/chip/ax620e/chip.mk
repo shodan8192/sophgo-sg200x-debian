@@ -433,10 +433,14 @@ define firmware_package_action
 	@touch $@
 endef
 
-$(BUILDDIR)/bsp-prepare-checkout-stamp:
-	@echo "$(COLOUR_GREEN)Checking out BSP for $(BOARD)$(END_COLOUR)"
+$(BUILDDIR)/bsp-prepare-clone-stamp:
+	@echo "$(COLOUR_GREEN)Cloning BSP for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
 	@git clone -b main $(GIT_CLONE_OPTS) --shallow-submodules $(GIT_USER_URL)/ax620e-bsp-build $(BUILDDIR)/bsp
+	@touch $@
+
+$(BUILDDIR)/bsp-prepare-checkout-stamp: $(BUILDDIR)/bsp-prepare-clone-stamp
+	@echo "$(COLOUR_GREEN)Checking out BSP for $(BOARD)$(END_COLOUR)"
 	@cd $(BUILDDIR)/bsp && git checkout 89c7d70
 	@cd $(BUILDDIR)/bsp && git submodule set-url axerabin $(GIT_USER_URL)/axerabin
 	@cd $(BUILDDIR)/bsp && git submodule set-url linux $(GIT_USER_URL)/linux
