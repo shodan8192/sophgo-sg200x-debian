@@ -103,9 +103,10 @@ endef
 
 $(BUILDDIR)/toolchain-prepare-patch-stamp:
 	@echo "$(COLOUR_GREEN)Patching Toolchain for $(BOARD)$(END_COLOUR)"
+	@[ "$(TOOLCHAIN_URL)" = "X" ] || sed -i 's|^tcurl=.*|tcurl=$(TOOLCHAIN_URL)|g' /builder/replace-all-arm-a-toolchains.sh
 	@if [ "$(UBOOT_ARCH)" = "arm" ]; then \
-		rm -rf /host-tools/gcc/riscv64-*/ ; \
-		cd / && /builder/replace-all-arm-a-toolchains.sh ; \
+		rm -rf /host-tools/gcc/riscv64-*/ && \
+		cd / && /builder/replace-all-arm-a-toolchains.sh && \
 		mv /ramdisk $(BUILDDIR)/ ; \
 	fi
 	@#cd / && /builder/fix-thead-glibc-toolchain.sh
