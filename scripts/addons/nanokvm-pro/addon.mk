@@ -16,7 +16,7 @@ NANOKVM_PRO_STABLE_URL = https://cdn.sipeed.com/nanokvm
 NANOKVM_PRO_PREVIEW_URL = https://cdn.sipeed.com/nanokvm/preview
 NANOKVM_PRO_BASE_URL ?= $(NANOKVM_PRO_STABLE_URL)
 
-NANOKVM_PRO_UPDATE_URL = https://scpcom.github.io/nanokvm_pro
+NANOKVM_PRO_UPDATE_URL = $(USER_SITE_URL)/nanokvm_pro
 
 NANOKVM_PRO_BUILD_DIR = $(BUILDDIR)/nanokvm-pro/NanoKVM-Pro
 
