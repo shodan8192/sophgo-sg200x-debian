@@ -38,12 +38,16 @@ endif
 
 TPUSDK_BOARD_LINK ?= $(TPUSDK_CHIP)_$(TPUSDK_CONFIG)_$(STORAGE_TYPE)
 
-$(BUILDDIR)/tpusdk-prepare-checkout-stamp:
-	@echo "$(COLOUR_GREEN)Checking out TPU SDK for $(BOARD)$(END_COLOUR)"
+$(BUILDDIR)/tpusdk-prepare-clone-stamp:
+	@echo "$(COLOUR_GREEN)Cloning TPU SDK for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
 	@git clone -b develop $(GIT_CLONE_OPTS) --shallow-submodules $(GIT_USER_URL)/LicheeSG-Nano-Build.git $(BUILDDIR)/tpusdk
 	@cd $(BUILDDIR)/tpusdk && git checkout df4ccf2
 	@cd $(BUILDDIR)/tpusdk && git rm -r buildroot freertos fsbl isp_tuning linux_5.10 middleware opensbi osdrv ramdisk u-boot-2021.10
+	@touch $@
+
+$(BUILDDIR)/tpusdk-prepare-checkout-stamp: $(BUILDDIR)/tpusdk-prepare-clone-stamp
+	@echo "$(COLOUR_GREEN)Checking out TPU SDK for $(BOARD)$(END_COLOUR)"
 	@cd $(BUILDDIR)/tpusdk && git submodule set-url build $(GIT_USER_URL)/sophgo-build
 	@cd $(BUILDDIR)/tpusdk && git submodule set-url cnpy $(GIT_USER_URL)/cnpy
 	@cd $(BUILDDIR)/tpusdk && git submodule set-url cvi_rtsp $(GIT_USER_URL)/cvi_rtsp
