@@ -443,10 +443,14 @@ middleware-clean:
 	@rm -f $(BUILDDIR)/middleware-*-stamp
 
 
-$(BUILDDIR)/buildroot-prepare-checkout-stamp:
-	@echo "$(COLOUR_GREEN)Checking out Buildroot for $(BOARD)$(END_COLOUR)"
+$(BUILDDIR)/buildroot-prepare-clone-stamp:
+	@echo "$(COLOUR_GREEN)Cloning Buildroot for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
 	@git clone -b nanokvm-2025.02 $(GIT_CLONE_OPTS) --recursive $(GIT_USER_URL)/buildroot.git $(BUILDDIR)/buildroot
+	@touch $@
+
+$(BUILDDIR)/buildroot-prepare-checkout-stamp: $(BUILDDIR)/buildroot-prepare-clone-stamp
+	@echo "$(COLOUR_GREEN)Checking out Buildroot for $(BOARD)$(END_COLOUR)"
 	@cd $(BR_DIR) && git checkout fa17154
 	@mkdir -p $(BUILDDIR)/ramdisk/tools
 	@git clone -b main $(GIT_USER_URL)/cvi-pinmux $(BUILDDIR)/ramdisk/tools/cvi_pinmux
