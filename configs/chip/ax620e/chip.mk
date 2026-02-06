@@ -103,13 +103,11 @@ endef
 
 $(BUILDDIR)/toolchain-prepare-patch-stamp:
 	@echo "$(COLOUR_GREEN)Patching Toolchain for $(BOARD)$(END_COLOUR)"
+	@[ "$(TOOLCHAIN_URL)" = "X" ] || sed -i 's|^tcurl=.*|tcurl=$(TOOLCHAIN_URL)|g' /builder/replace-all-arm-a-toolchains.sh
 	@if [ "$(UBOOT_ARCH)" = "arm" ]; then \
-		rm -rf /host-tools/gcc/riscv64-*/ ; \
-		cd / && /builder/replace-all-arm-a-toolchains.sh ; \
+		rm -rf /host-tools/gcc/riscv64-*/ && \
+		cd / && /builder/replace-all-arm-a-toolchains.sh && \
 		mv /ramdisk $(BUILDDIR)/ ; \
-	else \
-		mkdir -p /host-tools/gcc ; \
-		wget -O - https://github.com/scpcom/riscv-gnu-toolchain/releases/download/riscv64-gcc-thead_20241206-10.4.0-x86_64/riscv64-linux-gcc-thead_20241206-10.4.0-x86_64.tar.gz | tar -C /host-tools/gcc -xz ; \
 	fi
 	@#cd / && /builder/fix-thead-glibc-toolchain.sh
 	@touch $@
@@ -318,13 +316,18 @@ middleware-clean:
 	@rm -f $(BUILDDIR)/middleware-*-stamp
 
 
-$(BUILDDIR)/buildroot-prepare-checkout-stamp:
-	@echo "$(COLOUR_GREEN)Checking out Buildroot for $(BOARD)$(END_COLOUR)"
+$(BUILDDIR)/buildroot-prepare-clone-stamp:
+	@echo "$(COLOUR_GREEN)Cloning Buildroot for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
-	@git clone -b nanokvm-2025.02 $(GIT_CLONE_OPTS) --recursive https://github.com/scpcom/buildroot.git $(BUILDDIR)/buildroot
+	@git clone -b nanokvm-2025.02 $(GIT_CLONE_OPTS) --recursive $(GIT_USER_URL)/buildroot.git $(BUILDDIR)/buildroot
+	@touch $@
+
+$(BUILDDIR)/buildroot-prepare-checkout-stamp: $(BUILDDIR)/buildroot-prepare-clone-stamp
+	@echo "$(COLOUR_GREEN)Checking out Buildroot for $(BOARD)$(END_COLOUR)"
 	@cd $(BR_DIR) && git checkout 1ef3acd
 	@mkdir -p $(BUILDDIR)/ramdisk/tools
-	@git clone -b main https://github.com/scpcom/cvi-pinmux $(BUILDDIR)/ramdisk/tools/cvi_pinmux
+	@git clone -b main $(GIT_USER_URL)/cvi-pinmux $(BUILDDIR)/ramdisk/tools/cvi_pinmux
+	@cd $(BUILDDIR)/ramdisk/tools/cvi_pinmux && git checkout 5b90da9
 	@touch $@
 
 $(BUILDDIR)/buildroot-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $(BUILDDIR)/buildroot-prepare-checkout-stamp $(BUILDDIR)/middleware-compile-stamp
@@ -430,11 +433,19 @@ define firmware_package_action
 	@touch $@
 endef
 
-$(BUILDDIR)/bsp-prepare-checkout-stamp:
-	@echo "$(COLOUR_GREEN)Checking out BSP for $(BOARD)$(END_COLOUR)"
+$(BUILDDIR)/bsp-prepare-clone-stamp:
+	@echo "$(COLOUR_GREEN)Cloning BSP for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
-	@git clone -b main $(GIT_CLONE_OPTS) --recursive https://github.com/scpcom/ax620e-bsp-build $(BUILDDIR)/bsp
+	@git clone -b main $(GIT_CLONE_OPTS) --shallow-submodules $(GIT_USER_URL)/ax620e-bsp-build $(BUILDDIR)/bsp
+	@touch $@
+
+$(BUILDDIR)/bsp-prepare-checkout-stamp: $(BUILDDIR)/bsp-prepare-clone-stamp
+	@echo "$(COLOUR_GREEN)Checking out BSP for $(BOARD)$(END_COLOUR)"
 	@cd $(BUILDDIR)/bsp && git checkout 89c7d70
+	@cd $(BUILDDIR)/bsp && git submodule set-url axerabin $(GIT_USER_URL)/axerabin
+	@cd $(BUILDDIR)/bsp && git submodule set-url linux $(GIT_USER_URL)/linux
+	@cd $(BUILDDIR)/bsp && git submodule set-url u-boot $(GIT_USER_URL)/u-boot
+	@cd $(BUILDDIR)/bsp && git submodule update --init --recursive --depth=1
 	@touch $@
 
 $(BUILDDIR)/bsp-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $(BUILDDIR)/bsp-prepare-checkout-stamp $(BUILDDIR)/uboot-prepare-patch-stamp $(BUILDDIR)/linux-prepare-patch-stamp
@@ -607,8 +618,8 @@ $(BUILDDIR)/image-prepare-stamp:
 	@mkdir -p /rootfs/
 	@[ "X$(DEB_PUBKEY)" = "X" ] || gpg --recv-key --keyserver $(DEB_KEYSERVER) $(DEB_PUBKEY)
 	@[ "X$(DEB_PUBKEY)" = "X" ] || gpg --export $(DEB_PUBKEY) > /etc/apt/trusted.gpg.d/distro-archive-keyring.gpg
-	@curl -v -L https://scpcom.github.io/scpcom-packages.asc -o $(BUILDDIR)/public-key.asc
-	@mmdebstrap -v --architectures=$(DEB_ARCH) --include="$(_PACKAGES)" $(DEB_DISTRO) "/rootfs/" "deb $(DEB_URL)/ $(DEB_DISTRO) $(DEB_COMPONENTS)" "deb [signed-by=$(BUILDDIR)/public-key.asc] https://scpcom.github.io/deb stable $(CHIP_FAMILY) $(BOARD)-$(VARIANT)"
+	@curl -v -L $(USER_SITE_URL)/scpcom-packages.asc -o $(BUILDDIR)/public-key.asc
+	@mmdebstrap -v --architectures=$(DEB_ARCH) --include="$(_PACKAGES)" $(DEB_DISTRO) "/rootfs/" "deb $(DEB_URL)/ $(DEB_DISTRO) $(DEB_COMPONENTS)" "deb [signed-by=$(BUILDDIR)/public-key.asc] $(USER_SITE_URL)/deb stable $(CHIP_FAMILY) $(BOARD)-$(VARIANT)"
 	@touch $@
 
 $(BUILDDIR)/image-addons-stamp: $(BUILDDIR)/image-prepare-stamp $(FSBL_TARGETS) $(BUILDDIR)/linux-package-stamp $(BUILDDIR)/osdrv-package-stamp $(BUILDDIR)/middleware-package-stamp $(addon-targets)
@@ -660,6 +671,7 @@ $(BUILDDIR)/image-customize-stamp: $(BUILDDIR)/image-addons-stamp $(BUILDDIR)/li
 	@echo $(VARIANT) > /rootfs/tmp/install/variant
 	@echo $(STORAGE_TYPE) > /rootfs/tmp/install/storage
 	@echo "deb $(DEB_URL) $(DEB_DISTRO) $(DEB_COMPONENTS_FULL)" > /rootfs/tmp/install/deb_sources
+	@echo "deb $(USER_SITE_URL)/deb stable $(CHIP_FAMILY) $(BOARD)-$(VARIANT)" > /rootfs/tmp/install/deb_user_sources
 	@[ "$(DEB_DISTRO)" != "jammy" -o -e /rootfs/etc/resolv.conf-dist ] || mv /rootfs/etc/resolv.conf /rootfs/etc/resolv.conf-dist
 	@[ "$(DEB_DISTRO)" != "jammy" ] || cp -p /etc/resolv.conf /rootfs/etc/
 	@cp -v /usr/bin/qemu-$(QEMU_ARCH)-static /rootfs/tmp/install/
