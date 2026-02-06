@@ -438,6 +438,9 @@ $(BUILDDIR)/bsp-prepare-checkout-stamp:
 	@mkdir -p $(BUILDDIR)
 	@git clone -b main $(GIT_CLONE_OPTS) --shallow-submodules $(GIT_USER_URL)/ax620e-bsp-build $(BUILDDIR)/bsp
 	@cd $(BUILDDIR)/bsp && git checkout 89c7d70
+	@cd $(BUILDDIR)/bsp && git submodule set-url axerabin $(GIT_USER_URL)/axerabin
+	@cd $(BUILDDIR)/bsp && git submodule set-url linux $(GIT_USER_URL)/linux
+	@cd $(BUILDDIR)/bsp && git submodule set-url u-boot $(GIT_USER_URL)/u-boot
 	@cd $(BUILDDIR)/bsp && git submodule update --init --recursive --depth=1
 	@touch $@
 
