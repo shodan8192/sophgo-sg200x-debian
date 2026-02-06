@@ -178,12 +178,14 @@ $(BUILDDIR)/$(BOARD)-$(VARIANT)/cvi_board_memmap.h: $(BUILDDIR)/$(BOARD)-$(VARIA
 
 $(BUILDDIR)/toolchain-prepare-patch-stamp:
 	@echo "$(COLOUR_GREEN)Patching Toolchain for $(BOARD)$(END_COLOUR)"
+	@[ "$(TOOLCHAIN_URL)" = "X" ] || sed -i 's|^tcurl=.*|tcurl=$(TOOLCHAIN_URL)|g' /builder/replace-all-linaro-toolchains.sh
+	@[ "$(TOOLCHAIN_URL)" = "X" ] || sed -i 's|^tcurl=.*|tcurl=$(TOOLCHAIN_URL)|g' /builder/replace-all-thead-toolchains.sh
 	@if [ "$(UBOOT_ARCH)" = "arm" ]; then \
-		cd / && /builder/replace-all-linaro-toolchains.sh ; \
+		cd / && /builder/replace-all-linaro-toolchains.sh && \
 		mv /ramdisk $(BUILDDIR)/ ; \
 	else \
-		apt-get install -y gcc-riscv64-unknown-elf ; \
-		cd / && /builder/replace-all-thead-toolchains.sh ; \
+		apt-get install -y gcc-riscv64-unknown-elf && \
+		cd / && /builder/replace-all-thead-toolchains.sh && \
 		rm -rf /host-tools/gcc/riscv64-elf-x86_64 ; \
 		[ "$(SDK_VER)" = "glibc_riscv64" ] || rm -rf $(CROSS_COMPILE_PATH_GLIBC_RISCV64) ; \
 		[ "$(SDK_VER)" = "musl_riscv64" ] || rm -rf $(CROSS_COMPILE_PATH_MUSL_RISCV64) ; \
