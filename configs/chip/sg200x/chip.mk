@@ -465,6 +465,8 @@ $(BUILDDIR)/buildroot-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-s
 	@$(foreach file, $(wildcard /configs/common/patches/nanokvm/*.patch), cp $(file) $(BR_DIR)/package/nanokvm-server/;)
 	@$(foreach file, $(wildcard /configs/chip/$(CHIP_CFG)/patches/nanokvm/*.patch), cp $(file) $(BR_DIR)/package/nanokvm-server/;)
 	@$(foreach file, $(wildcard /configs/$(BOARD_CFG)/patches/nanokvm/*.patch), cp $(file) $(BR_DIR)/package/nanokvm-server/;)
+	@cd $(BR_DIR) && sed -i 's|https://scpcom.github.io|$(USER_SITE_URL)|g' package/nanokvm-server/nanokvm-server.mk
+	@cd $(BR_DIR) && sed -i 's|https://scpcom.github.io|$(USER_SITE_URL)|g' package/nanokvm-sg200x/nanokvm-sg200x.mk
 	@cd $(BR_DIR) && sed -i 's|https://github.com/scpcom|$(GIT_USER_URL)|g' package/maix-cdk/maix-cdk.mk
 	@cd $(BR_DIR) && sed -i 's|https://github.com/scpcom|$(GIT_USER_URL)|g' package/nanokvm-server/nanokvm-server.mk
 	@cd $(BR_DIR) && sed -i 's|https://github.com/scpcom|$(GIT_USER_URL)|g' package/nanokvm-sg200x/nanokvm-sg200x.mk
@@ -727,8 +729,8 @@ $(BUILDDIR)/image-prepare-stamp:
 	@mkdir -p /rootfs/
 	@[ "X$(DEB_PUBKEY)" = "X" ] || gpg --recv-key --keyserver $(DEB_KEYSERVER) $(DEB_PUBKEY)
 	@[ "X$(DEB_PUBKEY)" = "X" ] || gpg --export $(DEB_PUBKEY) > /etc/apt/trusted.gpg.d/distro-archive-keyring.gpg
-	@curl -v -L https://scpcom.github.io/scpcom-packages.asc -o $(BUILDDIR)/public-key.asc
-	@mmdebstrap -v --architectures=$(DEB_ARCH) --include="$(_PACKAGES)" $(DEB_DISTRO) "/rootfs/" "deb $(DEB_URL)/ $(DEB_DISTRO) $(DEB_COMPONENTS)" "deb [signed-by=$(BUILDDIR)/public-key.asc] https://scpcom.github.io/deb stable $(CHIP_FAMILY) $(BOARD)-$(VARIANT)"
+	@curl -v -L $(USER_SITE_URL)/scpcom-packages.asc -o $(BUILDDIR)/public-key.asc
+	@mmdebstrap -v --architectures=$(DEB_ARCH) --include="$(_PACKAGES)" $(DEB_DISTRO) "/rootfs/" "deb $(DEB_URL)/ $(DEB_DISTRO) $(DEB_COMPONENTS)" "deb [signed-by=$(BUILDDIR)/public-key.asc] $(USER_SITE_URL)/deb stable $(CHIP_FAMILY) $(BOARD)-$(VARIANT)"
 	@touch $@
 
 $(BUILDDIR)/image-addons-stamp: $(BUILDDIR)/image-prepare-stamp $(FSBL_TARGETS) $(BUILDDIR)/linux-package-stamp $(BUILDDIR)/osdrv-package-stamp $(BUILDDIR)/middleware-package-stamp $(addon-targets)
@@ -776,6 +778,7 @@ $(BUILDDIR)/image-customize-stamp: $(BUILDDIR)/image-addons-stamp $(BUILDDIR)/li
 	@echo $(VARIANT) > /rootfs/tmp/install/variant
 	@echo $(STORAGE_TYPE) > /rootfs/tmp/install/storage
 	@echo "deb $(DEB_URL) $(DEB_DISTRO) $(DEB_COMPONENTS_FULL)" > /rootfs/tmp/install/deb_sources
+	@echo "deb $(USER_SITE_URL)/deb stable $(CHIP_FAMILY) $(BOARD)-$(VARIANT)" > /rootfs/tmp/install/deb_user_sources
 	@cp -v /usr/bin/qemu-$(QEMU_ARCH)-static /rootfs/tmp/install/
 	@cp -v /configs/chip/$(CHIP_FAMILY)/setup_rootfs.sh /rootfs/tmp/install/
 	@cp -v $(BUILDDIR)/public-key.asc /rootfs/tmp/install/
