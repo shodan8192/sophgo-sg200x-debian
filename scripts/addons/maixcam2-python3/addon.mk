@@ -5,7 +5,7 @@ endif
 MAIXCAM2_PYTHON3_SHA256 = a37165fddf7401b3932b94a10e9cbb166d9ee825e34e23a27de2dadcacce411a
 MAIXCAM2_PYTHON3_VERSION = 3.13.2
 
-MAIXCAM2_PYTHON3_BASE_URL = https://github.com/sipeed/MaixCDK/releases/download/v0.0.0
+MAIXCAM2_PYTHON3_BASE_URL = $(GIT_RELEASES_URL)/sipeed/MaixCDK/releases/download/v0.0.0
 MAIXCAM2_PYTHON3_FILENAME = python3.13.2_maixcam2_gcc11.4.0.tar.xz
 
 MAIXCAM2_PYTHON3_SITE_PACKAGES = /usr/local/lib/python3.13/site-packages
