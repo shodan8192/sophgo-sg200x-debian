@@ -341,10 +341,14 @@ osdrv-clean:
 	@rm -f $(BUILDDIR)/osdrv-*-stamp
 
 
-$(BUILDDIR)/middleware-prepare-checkout-stamp:
-	@echo "$(COLOUR_GREEN)Checking out Middleware for $(BOARD)$(END_COLOUR)"
+$(BUILDDIR)/middleware-prepare-clone-stamp:
+	@echo "$(COLOUR_GREEN)Cloning Middleware for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
 	@git clone -b maix_mmf-cvisdk $(GIT_CLONE_OPTS) --shallow-submodules $(GIT_USER_URL)/sophgo-middleware.git $(BUILDDIR)/middleware
+	@touch $@
+
+$(BUILDDIR)/middleware-prepare-checkout-root-stamp: $(BUILDDIR)/middleware-prepare-clone-stamp
+	@echo "$(COLOUR_GREEN)Checking out Middleware for $(BOARD)$(END_COLOUR)"
 	@cd $(BUILDDIR)/middleware && git checkout 8a46b21
 	@cd $(BUILDDIR)/middleware && git submodule set-url 3rdparty/ffmpeg/ffmpeg $(GIT_USER_URL)/FFmpeg
 	@cd $(BUILDDIR)/middleware && git submodule set-url 3rdparty/flatbuffers/flatbuffers $(GIT_USER_URL)/flatbuffers
@@ -365,14 +369,25 @@ $(BUILDDIR)/middleware-prepare-checkout-stamp:
 	@cd $(BUILDDIR)/middleware && git submodule set-url sample/kvm_stream $(GIT_USER_URL)/streameye
 	@cd $(BUILDDIR)/middleware && git submodule set-url sample/test_mmf/media_server-1.0.x $(GIT_USER_URL)/ireader
 	@cd $(BUILDDIR)/middleware && git submodule update --init --depth=1
+	@touch $@
+
+$(BUILDDIR)/middleware-prepare-checkout-openssl-stamp: $(BUILDDIR)/middleware-prepare-checkout-root-stamp
+	@echo "$(COLOUR_GREEN)Checking out Middleware openssl for $(BOARD)$(END_COLOUR)"
 	@cd $(BUILDDIR)/middleware/3rdparty/openssl/openssl && git submodule set-url boringssl $(GIT_USER_URL)/boringssl
 	@cd $(BUILDDIR)/middleware/3rdparty/openssl/openssl && git submodule set-url krb5 $(GIT_USER_URL)/krb5
 	@cd $(BUILDDIR)/middleware/3rdparty/openssl/openssl && git submodule set-url pyca-cryptography $(GIT_USER_URL)/pyca-cryptography
 	@cd $(BUILDDIR)/middleware/3rdparty/openssl/openssl && git submodule update --init --depth=1
+	@touch $@
+
+$(BUILDDIR)/middleware-prepare-checkout-media-server-stamp: $(BUILDDIR)/middleware-prepare-checkout-root-stamp
+	@echo "$(COLOUR_GREEN)Checking out Middleware media-server for $(BOARD)$(END_COLOUR)"
 	@cd $(BUILDDIR)/middleware/sample/test_mmf/media_server-1.0.x && git submodule set-url avcodec $(GIT_USER_URL)/ireader-avcodec
 	@cd $(BUILDDIR)/middleware/sample/test_mmf/media_server-1.0.x && git submodule set-url media-server $(GIT_USER_URL)/ireader-media-server
 	@cd $(BUILDDIR)/middleware/sample/test_mmf/media_server-1.0.x && git submodule set-url sdk $(GIT_USER_URL)/ireader-sdk
 	@cd $(BUILDDIR)/middleware/sample/test_mmf/media_server-1.0.x && git submodule update --init --depth=1
+	@touch $@
+
+$(BUILDDIR)/middleware-prepare-checkout-stamp: $(BUILDDIR)/middleware-prepare-checkout-media-server-stamp $(BUILDDIR)/middleware-prepare-checkout-openssl-stamp
 	@touch $@
 
 $(BUILDDIR)/middleware-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $(BUILDDIR)/middleware-prepare-checkout-stamp $(BUILDDIR)/osdrv-compile-stamp
