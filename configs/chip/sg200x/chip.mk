@@ -453,7 +453,7 @@ $(BUILDDIR)/buildroot-prepare-clone-stamp:
 
 $(BUILDDIR)/buildroot-prepare-checkout-stamp: $(BUILDDIR)/buildroot-prepare-clone-stamp
 	@echo "$(COLOUR_GREEN)Checking out Buildroot for $(BOARD)$(END_COLOUR)"
-	@cd $(BR_DIR) && git checkout 1402918
+	@cd $(BR_DIR) && git checkout d109162
 	@mkdir -p $(BUILDDIR)/ramdisk/tools
 	@git clone -b main $(GIT_USER_URL)/cvi-pinmux $(BUILDDIR)/ramdisk/tools/cvi_pinmux
 	@cd $(BUILDDIR)/ramdisk/tools/cvi_pinmux && git checkout 5b90da9
