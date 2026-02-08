@@ -105,6 +105,8 @@ git_clone -b nanokvmpro https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/axerabin axera
 git_clone -b debian https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/sophgo-sg200x-debian sophgo-sg200x-debian
 git_clone -b main https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/scpcom.github.io site
 
+git_clone -b master https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/lcdtest lcdtest
+git_clone -b master https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/tpudemo-sg200x tpudemo-sg200x
 git_clone -b master https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/uvc-gadget uvc-gadget
 
 git_clone -b develop https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/json json
