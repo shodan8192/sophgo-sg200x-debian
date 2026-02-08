@@ -280,12 +280,14 @@ Next you can push all sources to your git:
 GIT_TARGET_HOST=git.example.dev GIT_TARGET_USER=yournamehere ./scripts/mirror/do-push.sh
 ```
 
+You can re-run the push script to keep the repositories up-to-date.
+
 Build Image by using your git:
 ```
 make BOARD=licheervnano GIT_USER_URL=https://git.example.dev/yournamehere image
 ```
 
-If you also provide an update server, a mirror of the release downloads (for MaixCDK and json) and the toolchains you can run:
+If you also provide an update server, a mirror of the release downloads (for MaixCDK pre-built python3) and the toolchains you can run:
 ```
 make BOARD=licheervnano GIT_HOST=https://git.example.dev GIT_USER=yournamehere GIT_RELEASES_URL=https://downloads.example.dev/path/to/releases TOOLCHAIN_URL=https://downloads.example.dev/path/to/toolchain USER_SITE_URL=https://downloads.example.dev/path/to/updates image
 ```
