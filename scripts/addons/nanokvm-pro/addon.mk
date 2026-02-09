@@ -35,6 +35,8 @@ NANOKVM_PRO_BASE_URL ?= $(NANOKVM_PRO_STABLE_URL)
 NANOKVM_PRO_UPDATE_URL = $(USER_SITE_URL)/nanokvm_pro
 NANOKVM_PRO_ARCH_URL = $(NANOKVM_PRO_UPDATE_URL)/glibc_$(DEB_ARCH)
 
+NANOKVM_PRO_TOOLCHAIN_URL ?= $(shell echo $(TOOLCHAIN_URL) | sed 's|/arm/.*|/arm/gnu|g')
+
 NANOKVM_PRO_BUILD_DIR = $(BUILDDIR)/nanokvm-pro/NanoKVM-Pro
 
 NANOKVM_PRO_KVMCOMM_MODULES = f_udisp_drv.ko \
@@ -123,6 +125,9 @@ $(BUILDDIR)/nanokvm-pro-package-stamp: $(BUILDDIR)/nanokvm-pro-prepare-stamp
 	@$(foreach file, $(wildcard /configs/$(BOARD_CFG)/patches/nanokvm-pro/*.patch), cd $(NANOKVM_PRO_BUILD_DIR) && git apply --ignore-whitespace $(file);)
 	@sed -i 's|https://cdn.sipeed.com/nanokvm|$(NANOKVM_PRO_ARCH_URL)|g' $(NANOKVM_PRO_BUILD_DIR)/$(NANOKVM_PRO_GOMOD)/service/application/service.go
 	@sed -i 's|https://cdn.sipeed.com/nanokvm|$(NANOKVM_PRO_ARCH_URL)|g' $(NANOKVM_PRO_BUILD_DIR)/$(NANOKVM_PRO_GOMOD)/service/extensions/kvmadmin/install.go
+	@if [ "X$(NANOKVM_PRO_TOOLCHAIN_URL)" != "X" ]; then \
+		cd $(NANOKVM_PRO_BUILD_DIR)/support/scripts && sed -i 's|https://developer.arm.com/-/media/Files/downloads/gnu|$(NANOKVM_PRO_TOOLCHAIN_URL)|g' config.ini ; \
+	fi
 	@cd $(NANOKVM_PRO_BUILD_DIR)/support/scripts ; ./toolchain_setup.sh
 	@cd $(NANOKVM_PRO_BUILD_DIR)/server/ ; ./build.sh
 	@cd $(NANOKVM_PRO_BUILD_DIR)/web/ ; pnpm install
