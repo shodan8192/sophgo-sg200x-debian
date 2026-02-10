@@ -1,13 +1,16 @@
 #!/bin/sh -e
 cleanuphosttools=false
+cleanupramdisk=false
 
 [ -e host-tools ] || cleanuphosttools=true
+[ -e ramdisk ] || cleanupramdisk=true
 
 for f in ./scripts/replace-all-*toolchains.sh ; do
   $f
 done
 
 [ $cleanuphosttools = false ] || rm -rf host-tools
+[ $cleanupramdisk = false ] || rm -rf ramdisk
 
 d=git-archive
 [ ! -e ../$d ] || d=../$d
