@@ -38,6 +38,7 @@ NANOKVM_PRO_ARCH_URL = $(NANOKVM_PRO_UPDATE_URL)/glibc_$(DEB_ARCH)
 NANOKVM_PRO_TOOLCHAIN_URL ?= $(shell echo $(TOOLCHAIN_URL) | sed 's|/arm/.*|/arm/gnu|g')
 
 NANOKVM_PRO_BUILD_DIR = $(BUILDDIR)/nanokvm-pro/NanoKVM-Pro
+NANOKVM_PRO_PACKAGE_DIR = $(BUILDDIR)/package/nanokvmpro-$(NANOKVM_PRO_VERSION)
 
 NANOKVM_PRO_KVMCOMM_MODULES = f_udisp_drv.ko \
 fbtft.ko \
@@ -93,7 +94,7 @@ $(BUILDDIR)/nanokvm-pro-prepare-stamp: $(BUILDDIR)/golang-toolchain-stamp $(BUIL
 	@#(eval NANOKVM_PRO_LATEST_FILE=$(shell cat $(BUILDDIR)/nanokvm-pro/nanokvm_pro_latest.json | jq -c '.name' | cut -d '"' -f 2))
 	@#(eval NANOKVM_PRO_VERSION=$(shell cat $(BUILDDIR)/nanokvm-pro/nanokvm_pro_latest.json | jq -c '.version' | cut -d '"' -f 2))
 	@$(eval NANOKVM_PRO_LATEST_FILE=nanokvm_pro_$(NANOKVM_PRO_VERSION).tar.gz)
-	@$(eval NANOKVM_PRO_PACKAGE_DIR=$(BUILDDIR)/package/nanokvmpro-$(NANOKVM_PRO_VERSION))
+	@#(eval NANOKVM_PRO_PACKAGE_DIR=$(BUILDDIR)/package/nanokvmpro-$(NANOKVM_PRO_VERSION))
 	@cd $(BUILDDIR)/nanokvm-pro ; wget -N "$(NANOKVM_PRO_BASE_URL)/resources/kvmadmin.tar.gz" || wget -N "$(NANOKVM_PRO_ARCH_URL)/resources/kvmadmin.tar.gz"
 	@cd $(BUILDDIR)/nanokvm-pro ; wget -N "$(NANOKVM_PRO_BASE_URL)/$(NANOKVM_PRO_LATEST_FILE)" || wget -N "$(NANOKVM_PRO_PREVIEW_URL)/$(NANOKVM_PRO_LATEST_FILE)" || wget -N "$(NANOKVM_PRO_ARCH_URL)/$(NANOKVM_PRO_LATEST_FILE)"
 	@if [ "`sha256sum "$(BUILDDIR)/nanokvm-pro/$(NANOKVM_PRO_LATEST_FILE)" | cut -d ' ' -f 1`" != "$(NANOKVM_PRO_SHA256)" ]; then \
@@ -112,7 +113,7 @@ $(BUILDDIR)/nanokvm-pro-prepare-stamp: $(BUILDDIR)/golang-toolchain-stamp $(BUIL
 	@cp -p $(BUILDDIR)/nanokvm-pro/kvmadmin.tar.gz /output/$(BOARD)-kvmadmin.tar.gz
 	@touch $@
 
-$(BUILDDIR)/nanokvm-pro-package-stamp: $(BUILDDIR)/nanokvm-pro-prepare-stamp
+$(BUILDDIR)/nanokvm-pro-package-prepare-stamp: $(BUILDDIR)/nanokvm-pro-prepare-stamp
 	@cd $(BUILDDIR)/nanokvm-pro ; dpkg-deb -R nanokvm_pro_$(NANOKVM_PRO_VERSION)/nanokvmpro_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb $(NANOKVM_PRO_PACKAGE_DIR)
 	@apt-get install -y golang-go npm
 	@npm install -g pnpm
@@ -128,6 +129,9 @@ $(BUILDDIR)/nanokvm-pro-package-stamp: $(BUILDDIR)/nanokvm-pro-prepare-stamp
 	@if [ "X$(NANOKVM_PRO_TOOLCHAIN_URL)" != "X" ]; then \
 		cd $(NANOKVM_PRO_BUILD_DIR)/support/scripts && sed -i 's|https://developer.arm.com/-/media/Files/downloads/gnu|$(NANOKVM_PRO_TOOLCHAIN_URL)|g' config.ini ; \
 	fi
+	@touch $@
+
+$(BUILDDIR)/nanokvm-pro-package-stamp: $(BUILDDIR)/nanokvm-pro-package-prepare-stamp
 	@cd $(NANOKVM_PRO_BUILD_DIR)/support/scripts ; ./toolchain_setup.sh
 	@cd $(NANOKVM_PRO_BUILD_DIR)/server/ ; ./build.sh
 	@cd $(NANOKVM_PRO_BUILD_DIR)/web/ ; pnpm install
