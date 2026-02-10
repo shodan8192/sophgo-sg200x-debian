@@ -113,7 +113,7 @@ $(BUILDDIR)/nanokvm-pro-prepare-stamp: $(BUILDDIR)/golang-toolchain-stamp $(BUIL
 	@cp -p $(BUILDDIR)/nanokvm-pro/kvmadmin.tar.gz /output/$(BOARD)-kvmadmin.tar.gz
 	@touch $@
 
-$(BUILDDIR)/nanokvm-pro-package-stamp: $(BUILDDIR)/nanokvm-pro-prepare-stamp
+$(BUILDDIR)/nanokvm-pro-package-prepare-stamp: $(BUILDDIR)/nanokvm-pro-prepare-stamp
 	@cd $(BUILDDIR)/nanokvm-pro ; dpkg-deb -R nanokvm_pro_$(NANOKVM_PRO_VERSION)/nanokvmpro_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb $(NANOKVM_PRO_PACKAGE_DIR)
 	@apt-get install -y golang-go npm
 	@npm install -g pnpm
@@ -129,6 +129,9 @@ $(BUILDDIR)/nanokvm-pro-package-stamp: $(BUILDDIR)/nanokvm-pro-prepare-stamp
 	@if [ "X$(NANOKVM_PRO_TOOLCHAIN_URL)" != "X" ]; then \
 		cd $(NANOKVM_PRO_BUILD_DIR)/support/scripts && sed -i 's|https://developer.arm.com/-/media/Files/downloads/gnu|$(NANOKVM_PRO_TOOLCHAIN_URL)|g' config.ini ; \
 	fi
+	@touch $@
+
+$(BUILDDIR)/nanokvm-pro-package-stamp: $(BUILDDIR)/nanokvm-pro-package-prepare-stamp
 	@cd $(NANOKVM_PRO_BUILD_DIR)/support/scripts ; ./toolchain_setup.sh
 	@cd $(NANOKVM_PRO_BUILD_DIR)/server/ ; ./build.sh
 	@cd $(NANOKVM_PRO_BUILD_DIR)/web/ ; pnpm install
