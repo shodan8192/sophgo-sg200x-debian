@@ -96,6 +96,7 @@ git_clone -b main https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/maixcdk-dl-pkgs
 git_clone -b latest https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/maixcam-skeleton
 git_clone -b main https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/nanokvm-server-vendor
 git_clone -b latest https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/nanokvm-skeleton
+git_clone -b main https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/nanokvm-web-modules
 git_clone -b main https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/nanokvm-pro-server-vendor
 git_clone -b main https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/nanokvm-pro-web-modules
 
