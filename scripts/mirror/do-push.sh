@@ -85,6 +85,21 @@ for f in */.git ; do
       do_pull_push $x $u $s
     done
     git checkout $b
+  elif echo $d | grep -q -E '^berkeley-testfloat-3$' ; then
+    for x in master qemu ; do
+      do_pull_push $x $u $s
+    done
+    git checkout $b
+  elif echo $d | grep -q -E '^riscv-gcc$' ; then
+    for x in xuantie-gcc-10.2.0 xuantie-gcc-10.4.0 ; do
+      do_pull_push $x $u $s
+    done
+    git checkout $b
+  elif echo $d | grep -q -E '^riscv-gnu-toolchain$' ; then
+    for x in  xuantie-gnu-toolchain-v2.6.x  xuantie-gnu-toolchain-v2.8.x xuantie-gnu-toolchain-v2.10.x ; do
+      do_pull_push $x $u $s
+    done
+    git checkout $b
   elif echo $d | grep -q -E '^sophgo-sg200x-debian$' ; then
     for x in debian ubuntu ; do
       do_pull_push $x $u $s
@@ -108,6 +123,12 @@ for f in */.git ; do
     do_push_tags '[0-9]\.*'
   elif echo $d | grep -q -E '^cvi_pinmux|^duo-pinmux$' ; then
     do_push_tags '[0-9]\.*'
+  elif echo $d | grep -q -E '^capstone$' ; then
+    do_push_tags '5.0*'
+  elif echo $d | grep -q -E '^dtc$' ; then
+    do_push_tags 'v[0-9]\.*'
+  elif echo $d | grep -q -E '^edk2$' ; then
+    do_push_tags 'edk2-stable2020*'
   elif echo $d | grep -q -E '^flatbuffers|^glog$' ; then
     do_push_tags 'v*'
   elif echo $d | grep -q -E '^kernel$|^linux' ; then
@@ -117,12 +138,16 @@ for f in */.git ; do
     do_push_tags 'krb5-1.17*'
   elif echo $d | grep -q -E '^eigen|^libeigen$' ; then
     do_push_tags '[0-9]\.*'
+  elif echo $d | grep -q -E '^libslirp$' ; then
+    do_push_tags 'v4.*'
   elif echo $d | grep -q -E '^libwebsockets$' ; then
     do_push_tags 'v4\.*'
   elif echo $d | grep -q -E '^LicheeSG-Nano-Build$' ; then
     do_push_tags 'v*'
   elif echo $d | grep -q -E '^maixcam-skeleton$' ; then
     do_push_tags 'v*'
+  elif echo $d | grep -q -E '^meson$' ; then
+    do_push_tags '0.55*'
   elif echo $d | grep -q -E '^NanoKVM' ; then
     do_push_tags '[0-9]\.*'
   elif echo $d | grep -q -E '^nanokvm-skeleton$' ; then
@@ -137,6 +162,8 @@ for f in */.git ; do
     do_push_tags 'OpenSSL_1_1_*'
   elif echo $d | grep -q -E '^overlayfs-tools$' ; then
     do_push_tags 'v20*'
+  elif echo $d | grep -q -E '^riscv-gnu-toolchain$' ; then
+    do_push_tags 'riscv*-10.?.*'
   elif echo $d | grep -q -E '^sqlite$' ; then
     do_push_tags 'version-3\.*'
   elif echo $d | grep -q -E '^u-boot$' ; then
