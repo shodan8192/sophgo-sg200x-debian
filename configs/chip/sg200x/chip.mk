@@ -455,7 +455,7 @@ $(BUILDDIR)/buildroot-prepare-clone-dl-stamp: $(BUILDDIR)/buildroot-prepare-clon
 	@echo "$(COLOUR_GREEN)Cloning Buildroot for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
 	@git clone -b main --depth=1 $(GIT_USER_URL)/buildroot-dl.git $(BR_DIR)/dl
-	@cd $(BR_DIR)/dl && git checkout b953bc0
+	@cd $(BR_DIR)/dl && git checkout f5c041b
 	@cd $(BR_DIR)/dl && [ "$(GIT_REF)" = "develop" ] || rm -rf .git
 	@touch $@
 
