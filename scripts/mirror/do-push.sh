@@ -70,6 +70,11 @@ for f in */.git ; do
   echo "$d: $s $b"
   if [ $checkoutbranches = false ]; then
      do_pull_push $b $u $s
+  elif echo $d | grep -q -E '^buildroot-dl$|^dl$' ; then
+    for x in main maixcdk ; do
+      do_pull_push $x $u $s
+    done
+    git checkout $b
   elif echo $d | grep -q -E '^u-boot$' ; then
     for x in licheervnano-cvisdk-2021.10 nanokvmpro-2020.04 ; do
       do_pull_push $x $u $s
