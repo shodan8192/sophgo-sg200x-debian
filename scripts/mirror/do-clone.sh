@@ -130,6 +130,9 @@ git_clone -b master https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/uvc-gadget uvc-gad
 
 git_clone -b develop https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/json json
 
+git_clone -b master https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/ipmitool ipmitool
+git_clone -b master https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/rtc-tools rtc-tools
+
 if [ $clonetoolchain != false ]; then
 git_clone -b xuantie-gnu-toolchain-v2.10.x https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/riscv-gnu-toolchain riscv-gnu-toolchain
 git_clone -b xuantie-binutils-gdb-2.35 https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/riscv-binutils-gdb riscv-binutils-gdb

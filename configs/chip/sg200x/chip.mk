@@ -454,14 +454,14 @@ $(BUILDDIR)/buildroot-prepare-clone-stamp:
 $(BUILDDIR)/buildroot-prepare-clone-dl-stamp: $(BUILDDIR)/buildroot-prepare-clone-stamp
 	@echo "$(COLOUR_GREEN)Cloning Buildroot for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
-	@git clone -b main --depth=1 $(GIT_USER_URL)/buildroot-dl.git $(BR_DIR)/dl
-	@cd $(BR_DIR)/dl && git checkout b953bc0
+	@git clone -b maixcdk --depth=1 $(GIT_USER_URL)/buildroot-dl.git $(BR_DIR)/dl
+	@cd $(BR_DIR)/dl && git checkout 724b9c7
 	@cd $(BR_DIR)/dl && [ "$(GIT_REF)" = "develop" ] || rm -rf .git
 	@touch $@
 
 $(BUILDDIR)/buildroot-prepare-checkout-stamp: $(BUILDDIR)/buildroot-prepare-clone-dl-stamp
 	@echo "$(COLOUR_GREEN)Checking out Buildroot for $(BOARD)$(END_COLOUR)"
-	@cd $(BR_DIR) && git checkout 51f9c4d
+	@cd $(BR_DIR) && git checkout 287e819
 	@mkdir -p $(BUILDDIR)/ramdisk/tools
 	@git clone -b main $(GIT_USER_URL)/cvi-pinmux $(BUILDDIR)/ramdisk/tools/cvi_pinmux
 	@cd $(BUILDDIR)/ramdisk/tools/cvi_pinmux && git checkout 5b90da9
