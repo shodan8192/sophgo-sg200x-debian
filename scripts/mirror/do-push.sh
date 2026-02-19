@@ -71,7 +71,7 @@ for f in */.git ; do
   if [ $checkoutbranches = false ]; then
      do_pull_push $b $u $s
   elif echo $d | grep -q -E '^buildroot-dl$|^dl$' ; then
-    for x in main maixcdk ; do
+    for x in main maixcdk licheesgnano ; do
       do_pull_push $x $u $s
     done
     git checkout $b
