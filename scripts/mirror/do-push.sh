@@ -135,6 +135,16 @@ for f in */.git ; do
       do_pull_push $x $u $s
     done
     git checkout $b
+  elif echo $d | grep -q -E '^json-c$' ; then
+    for x in 3rd cvi ; do
+      do_pull_push $x $u $s
+    done
+    git checkout $b
+  elif echo $d | grep -q -E '^miniz$' ; then
+    for x in 3rd cvi ; do
+      do_pull_push $x $u $s
+    done
+    git checkout $b
   elif echo $d | grep -q -E '^berkeley-testfloat-3$' ; then
     for x in master qemu ; do
       do_pull_push $x $u $s
