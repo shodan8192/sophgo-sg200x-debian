@@ -2,6 +2,14 @@ ifneq ("$(findstring nanokvm-pro,$(IMAGE_ADDITIONS))","")
 BSPFILTER += "nanokvm-pro"
 endif
 
+NANOKVM_PRO_BUILD_DIR = $(BUILDDIR)/nanokvm-pro/NanoKVM-Pro
+
+NANOKVM_PRO_XDG_HOME_DIR = $(NANOKVM_PRO_BUILD_DIR)
+NANOKVM_PRO_XDG_CACHE_DIR = $(NANOKVM_PRO_XDG_HOME_DIR)/.cache
+NANOKVM_PRO_XDG_DATA_DIR = $(NANOKVM_PRO_XDG_HOME_DIR)/.local/share
+
+NANOKVM_PRO_PNPM_SHARE_DIR = $(NANOKVM_PRO_XDG_DATA_DIR)/pnpm
+
 GOLANG_HOST_ARCH ?= amd64
 GOLANG_TOOLCHAIN_URL ?= $(shell echo $(TOOLCHAIN_URL) | sed 's|/arm/.*|/golang.org|g' | sed 's|/linaro/.*|/golang.org|g')
 
@@ -40,7 +48,6 @@ NANOKVM_PRO_ARCH_URL = $(NANOKVM_PRO_UPDATE_URL)/glibc_$(DEB_ARCH)
 
 NANOKVM_PRO_TOOLCHAIN_URL ?= $(shell echo $(TOOLCHAIN_URL) | sed 's|/arm/.*|/arm/gnu|g')
 
-NANOKVM_PRO_BUILD_DIR = $(BUILDDIR)/nanokvm-pro/NanoKVM-Pro
 NANOKVM_PRO_PACKAGE_DIR = $(BUILDDIR)/package/nanokvmpro-$(NANOKVM_PRO_VERSION)
 
 NANOKVM_PRO_KVMCOMM_MODULES = f_udisp_drv.ko \
@@ -52,6 +59,17 @@ rotary_encoder.ko \
 wireguard.ko
 
 NANOKVM_PRO_KVMCOMM_PACKAGE_DIR = $(BUILDDIR)/package/kvmcomm-$(NANOKVM_PRO_VERSION)
+
+HOST_NODEJS_BIN_ENV = \
+	XDG_CACHE_HOME=$(NANOKVM_PRO_XDG_CACHE_DIR) \
+	XDG_DATA_HOME=$(NANOKVM_PRO_XDG_DATA_DIR) \
+	COREPACK_HOME=$(NANOKVM_PRO_XDG_CACHE_DIR)/node/corepack \
+	PNPM_HOME=$(NANOKVM_PRO_XDG_DATA_DIR)/pnpm \
+	npm_config_cache=$(NANOKVM_PRO_BUILD_DIR)/.npm-cache
+
+HOST_COREPACK = $(HOST_NODEJS_BIN_ENV) corepack
+HOST_NPM = $(HOST_NODEJS_BIN_ENV) npm
+HOST_PNPM = $(HOST_NODEJS_BIN_ENV) pnpm
 
 $(BUILDDIR)/golang-toolchain-stamp:
 	@if [ "X$(GOLANG_TOOLCHAIN_URL)" != "X" ]; then \
@@ -125,13 +143,15 @@ $(BUILDDIR)/nanokvm-pro-package-prepare-stamp: $(BUILDDIR)/nanokvm-pro-prepare-s
 	@cd $(NANOKVM_PRO_BUILD_DIR)/$(NANOKVM_PRO_GOMOD)/vendor && git checkout $(NANOKVM_PRO_GO_VENDOR_REF)
 	@cd $(NANOKVM_PRO_BUILD_DIR)/web && git clone --depth 1 $(NANOKVM_PRO_NODE_MODULES_URL) node_modules
 	@cd $(NANOKVM_PRO_BUILD_DIR)/web/node_modules && git checkout $(NANOKVM_PRO_NODE_MODULES_REF)
+	@cd $(NANOKVM_PRO_BUILD_DIR)/web && sed -i 's|^storeDir: .*|storeDir: '$(NANOKVM_PRO_PNPM_SHARE_DIR)'/store/v10|g' node_modules/.modules.yaml
+	@cd $(NANOKVM_PRO_BUILD_DIR)/web && sed -i 's|"storeDir": ".*"|"storeDir": "'$(NANOKVM_PRO_PNPM_SHARE_DIR)'/store/v10"|g' node_modules/.modules.yaml
 	@if apt-get install -y node-corepack ; then \
-		corepack enable pnpm && \
-		mkdir -p ~/.cache/node && \
-		cd ~/.cache/node && \
-		mv $(NANOKVM_PRO_BUILD_DIR)/web/node_modules/corepack ~/.cache/node/ ; \
+		$(HOST_COREPACK) enable pnpm && \
+		mkdir -p $(NANOKVM_PRO_XDG_CACHE_DIR)/node && \
+		cd $(NANOKVM_PRO_XDG_CACHE_DIR)/node && \
+		mv $(NANOKVM_PRO_BUILD_DIR)/web/node_modules/corepack $(NANOKVM_PRO_XDG_CACHE_DIR)/node/ ; \
 	else \
-		npm install -g pnpm && \
+		$(HOST_NPM) install -g pnpm && \
 		rm -rf  $(NANOKVM_PRO_BUILD_DIR)/web/node_modules/corepack/ ; \
 	fi
 	@$(foreach file, $(wildcard /configs/common/patches/nanokvm-pro/*.patch), cd $(NANOKVM_PRO_BUILD_DIR) && git apply --ignore-whitespace $(file);)
@@ -147,8 +167,8 @@ $(BUILDDIR)/nanokvm-pro-package-prepare-stamp: $(BUILDDIR)/nanokvm-pro-prepare-s
 $(BUILDDIR)/nanokvm-pro-package-stamp: $(BUILDDIR)/nanokvm-pro-package-prepare-stamp
 	@cd $(NANOKVM_PRO_BUILD_DIR)/support/scripts ; ./toolchain_setup.sh
 	@cd $(NANOKVM_PRO_BUILD_DIR)/server/ ; ./build.sh
-	@cd $(NANOKVM_PRO_BUILD_DIR)/web/ ; pnpm install -r --offline
-	@cd $(NANOKVM_PRO_BUILD_DIR)/web/ ; pnpm build
+	@cd $(NANOKVM_PRO_BUILD_DIR)/web/ ; $(HOST_PNPM) install -r --offline
+	@cd $(NANOKVM_PRO_BUILD_DIR)/web/ ; $(HOST_PNPM) build
 	@cp -p $(NANOKVM_PRO_BUILD_DIR)/server/NanoKVM-Server $(NANOKVM_PRO_PACKAGE_DIR)/kvmapp/server/
 	@rm -rf $(NANOKVM_PRO_PACKAGE_DIR)/kvmapp/server/web/
 	@mkdir $(NANOKVM_PRO_PACKAGE_DIR)/kvmapp/server/web/
