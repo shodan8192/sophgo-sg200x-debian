@@ -70,23 +70,78 @@ for f in */.git ; do
   echo "$d: $s $b"
   if [ $checkoutbranches = false ]; then
      do_pull_push $b $u $s
+  elif echo $d | grep -q -E '^LicheeRV-Nano-Build' ; then
+    for x in develop main middleware-maix_mmf nanokvm ; do
+      do_pull_push $x $u $s
+    done
+    git checkout $b
+  elif echo $d | grep -q -E '^LicheeSG-Nano-Build' ; then
+    for x in develop main ; do
+      do_pull_push $x $u $s
+    done
+    git checkout $b
+  elif echo $d | grep -q -E '^build$' ; then
+    for x in licheervnano-cvisdk licheervnano ; do
+      do_pull_push $x $u $s
+    done
+    git checkout $b
+  elif echo $d | grep -q -E '^buildroot$' ; then
+    for x in nanokvm-2025.02 licheervnano-2025.02 licheervnano-2023.11 ; do
+      do_pull_push $x $u $s
+    done
+    git checkout $b
   elif echo $d | grep -q -E '^buildroot-dl$|^dl$' ; then
-    for x in main maixcdk ; do
+    for x in main maixcdk licheesgnano ; do
+      do_pull_push $x $u $s
+    done
+    git checkout $b
+  elif echo $d | grep -q -E '^fsbl$' ; then
+    for x in licheervnano-cvisdk licheervnano ; do
       do_pull_push $x $u $s
     done
     git checkout $b
   elif echo $d | grep -q -E '^u-boot$' ; then
-    for x in licheervnano-cvisdk-2021.10 nanokvmpro-2020.04 ; do
+    for x in licheervnano-cvisdk-2021.10 nanokvmpro-2020.04 licheervnano-2021.10 ; do
       do_pull_push $x $u $s
     done
     git checkout $b
   elif echo $d | grep -q -E '^kernel$|^linux' ; then
-    for x in licheervnano-merged-5.10.y nanokvmpro-4.19.y ; do
+    for x in licheervnano-merged-5.10.y nanokvmpro-4.19.y licheervnano-cvisdk-5.10.y licheervnano-5.10.y ; do
+      do_pull_push $x $u $s
+    done
+    git checkout $b
+  elif echo $d | grep -q -E '^middleware$' ; then
+    for x in maix_mmf-cvisdk licheervnano ; do
       do_pull_push $x $u $s
     done
     git checkout $b
   elif echo $d | grep -q -E '^opencv$' ; then
     for x in 3rd 4.x ; do
+      do_pull_push $x $u $s
+    done
+    git checkout $b
+  elif echo $d | grep -q -E '^opensbi$' ; then
+    for x in licheervnano-cvisdk-1.2 licheervnano-0.9 ; do
+      do_pull_push $x $u $s
+    done
+    git checkout $b
+  elif echo $d | grep -q -E '^osdrv$' ; then
+    for x in licheervnano-cvisdk licheervnano ; do
+      do_pull_push $x $u $s
+    done
+    git checkout $b
+  elif echo $d | grep -q -E '^ramdisk$' ; then
+    for x in licheesgnano licheervnano ; do
+      do_pull_push $x $u $s
+    done
+    git checkout $b
+  elif echo $d | grep -q -E '^json-c$' ; then
+    for x in 3rd cvi ; do
+      do_pull_push $x $u $s
+    done
+    git checkout $b
+  elif echo $d | grep -q -E '^miniz$' ; then
+    for x in 3rd cvi ; do
       do_pull_push $x $u $s
     done
     git checkout $b
