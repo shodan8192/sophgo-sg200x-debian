@@ -46,7 +46,7 @@ NANOKVM_PRO_GO_VENDOR_REF = f573cc27f239da8ce24646e4dbe91410c88b1c03
 NANOKVM_PRO_GO_VENDOR_URL = $(GIT_USER_URL)/nanokvm-pro-server-vendor
 NANOKVM_PRO_GOMOD = server
 
-NANOKVM_PRO_NODE_MODULES_REF = 56b02d88aab803a759732f75e813b92c20a33100
+NANOKVM_PRO_NODE_MODULES_REF = e2cd418f6c781657b038b9867820387ac110d447
 NANOKVM_PRO_NODE_MODULES_URL = $(GIT_USER_URL)/nanokvm-pro-web-modules
 
 NANOKVM_PRO_STABLE_URL = https://cdn.sipeed.com/nanokvm
@@ -156,12 +156,15 @@ $(BUILDDIR)/nanokvm-pro-package-prepare-stamp: $(BUILDDIR)/nanokvm-pro-prepare-s
 	@cd $(NANOKVM_PRO_BUILD_DIR)/web && sed -i 's|^storeDir: .*|storeDir: '$(NANOKVM_PRO_PNPM_SHARE_DIR)'/store/v10|g' node_modules/.modules.yaml
 	@cd $(NANOKVM_PRO_BUILD_DIR)/web && sed -i 's|"storeDir": ".*"|"storeDir": "'$(NANOKVM_PRO_PNPM_SHARE_DIR)'/store/v10"|g' node_modules/.modules.yaml
 	@if apt-get install -y node-corepack ; then \
+		rm -rf  $(NANOKVM_PRO_BUILD_DIR)/web/node_modules/.npm/ && \
 		$(HOST_COREPACK) enable pnpm && \
 		mkdir -p $(NANOKVM_PRO_XDG_CACHE_DIR)/node && \
 		cd $(NANOKVM_PRO_XDG_CACHE_DIR)/node && \
 		mv $(NANOKVM_PRO_BUILD_DIR)/web/node_modules/corepack $(NANOKVM_PRO_XDG_CACHE_DIR)/node/ ; \
 	else \
-		$(HOST_NPM) install -g pnpm && \
+		mkdir -p $(NANOKVM_PRO_XDG_HOME_DIR) && \
+		mv $(NANOKVM_PRO_BUILD_DIR)/web/node_modules/.npm $(NANOKVM_PRO_XDG_HOME_DIR)/ && \
+		$(HOST_NPM) install -g --offline pnpm && \
 		rm -rf  $(NANOKVM_PRO_BUILD_DIR)/web/node_modules/corepack/ ; \
 	fi
 	@$(foreach file, $(wildcard /configs/common/patches/nanokvm-pro/*.patch), cd $(NANOKVM_PRO_BUILD_DIR) && git apply --ignore-whitespace $(file);)
