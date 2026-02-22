@@ -148,10 +148,16 @@ fi
 kernel_image=${lib_dir##*/}
 
 # set default dtb file, please verify your board version
-mkdir -p /boot/fdt/${kernel_image}/${CHIP_VENDOR}
+mkdir -p /boot/fdt/${kernel_image}
 
-cp ${lib_dir}/${CHIP_VENDOR}/*.dtb /boot/fdt/${kernel_image}/${CHIP_VENDOR}/
-
+if [ -e ${lib_dir}/${CHIP_VENDOR} ]; then
+  mkdir -p /boot/fdt/${kernel_image}/${CHIP_VENDOR}
+  cp ${lib_dir}/${CHIP_VENDOR}/*.dtb /boot/fdt/${kernel_image}/${CHIP_VENDOR}/
+elif [ "${CHIP_VENDOR}" = "axera" ]; then
+  cp ${lib_dir}/AX6*.dtb /boot/fdt/${kernel_image}/
+else
+  cp ${lib_dir}/*.dtb /boot/fdt/${kernel_image}/
+fi
 
 cat /boot/extlinux/extlinux.conf
 
