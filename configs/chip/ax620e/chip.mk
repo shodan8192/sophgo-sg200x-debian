@@ -18,7 +18,7 @@ else
 $(error $(red)SDK_VER is invalid$(reset))
 endif
 
-ifeq ($(UBOOT_ARCH),arm)
+ifeq ($(BOOT_CPU),aarch64)
 SBL_CROSS_COMPILE_PATH = $(CROSS_COMPILE_PATH_64)
 SBL_CROSS_COMPILE_PREFIX = $(CROSS_COMPILE_64)
 else
@@ -449,7 +449,7 @@ $(BUILDDIR)/bsp-prepare-clone-stamp:
 
 $(BUILDDIR)/bsp-prepare-checkout-stamp: $(BUILDDIR)/bsp-prepare-clone-stamp
 	@echo "$(COLOUR_GREEN)Checking out BSP for $(BOARD)$(END_COLOUR)"
-	@cd $(BUILDDIR)/bsp && git checkout a236692
+	@cd $(BUILDDIR)/bsp && git checkout a107cc2
 	@cd $(BUILDDIR)/bsp && git submodule set-url axerabin $(GIT_USER_URL)/axerabin
 	@cd $(BUILDDIR)/bsp && git submodule set-url linux $(GIT_USER_URL)/linux
 	@cd $(BUILDDIR)/bsp && git submodule set-url u-boot $(GIT_USER_URL)/u-boot
@@ -461,6 +461,9 @@ $(BUILDDIR)/bsp-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $
 	@$(eval BSP_ROOTFS_SOURCE_DIR=$(BUILDDIR)/bsp/axerabin/$(CHIP)/rootfs)
 	@sed -i '/get-toolchain.sh/d' $(BUILDDIR)/bsp/build.sh
 	@sed -i 's|^BOARD_DTS=.*|BOARD_DTS=$(BOARD_DTS)|g' $(BUILDDIR)/bsp/scripts/envsetup_pack.sh
+	@sed -i s/'^BOARD_CHIP=.*'/'BOARD_CHIP='$(CHIP)/g $(BUILDDIR)/bsp/scripts/envsetup_pack.sh
+	@sed -i s/'^BOARD_FAMILY=.*'/'BOARD_FAMILY='$(UBOOT_CHIP)/g $(BUILDDIR)/bsp/scripts/envsetup_pack.sh
+	@sed -i s/'^KERNEL_ARCH=.*'/'KERNEL_ARCH='$(KERNEL_ARCH)/g $(BUILDDIR)/bsp/scripts/envsetup_pack.sh
 	@sed -i 's|^CROSS_COMPILE_PATH=.*|CROSS_COMPILE_PATH=$(SBL_CROSS_COMPILE_PATH)|g' $(BUILDDIR)/bsp/scripts/envsetup_pack.sh
 	@sed -i 's|^CROSS_COMPILE=.*|CROSS_COMPILE=$(SBL_CROSS_COMPILE_PREFIX)|g' $(BUILDDIR)/bsp/scripts/envsetup_pack.sh
 	@if [ "X$(findstring kvm,$(VARIANT))" = "X" ]; then \

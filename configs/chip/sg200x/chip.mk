@@ -32,7 +32,7 @@ else
 $(error $(red)SDK_VER is invalid$(reset))
 endif
 
-ifeq ($(UBOOT_ARCH),arm)
+ifeq ($(BOOT_CPU),aarch64)
 SBL_CROSS_COMPILE_PATH = $(CROSS_COMPILE_PATH_64)
 SBL_CROSS_COMPILE_PREFIX = $(CROSS_COMPILE_64)
 else
