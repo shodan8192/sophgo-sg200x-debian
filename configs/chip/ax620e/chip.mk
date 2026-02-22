@@ -449,7 +449,7 @@ $(BUILDDIR)/bsp-prepare-clone-stamp:
 
 $(BUILDDIR)/bsp-prepare-checkout-stamp: $(BUILDDIR)/bsp-prepare-clone-stamp
 	@echo "$(COLOUR_GREEN)Checking out BSP for $(BOARD)$(END_COLOUR)"
-	@cd $(BUILDDIR)/bsp && git checkout 84e6397
+	@cd $(BUILDDIR)/bsp && git checkout a236692
 	@cd $(BUILDDIR)/bsp && git submodule set-url axerabin $(GIT_USER_URL)/axerabin
 	@cd $(BUILDDIR)/bsp && git submodule set-url linux $(GIT_USER_URL)/linux
 	@cd $(BUILDDIR)/bsp && git submodule set-url u-boot $(GIT_USER_URL)/u-boot
@@ -463,7 +463,6 @@ $(BUILDDIR)/bsp-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $
 	@sed -i 's|^BOARD_DTS=.*|BOARD_DTS=$(BOARD_DTS)|g' $(BUILDDIR)/bsp/scripts/envsetup_pack.sh
 	@sed -i 's|^CROSS_COMPILE_PATH=.*|CROSS_COMPILE_PATH=$(SBL_CROSS_COMPILE_PATH)|g' $(BUILDDIR)/bsp/scripts/envsetup_pack.sh
 	@sed -i 's|^CROSS_COMPILE=.*|CROSS_COMPILE=$(SBL_CROSS_COMPILE_PREFIX)|g' $(BUILDDIR)/bsp/scripts/envsetup_pack.sh
-	@sed -i 's|dtb EXTRA_CFLAGS|dtb BOARD=$(UBOOT_FAMILY) EXTRA_CFLAGS|g' $(BUILDDIR)/bsp/scripts/build-u-boot.sh
 	@if [ "X$(findstring kvm,$(VARIANT))" = "X" ]; then \
 		sed -i /'devmem 0x10030028'/d $(BSP_ROOTFS_SOURCE_DIR)/etc/rc.local ; \
 		sed -i s/'if ! systemctl is-active --quiet sysdev.service'/'if false'/g $(BSP_ROOTFS_SOURCE_DIR)/etc/rc.local ; \
