@@ -21,14 +21,18 @@ $(BUILDDIR)/libconfig-prepare-stamp:
 		tar xzf libconfig_$(LIBCONFIG_VERSION).orig.tar.gz && \
 		cd libconfig-$(LIBCONFIG_VERSION)/ && \
 		tar xJf ../libconfig_$(LIBCONFIG_VERSION)-$(LIBCONFIG_BUILD).debian.tar.xz && \
+		rm -f debian/libconfig*-dev.docs && \
+		rm -f debian/libconfig-doc.doc-base && \
+		rm -f debian/libconfig-doc.docs && \
+		sed -i /'^Build-Depends-Indep:'/d debian/control && \
+		sed -i /'.(MAKE) -C doc pdf'/d debian/rules && \
 		echo OK
 	@touch $@
 
 $(BUILDDIR)/libconfig-stamp: $(BUILDDIR)/libconfig-prepare-stamp
 	@chroot /rootfs apt-get update || true
 	@chroot /rootfs apt-get remove -y libconfig-dev || true
-	@chroot /rootfs apt-get install -y debhelper
-	@chroot /rootfs apt-get install -y --no-install-recommends texinfo texlive-latex-base texlive-fonts-recommended
+	@chroot /rootfs apt-get install -y debhelper texinfo
 	@chroot /rootfs bash -c 'cd /root/source-libconfig/libconfig-$(LIBCONFIG_VERSION)/ && dpkg-buildpackage'
 	@rm -rf /rootfs/root/source-libconfig/libconfig-$(LIBCONFIG_VERSION)/
 	@cp -p /rootfs/root/source-libconfig/libconfig9_$(LIBCONFIG_VERSION)-$(LIBCONFIG_BUILD)_$(DEB_ARCH).deb /output/
