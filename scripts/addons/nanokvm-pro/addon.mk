@@ -140,6 +140,12 @@ $(BUILDDIR)/nanokvm-pro-prepare-stamp: $(BUILDDIR)/golang-toolchain-stamp $(BUIL
 	@cp -p $(BUILDDIR)/nanokvm-pro/kvmadmin.tar.gz /output/$(BOARD)-kvmadmin.tar.gz
 	@touch $@
 
+ifeq ($(NANOKVM_PRO_DEBS_FROM_SOURCE),y)
+$(BUILDDIR)/nanokvm-pro-debs-stamp: $(BUILDDIR)/libconfig-stamp $(BUILDDIR)/libjpeg-turbo-stamp $(BUILDDIR)/libwebsockets-stamp $(BUILDDIR)/opus-stamp $(BUILDDIR)/ttyd-stamp
+	@cp /output/libopus0_$(OPUS_VERSION)-$(OPUS_BUILD)_$(DEB_ARCH).deb $(BUILDDIR)/nanokvm-pro/nanokvm_pro_$(NANOKVM_PRO_VERSION)/
+	@cp /output/libopus-dev_$(OPUS_VERSION)-$(OPUS_BUILD)_$(DEB_ARCH).deb $(BUILDDIR)/nanokvm-pro/nanokvm_pro_$(NANOKVM_PRO_VERSION)/
+	@touch $@
+else
 $(BUILDDIR)/nanokvm-pro-debs-stamp: $(BUILDDIR)/nanokvm-pro-prepare-stamp
 	@cd $(BUILDDIR)/nanokvm-pro/nanokvm_pro_$(NANOKVM_PRO_VERSION) ; [ "$(findstring ubuntu,$(DEB_URL))" != "" ] || wget -N https://launchpadlibrarian.net/587202705/libjpeg-turbo8_2.1.2-0ubuntu1_arm64.deb || wget -N $(USER_SITE_URL)/deb/pool/$(CHIP_FAMILY)/libjpeg-turbo8_2.1.2-0ubuntu1_$(DEB_ARCH).deb
 	@cd $(BUILDDIR)/nanokvm-pro/nanokvm_pro_$(NANOKVM_PRO_VERSION) ; [ "$(DEB_DISTRO)" != "trixie" ] || wget -N https://launchpadlibrarian.net/470183065/libconfig9_1.5-0.4build1_arm64.deb || wget -N $(USER_SITE_URL)/deb/pool/$(CHIP_FAMILY)/libconfig9_1.5-0.4build1_$(DEB_ARCH).deb
@@ -148,6 +154,7 @@ $(BUILDDIR)/nanokvm-pro-debs-stamp: $(BUILDDIR)/nanokvm-pro-prepare-stamp
 	@cd $(BUILDDIR)/nanokvm-pro/nanokvm_pro_$(NANOKVM_PRO_VERSION) ; [ "$(DEB_DISTRO)" = "jammy" ] || wget -N https://launchpadlibrarian.net/571748137/libwebsockets16_4.0.20-2ubuntu1_arm64.deb || wget -N $(USER_SITE_URL)/deb/pool/$(CHIP_FAMILY)/libwebsockets16_4.0.20-2ubuntu1_$(DEB_ARCH).deb
 	@cd $(BUILDDIR)/nanokvm-pro/nanokvm_pro_$(NANOKVM_PRO_VERSION) ; [ "$(findstring ubuntu,$(DEB_URL))" != "" ] || wget -N https://launchpadlibrarian.net/572052652/ttyd_1.6.3+20210924-1build1_arm64.deb || wget -N $(USER_SITE_URL)/deb/pool/$(CHIP_FAMILY)/ttyd_1.6.3+20210924-1build1_$(DEB_ARCH).deb
 	@touch $@
+endif
 
 $(BUILDDIR)/nanokvm-pro-package-prepare-stamp: $(BUILDDIR)/nanokvm-pro-prepare-stamp $(BUILDDIR)/nanokvm-pro-debs-stamp
 	@cd $(BUILDDIR)/nanokvm-pro ; dpkg-deb -R nanokvm_pro_$(NANOKVM_PRO_VERSION)/nanokvmpro_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb $(NANOKVM_PRO_PACKAGE_DIR)
