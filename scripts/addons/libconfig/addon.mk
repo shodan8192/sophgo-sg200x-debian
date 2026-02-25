@@ -24,6 +24,7 @@ $(BUILDDIR)/libconfig-prepare-stamp:
 		rm -f debian/libconfig*-dev.docs && \
 		rm -f debian/libconfig-doc.doc-base && \
 		rm -f debian/libconfig-doc.docs && \
+		rm -f debian/libconfig9.info && \
 		sed -i /'^Build-Depends-Indep:'/d debian/control && \
 		sed -i /'.(MAKE) -C doc pdf'/d debian/rules && \
 		echo OK
@@ -31,7 +32,6 @@ $(BUILDDIR)/libconfig-prepare-stamp:
 
 $(BUILDDIR)/libconfig-stamp: $(BUILDDIR)/libconfig-prepare-stamp
 	@chroot /rootfs apt-get update || true
-	@chroot /rootfs apt-get remove -y libconfig-dev || true
 	@chroot /rootfs apt-get install -y debhelper texinfo
 	@chroot /rootfs bash -c 'cd /root/source-libconfig/libconfig-$(LIBCONFIG_VERSION)/ && dpkg-buildpackage'
 	@rm -rf /rootfs/root/source-libconfig/libconfig-$(LIBCONFIG_VERSION)/
