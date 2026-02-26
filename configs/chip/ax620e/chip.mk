@@ -716,7 +716,7 @@ $(BUILDDIR)/image-compile-stamp: $(BUILDDIR)/image-customize-stamp
 	@[ "$(GIT_REF)" = "develop" ] || rm -rf /host-tools/gcc/
 	@rm -rf /tmp/genimage/
 	@mkdir -p $(BUILDDIR)/input/
-	@cp -p $(BSP_INSTALL_DIR)/$(STORAGE_TYPE).img $(BUILDDIR)/input/
+	@[ ! -e $(BSP_INSTALL_DIR)/$(STORAGE_TYPE).img ] || cp -p $(BSP_INSTALL_DIR)/$(STORAGE_TYPE).img $(BUILDDIR)/input/
 	@cd $(BUILDDIR) && genimage --config /configs/chip/$(CHIP_FAMILY)/genimage_$(STORAGE_TYPE).cfg --tmppath /tmp/genimage --rootpath /rootfs/
 	@rm -rf /tmp/genimage/
 	@lz4 -9 -f $(BUILDDIR)/images/sdcard.img /output/$(BOARD)_$(STORAGE_TYPE).img.lz4
@@ -734,7 +734,7 @@ $(BUILDDIR)/image-compile-stamp: $(BUILDDIR)/image-customize-stamp
 		cp -p $(BSP_INSTALL_DIR)/kernel.img /tmp/rom/boot/ ; \
 		cp -p $(BSP_INSTALL_DIR)/uboot.bin /tmp/rom/boot/ ; \
 		touch /tmp/rom/boot/rec ; \
-		cd $(BUILDDIR) && genimage --config /configs/chip/$(CHIP_FAMILY)/genimage_sd.cfg --tmppath /tmp/genimage --rootpath /tmp/rom/ ; \
+		cd $(BUILDDIR) && genimage --config /configs/chip/$(CHIP_FAMILY)/genimage_sdcard.cfg --tmppath /tmp/genimage --rootpath /tmp/rom/ ; \
 		mv $(BUILDDIR)/images/sdcard.img $(BUILDDIR)/images/$(BOARD)_sdcard.img ; \
 		echo "Image Version: $(GIT_REF)" > $(BUILDDIR)/images/README.md ; \
 		echo "App Version: $(IMAGE_APP_VERSION)" >> $(BUILDDIR)/images/README.md ; \
