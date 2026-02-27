@@ -27,6 +27,12 @@ GOLANG_TOOLCHAIN_CACHE = $(NANOKVM_PRO_XDG_HOME_DIR)/go/pkg/mod/cache/download
 GOLANG_TOOLCHAIN_DL_DIR = $(BUILDDIR)/golang-toolchain
 GOLANG_TOOLCHAIN_FILE = v0.0.1-go$(GOLANG_TOOLCHAIN_VERSION).linux-$(GOLANG_HOST_ARCH)
 
+ifeq ($(DEB_ARCH),arm64)
+GOLANG_TARGET_ARCH ?= arm64
+else
+GOLANG_TARGET_ARCH ?= arm
+endif
+
 NANOKVM_PRO_GO_ENV = \
 	XDG_CACHE_HOME=$(NANOKVM_PRO_XDG_CACHE_DIR) \
 	XDG_CONFIG_HOME=$(NANOKVM_PRO_XDG_CONFIG_DIR) \
@@ -58,6 +64,16 @@ NANOKVM_PRO_ARCH_URL = $(NANOKVM_PRO_UPDATE_URL)/glibc_$(DEB_ARCH)
 
 NANOKVM_PRO_TOOLCHAIN_URL ?= $(shell echo $(TOOLCHAIN_URL) | sed 's|/arm/.*|/arm/gnu|g')
 
+ifeq ($(DEB_ARCH),arm64)
+NANOKVM_PRO_TOOLCHAIN_SHA256 = 6e8112dce0d4334d93bd3193815f16abe6a2dd5e7872697987a0b12308f876a4
+NANOKVM_PRO_TOOLCHAIN_TARGET = aarch64-none-linux-gnu
+NANOKVM_PRO_LIB_TARGET = aarch64-linux-gnu
+else
+NANOKVM_PRO_TOOLCHAIN_SHA256 = d73f230bb946231b648a960b719f2cc1afc792ec2e36f9abc25552f00923a926
+NANOKVM_PRO_TOOLCHAIN_TARGET = arm-none-linux-gnueabihf
+NANOKVM_PRO_LIB_TARGET = arm-linux-gnueabihf
+endif
+
 NANOKVM_PRO_PACKAGE_DIR = $(BUILDDIR)/package/nanokvmpro-$(NANOKVM_PRO_VERSION)
 
 NANOKVM_PRO_KVMCOMM_MODULES = f_udisp_drv.ko \
@@ -69,6 +85,7 @@ rotary_encoder.ko \
 wireguard.ko
 
 NANOKVM_PRO_KVMCOMM_PACKAGE_DIR = $(BUILDDIR)/package/kvmcomm-$(NANOKVM_PRO_VERSION)
+NANOKVM_PRO_PIKVM_PACKAGE_DIR = $(BUILDDIR)/package/pikvm-$(NANOKVM_PRO_VERSION)
 
 HOST_NODEJS_BIN_ENV = \
 	XDG_CACHE_HOME=$(NANOKVM_PRO_XDG_CACHE_DIR) \
@@ -137,16 +154,26 @@ $(BUILDDIR)/nanokvm-pro-prepare-stamp: $(BUILDDIR)/golang-toolchain-stamp $(BUIL
 		fi \
 	fi
 	@cd $(BUILDDIR)/nanokvm-pro ; tar xzf "$(NANOKVM_PRO_LATEST_FILE)"
+	@cp -p $(BUILDDIR)/nanokvm-pro/kvmadmin.tar.gz /output/$(BOARD)-kvmadmin.tar.gz
+	@touch $@
+
+ifeq ($(NANOKVM_PRO_DEBS_FROM_SOURCE),y)
+$(BUILDDIR)/nanokvm-pro-debs-stamp: $(BUILDDIR)/libconfig-stamp $(BUILDDIR)/libjpeg-turbo-stamp $(BUILDDIR)/libwebsockets-stamp $(BUILDDIR)/opus-stamp $(BUILDDIR)/ttyd-stamp
+	@cp /output/libopus0_$(OPUS_VERSION)-$(OPUS_BUILD)_$(DEB_ARCH).deb $(BUILDDIR)/nanokvm-pro/nanokvm_pro_$(NANOKVM_PRO_VERSION)/
+	@cp /output/libopus-dev_$(OPUS_VERSION)-$(OPUS_BUILD)_$(DEB_ARCH).deb $(BUILDDIR)/nanokvm-pro/nanokvm_pro_$(NANOKVM_PRO_VERSION)/
+	@touch $@
+else
+$(BUILDDIR)/nanokvm-pro-debs-stamp: $(BUILDDIR)/nanokvm-pro-prepare-stamp
 	@cd $(BUILDDIR)/nanokvm-pro/nanokvm_pro_$(NANOKVM_PRO_VERSION) ; [ "$(findstring ubuntu,$(DEB_URL))" != "" ] || wget -N https://launchpadlibrarian.net/587202705/libjpeg-turbo8_2.1.2-0ubuntu1_arm64.deb || wget -N $(USER_SITE_URL)/deb/pool/$(CHIP_FAMILY)/libjpeg-turbo8_2.1.2-0ubuntu1_$(DEB_ARCH).deb
 	@cd $(BUILDDIR)/nanokvm-pro/nanokvm_pro_$(NANOKVM_PRO_VERSION) ; [ "$(DEB_DISTRO)" != "trixie" ] || wget -N https://launchpadlibrarian.net/470183065/libconfig9_1.5-0.4build1_arm64.deb || wget -N $(USER_SITE_URL)/deb/pool/$(CHIP_FAMILY)/libconfig9_1.5-0.4build1_$(DEB_ARCH).deb
 	@cd $(BUILDDIR)/nanokvm-pro/nanokvm_pro_$(NANOKVM_PRO_VERSION) ; wget -N https://launchpadlibrarian.net/592830919/libopus0_1.3.1-0.1build2_arm64.deb || wget -N $(USER_SITE_URL)/deb/pool/$(CHIP_FAMILY)/libopus0_1.3.1-0.1build2_$(DEB_ARCH).deb
 	@cd $(BUILDDIR)/nanokvm-pro/nanokvm_pro_$(NANOKVM_PRO_VERSION) ; wget -N https://launchpadlibrarian.net/592830918/libopus-dev_1.3.1-0.1build2_arm64.deb || wget -N $(USER_SITE_URL)/deb/pool/$(CHIP_FAMILY)/libopus-dev_1.3.1-0.1build2_$(DEB_ARCH).deb
 	@cd $(BUILDDIR)/nanokvm-pro/nanokvm_pro_$(NANOKVM_PRO_VERSION) ; [ "$(DEB_DISTRO)" = "jammy" ] || wget -N https://launchpadlibrarian.net/571748137/libwebsockets16_4.0.20-2ubuntu1_arm64.deb || wget -N $(USER_SITE_URL)/deb/pool/$(CHIP_FAMILY)/libwebsockets16_4.0.20-2ubuntu1_$(DEB_ARCH).deb
 	@cd $(BUILDDIR)/nanokvm-pro/nanokvm_pro_$(NANOKVM_PRO_VERSION) ; [ "$(findstring ubuntu,$(DEB_URL))" != "" ] || wget -N https://launchpadlibrarian.net/572052652/ttyd_1.6.3+20210924-1build1_arm64.deb || wget -N $(USER_SITE_URL)/deb/pool/$(CHIP_FAMILY)/ttyd_1.6.3+20210924-1build1_$(DEB_ARCH).deb
-	@cp -p $(BUILDDIR)/nanokvm-pro/kvmadmin.tar.gz /output/$(BOARD)-kvmadmin.tar.gz
 	@touch $@
+endif
 
-$(BUILDDIR)/nanokvm-pro-package-prepare-stamp: $(BUILDDIR)/nanokvm-pro-prepare-stamp
+$(BUILDDIR)/nanokvm-pro-package-prepare-stamp: $(BUILDDIR)/nanokvm-pro-prepare-stamp $(BUILDDIR)/nanokvm-pro-debs-stamp
 	@cd $(BUILDDIR)/nanokvm-pro ; dpkg-deb -R nanokvm_pro_$(NANOKVM_PRO_VERSION)/nanokvmpro_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb $(NANOKVM_PRO_PACKAGE_DIR)
 	@apt-get install -y golang-go npm
 	@cd $(BUILDDIR)/nanokvm-pro && git clone $(NANOKVM_PRO_GIT_URL)
@@ -179,6 +206,17 @@ $(BUILDDIR)/nanokvm-pro-package-prepare-stamp: $(BUILDDIR)/nanokvm-pro-prepare-s
 	fi
 	@cd $(NANOKVM_PRO_BUILD_DIR)/support/scripts && sed -i 's|curl -sL -o libopus0.deb ".libopus_url"|cp -p $(BUILDDIR)/nanokvm-pro/nanokvm_pro_$(NANOKVM_PRO_VERSION)/libopus0_1.3.1-0.1build2_$(DEB_ARCH).deb libopus0.deb|g' toolchain_setup.sh
 	@cd $(NANOKVM_PRO_BUILD_DIR)/support/scripts && sed -i 's|curl -sL -o libopus-dev.deb ".libopus_dev_url"|cp -p $(BUILDDIR)/nanokvm-pro/nanokvm_pro_$(NANOKVM_PRO_VERSION)/libopus-dev_1.3.1-0.1build2_$(DEB_ARCH).deb libopus-dev.deb|g' toolchain_setup.sh
+	@sed -i s/'local arch="arm64"'/'local arch="$(GOLANG_TARGET_ARCH)"'/g $(NANOKVM_PRO_BUILD_DIR)/server/build.sh
+	@sed -i s/aarch64-none-linux-gnu/$(NANOKVM_PRO_TOOLCHAIN_TARGET)/g $(NANOKVM_PRO_BUILD_DIR)/server/build.sh
+	@sed -i s/aarch64-none-linux-gnu/$(NANOKVM_PRO_TOOLCHAIN_TARGET)/g $(NANOKVM_PRO_BUILD_DIR)/support/scripts/config.ini
+	@sed -i s/aarch64-none-linux-gnu/$(NANOKVM_PRO_TOOLCHAIN_TARGET)/g $(NANOKVM_PRO_BUILD_DIR)/support/scripts/toolchain_setup.sh
+	@#sed -i s/aarch64-none-linux-gnu/$(NANOKVM_PRO_TOOLCHAIN_TARGET)/g $(NANOKVM_PRO_BUILD_DIR)/support/tools/version_fix/Makefile
+	@sed -i s/arm64/$(DEB_ARCH)/g $(NANOKVM_PRO_BUILD_DIR)/support/scripts/config.ini
+	@sed -i s/6e8112dce0d4334d93bd3193815f16abe6a2dd5e7872697987a0b12308f876a4/$(NANOKVM_PRO_TOOLCHAIN_SHA256)/g $(NANOKVM_PRO_BUILD_DIR)/support/scripts/config.ini
+	@sed -i s/aarch64-linux-gnu/$(NANOKVM_PRO_LIB_TARGET)/g $(NANOKVM_PRO_BUILD_DIR)/support/scripts/toolchain_setup.sh
+	@sed -i s/'_arm64.deb'/'_$(DEB_ARCH).deb'/g $(NANOKVM_PRO_BUILD_DIR)/server/service/application/update.go
+	@[ "$(DEB_ARCH)" = "arm64" ] || sed -i s/ARM64/$(ARCH_NAME)/g $(NANOKVM_PRO_BUILD_DIR)/server/build.sh
+	@[ "$(DEB_ARCH)" = "arm64" ] || sed -i s/ARM64/$(ARCH_NAME)/g $(NANOKVM_PRO_BUILD_DIR)/support/scripts/toolchain_setup.sh
 	@touch $@
 
 $(BUILDDIR)/nanokvm-pro-package-stamp: $(BUILDDIR)/nanokvm-pro-package-prepare-stamp
@@ -235,7 +273,16 @@ $(BUILDDIR)/nanokvm-pro-firmware-stamp: $(BUILDDIR)/aic8800-firmware-stamp $(BUI
 	@cd $(NANOKVM_PRO_FIRMWARE_PACKAGE_DIR) && tar cJf /output/"$(BOARD)-$(NANOKVM_PRO_FIRMWARE_FILE)" *
 	@touch $@
 
-$(BUILDDIR)/nanokvm-pro-stamp: $(BUILDDIR)/nanokvm-pro-package-stamp $(BUILDDIR)/nanokvm-pro-firmware-stamp
+$(BUILDDIR)/nanokvm-pro-pikvm-stamp: $(BUILDDIR)/nanokvm-pro-prepare-stamp
+	@cd $(BUILDDIR)/nanokvm-pro ; dpkg-deb -R nanokvm_pro_$(NANOKVM_PRO_VERSION)/pikvm_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb $(NANOKVM_PRO_PIKVM_PACKAGE_DIR)
+	@cd $(BUILDDIR)/nanokvm-pro ; rm -f nanokvm_pro_$(NANOKVM_PRO_VERSION)/pikvm_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb
+	@cd $(BUILDDIR)/package/ && dpkg-deb --build pikvm-$(NANOKVM_PRO_VERSION) pikvm_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb
+	@cp $(BUILDDIR)/package/pikvm_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb /output/
+	@mkdir -p /rootfs/tmp/install/
+	@cp /output/pikvm_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb /rootfs/tmp/install/
+	@touch $@
+
+$(BUILDDIR)/nanokvm-pro-stamp: $(BUILDDIR)/nanokvm-pro-package-stamp $(BUILDDIR)/nanokvm-pro-firmware-stamp $(BUILDDIR)/nanokvm-pro-pikvm-stamp
 	@cp -p $(BUILDDIR)/nanokvm-pro/nanokvm_pro_$(NANOKVM_PRO_VERSION)/*.deb /output/
 	@mkdir -p /rootfs/tmp/install/
 	@cp -p $(BUILDDIR)/nanokvm-pro/nanokvm_pro_$(NANOKVM_PRO_VERSION)/*.deb /rootfs/tmp/install/

@@ -31,6 +31,13 @@ IMAGE_ADDITIONS += "ethernet-builtin"
 #IMAGE_ADDITIONS += "cvi-pinmux"
 #ifneq ("$(findstring kvm,$(VARIANT))","")
 #IMAGE_ADDITIONS += "nanokvm"
+ifeq ($(NANOKVM_PRO_DEBS_FROM_SOURCE),y)
+IMAGE_ADDITIONS += "libconfig"
+IMAGE_ADDITIONS += "libjpeg-turbo"
+IMAGE_ADDITIONS += "libwebsockets"
+IMAGE_ADDITIONS += "opus"
+IMAGE_ADDITIONS += "ttyd"
+endif
 IMAGE_ADDITIONS += "nanokvm-pro"
 #else
 #IMAGE_ADDITIONS += "maixapp"

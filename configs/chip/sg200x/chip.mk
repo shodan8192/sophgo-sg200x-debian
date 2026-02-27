@@ -197,7 +197,7 @@ $(BUILDDIR)/linux-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out Kernel for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
 	@git clone -b licheervnano-merged-5.10.y $(GIT_CLONE_OPTS) $(GIT_USER_URL)/linux.git $(BUILDDIR)/kernel
-	@cd $(BUILDDIR)/kernel && git checkout cc4b4a2
+	@cd $(BUILDDIR)/kernel && git checkout 5cc993b
 	@touch $@
 
 $(BUILDDIR)/linux-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $(BUILDDIR)/linux-prepare-checkout-stamp $(BUILDDIR)/$(BOARD)-$(VARIANT)/cvi_board_memmap.h
@@ -476,7 +476,7 @@ $(BUILDDIR)/buildroot-prepare-checkout-pinmux-stamp: $(BUILDDIR)/buildroot-prepa
 
 $(BUILDDIR)/buildroot-prepare-checkout-stamp: $(BUILDDIR)/buildroot-prepare-checkout-dl-stamp $(BUILDDIR)/buildroot-prepare-checkout-pinmux-stamp
 	@echo "$(COLOUR_GREEN)Checking out Buildroot for $(BOARD)$(END_COLOUR)"
-	@cd $(BR_DIR) && git checkout abf4e21
+	@cd $(BR_DIR) && git checkout 0fe8961
 	@touch $@
 
 $(BUILDDIR)/buildroot-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $(BUILDDIR)/buildroot-prepare-checkout-stamp $(BUILDDIR)/middleware-compile-stamp
@@ -568,7 +568,7 @@ $(BUILDDIR)/uboot-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out U-Boot for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
 	@git clone -b licheervnano-cvisdk-2021.10 $(GIT_CLONE_OPTS) $(GIT_USER_URL)/u-boot $(BUILDDIR)/u-boot
-	@cd $(BUILDDIR)/u-boot && git checkout 3790a21
+	@cd $(BUILDDIR)/u-boot && git checkout 23740b0
 	@touch $@
 
 $(BUILDDIR)/uboot-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $(BUILDDIR)/uboot-prepare-checkout-stamp $(BUILDDIR)/$(BOARD)-$(VARIANT)/cvi_board_memmap.h
