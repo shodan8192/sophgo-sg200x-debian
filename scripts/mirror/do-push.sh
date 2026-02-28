@@ -200,6 +200,11 @@ for f in */.git ; do
     do_push_tags '[0-9]\.*'
   elif echo $d | grep -q -E '^ipmitool$' ; then
     do_push_tags 'IPMITOOL_1*'
+  elif echo $d | grep -q -E '^janus-gateway$' ; then
+    do_push_tags 'v1.*'
+  elif echo $d | grep -q -E '^kvmd$' ; then
+    do_push_tags 'v4.1??'
+    do_push_tags 'nanokvm_pro_1.*'
   elif echo $d | grep -q -E '^libslirp$' ; then
     do_push_tags 'v4.*'
   elif echo $d | grep -q -E '^libwebsockets$' ; then
@@ -232,6 +237,8 @@ for f in */.git ; do
     do_push_tags 'version-3\.*'
   elif echo $d | grep -q -E '^u-boot$' ; then
     do_push_tags 'v20*'
+  elif echo $d | grep -q -E '^ustreamer$' ; then
+    do_push_tags 'v6.*'
   elif echo $d | grep -q -E '^uv$' ; then
     do_push_tags 'v1.4?.*'
   elif echo $d | grep -q -E '^zlib$' ; then
