@@ -106,7 +106,13 @@ start_usb_dev(){
             fi
             echo "NanoKVM USB Mass Storage0520" > functions/mass_storage.disk0/lun.0/inquiry_string
             disk=$(cat /boot/usb.disk0)
-            if [ -z "${disk}" ]
+            if [ -e /boot/usb.disk0.cdrom ]
+            then
+                    echo "NanoKVM USB CD/DVD-ROM  0520" > functions/mass_storage.disk0/lun.0/inquiry_string
+                    echo 1 > functions/mass_storage.disk0/lun.0/ro
+                    echo 1 > functions/mass_storage.disk0/lun.0/cdrom
+                    cat /boot/usb.disk0.cdrom > functions/mass_storage.disk0/lun.0/file
+            elif [ -z "${disk}" ]
             then
                     # if [ ! -e /mnt/usbdisk.img ]
                     # then
