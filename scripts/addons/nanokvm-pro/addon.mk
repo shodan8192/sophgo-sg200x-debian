@@ -275,6 +275,8 @@ $(BUILDDIR)/nanokvm-pro-firmware-stamp: $(BUILDDIR)/aic8800-firmware-stamp $(BUI
 
 $(BUILDDIR)/nanokvm-pro-pikvm-stamp: $(BUILDDIR)/nanokvm-pro-prepare-stamp
 	@cd $(BUILDDIR)/nanokvm-pro ; dpkg-deb -R nanokvm_pro_$(NANOKVM_PRO_VERSION)/pikvm_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb $(NANOKVM_PRO_PIKVM_PACKAGE_DIR)
+	@mkdir -p $(NANOKVM_PRO_PIKVM_PACKAGE_DIR)/usr/local/include/
+	@cd $(NANOKVM_PRO_PIKVM_PACKAGE_DIR) && mv usr/include/gpiod.h usr/local/include/
 	@cd $(BUILDDIR)/nanokvm-pro ; rm -f nanokvm_pro_$(NANOKVM_PRO_VERSION)/pikvm_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb
 	@cd $(BUILDDIR)/package/ && dpkg-deb --build pikvm-$(NANOKVM_PRO_VERSION) pikvm_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb
 	@cp $(BUILDDIR)/package/pikvm_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb /output/
