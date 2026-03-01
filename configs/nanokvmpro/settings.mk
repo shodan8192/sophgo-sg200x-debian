@@ -31,6 +31,9 @@ IMAGE_ADDITIONS += "ethernet-builtin"
 #IMAGE_ADDITIONS += "cvi-pinmux"
 #ifneq ("$(findstring kvm,$(VARIANT))","")
 #IMAGE_ADDITIONS += "nanokvm"
+ifneq ($(findstring "$(DEB_DISTRO)","jammy" "noble"),)
+IMAGE_ADDITIONS += "libgpiod"
+endif
 ifeq ($(NANOKVM_PRO_DEBS_FROM_SOURCE),y)
 IMAGE_ADDITIONS += "libconfig"
 IMAGE_ADDITIONS += "libjpeg-turbo"
