@@ -33,10 +33,12 @@ $(BUILDDIR)/libgpiod-stamp: $(BUILDDIR)/libgpiod-prepare-stamp
 	@chroot /rootfs bash -c 'cd /root/source-libgpiod/libgpiod-$(LIBGPIOD_VERSION)/ && dpkg-buildpackage'
 	@[ "$(findstring maixcam2-python3,$(IMAGE_ADDITIONS))" = "" ] || chroot /rootfs apt-get remove --purge -y python3-pip
 	@rm -rf /rootfs/root/source-libgpiod/libgpiod-$(LIBGPIOD_VERSION)/
+	@cp -p /rootfs/root/source-libgpiod/gpiod_$(LIBGPIOD_VERSION)-$(LIBGPIOD_BUILD)_$(DEB_ARCH).deb /output/
 	@cp -p /rootfs/root/source-libgpiod/libgpiod3_$(LIBGPIOD_VERSION)-$(LIBGPIOD_BUILD)_$(DEB_ARCH).deb /output/
 	@cp -p /rootfs/root/source-libgpiod/libgpiod-dev_$(LIBGPIOD_VERSION)-$(LIBGPIOD_BUILD)_$(DEB_ARCH).deb /output/
 	@cp -p /rootfs/root/source-libgpiod/python3-libgpiod_$(LIBGPIOD_VERSION)-$(LIBGPIOD_BUILD)_$(DEB_ARCH).deb /output/
 	@mkdir -p /rootfs/tmp/install/
+	@cp -p /rootfs/root/source-libgpiod/gpiod_$(LIBGPIOD_VERSION)-$(LIBGPIOD_BUILD)_$(DEB_ARCH).deb /rootfs/tmp/install/
 	@cp -p /rootfs/root/source-libgpiod/libgpiod3_$(LIBGPIOD_VERSION)-$(LIBGPIOD_BUILD)_$(DEB_ARCH).deb /rootfs/tmp/install/
 	@cp -p /rootfs/root/source-libgpiod/libgpiod-dev_$(LIBGPIOD_VERSION)-$(LIBGPIOD_BUILD)_$(DEB_ARCH).deb /rootfs/tmp/install/
 	@cp -p /rootfs/root/source-libgpiod/python3-libgpiod_$(LIBGPIOD_VERSION)-$(LIBGPIOD_BUILD)_$(DEB_ARCH).deb /rootfs/tmp/install/
