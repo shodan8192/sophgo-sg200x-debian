@@ -34,5 +34,5 @@ $(BUILDDIR)/libjpeg-turbo-stamp: $(BUILDDIR)/libjpeg-turbo-prepare-stamp
 	@cp -p /rootfs/root/source-libjpeg-turbo/libjpeg-turbo8_$(LIBJPEG_TURBO_VERSION)-$(LIBJPEG_TURBO_BUILD)_$(DEB_ARCH).deb /output/
 	@mkdir -p /rootfs/tmp/install/
 	@cp -p /rootfs/root/source-libjpeg-turbo/libjpeg-turbo8_$(LIBJPEG_TURBO_VERSION)-$(LIBJPEG_TURBO_BUILD)_$(DEB_ARCH).deb /rootfs/tmp/install/
-	@#rm -rf /rootfs/root/source-libjpeg-turbo/
+	@[ "$(GIT_REF)" = "develop" ] || rm -rf /rootfs/root/source-libjpeg-turbo/
 	@touch $@
