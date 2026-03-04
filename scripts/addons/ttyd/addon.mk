@@ -32,5 +32,5 @@ $(BUILDDIR)/ttyd-stamp: $(BUILDDIR)/ttyd-prepare-stamp
 	@cp -p /rootfs/root/source-ttyd/ttyd_$(TTYD_VERSION)-$(TTYD_BUILD)_$(DEB_ARCH).deb /output/
 	@mkdir -p /rootfs/tmp/install/
 	@cp -p /rootfs/root/source-ttyd/ttyd_$(TTYD_VERSION)-$(TTYD_BUILD)_$(DEB_ARCH).deb /rootfs/tmp/install/
-	@#rm -rf /rootfs/root/source-ttyd/
+	@[ "$(GIT_REF)" = "develop" ] || rm -rf /rootfs/root/source-ttyd/
 	@touch $@
