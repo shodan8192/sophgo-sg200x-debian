@@ -38,5 +38,5 @@ $(BUILDDIR)/libconfig-stamp: $(BUILDDIR)/libconfig-prepare-stamp
 	@cp -p /rootfs/root/source-libconfig/libconfig9_$(LIBCONFIG_VERSION)-$(LIBCONFIG_BUILD)_$(DEB_ARCH).deb /output/
 	@mkdir -p /rootfs/tmp/install/
 	@cp -p /rootfs/root/source-libconfig/libconfig9_$(LIBCONFIG_VERSION)-$(LIBCONFIG_BUILD)_$(DEB_ARCH).deb /rootfs/tmp/install/
-	@#rm -rf /rootfs/root/source-libconfig/
+	@[ "$(GIT_REF)" = "develop" ] || rm -rf /rootfs/root/source-libconfig/
 	@touch $@
