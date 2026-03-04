@@ -42,5 +42,5 @@ $(BUILDDIR)/libgpiod-stamp: $(BUILDDIR)/libgpiod-prepare-stamp
 	@cp -p /rootfs/root/source-libgpiod/libgpiod3_$(LIBGPIOD_VERSION)-$(LIBGPIOD_BUILD)_$(DEB_ARCH).deb /rootfs/tmp/install/
 	@cp -p /rootfs/root/source-libgpiod/libgpiod-dev_$(LIBGPIOD_VERSION)-$(LIBGPIOD_BUILD)_$(DEB_ARCH).deb /rootfs/tmp/install/
 	@cp -p /rootfs/root/source-libgpiod/python3-libgpiod_$(LIBGPIOD_VERSION)-$(LIBGPIOD_BUILD)_$(DEB_ARCH).deb /rootfs/tmp/install/
-	@#rm -rf /rootfs/root/source-libgpiod/
+	@[ "$(GIT_REF)" = "develop" ] || rm -rf /rootfs/root/source-libgpiod/
 	@touch $@
