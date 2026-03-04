@@ -35,5 +35,5 @@ $(BUILDDIR)/libwebsockets-stamp: $(BUILDDIR)/libwebsockets-prepare-stamp
 	@cp -p /rootfs/root/source-websockets/libwebsockets16_$(LIBWEBSOCKETS_VERSION)-$(LIBWEBSOCKETS_BUILD)_$(DEB_ARCH).deb /output/
 	@mkdir -p /rootfs/tmp/install/
 	@cp -p /rootfs/root/source-websockets/libwebsockets16_$(LIBWEBSOCKETS_VERSION)-$(LIBWEBSOCKETS_BUILD)_$(DEB_ARCH).deb /rootfs/tmp/install/
-	@#rm -rf /rootfs/root/source-websockets/
+	@[ "$(GIT_REF)" = "develop" ] || rm -rf /rootfs/root/source-websockets/
 	@touch $@
