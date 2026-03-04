@@ -17,6 +17,7 @@ PACKAGES += " build-essential libasound2-dev libbsd-dev libcjson-dev libconfig-d
 ifeq ("$(DEB_DISTRO)","trixie")
 PACKAGES += " python3-aiofiles python3-aiohttp python3-evdev python3-mako python3-netifaces python3-passlib python3-pil python3-psutil python3-pyghmi python3-pygments python3-pyotp python3-ruamel.yaml python3-serial python3-setproctitle python3-systemd python3-xlib python3-yaml python-is-python3"
 PACKAGES += " python3-async-lru python3-dbus-next python3-zstandard"
+PACKAGES += " python3-libgpiod"
 else
 IMAGE_ADDITIONS += "maixcam2-python3"
 endif
@@ -33,6 +34,8 @@ IMAGE_ADDITIONS += "ethernet-builtin"
 #IMAGE_ADDITIONS += "nanokvm"
 ifneq ($(findstring "$(DEB_DISTRO)","jammy" "noble"),)
 IMAGE_ADDITIONS += "libgpiod"
+else
+PACKAGES += " gpiod"
 endif
 ifeq ($(NANOKVM_PRO_DEBS_FROM_SOURCE),y)
 IMAGE_ADDITIONS += "libconfig"
@@ -41,6 +44,7 @@ IMAGE_ADDITIONS += "libwebsockets"
 IMAGE_ADDITIONS += "opus"
 IMAGE_ADDITIONS += "ttyd"
 endif
+IMAGE_ADDITIONS += "pikvm"
 IMAGE_ADDITIONS += "nanokvm-pro"
 #else
 #IMAGE_ADDITIONS += "maixapp"
