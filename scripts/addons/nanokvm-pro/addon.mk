@@ -273,10 +273,26 @@ $(BUILDDIR)/nanokvm-pro-firmware-stamp: $(BUILDDIR)/aic8800-firmware-stamp $(BUI
 	@cd $(NANOKVM_PRO_FIRMWARE_PACKAGE_DIR) && tar cJf /output/"$(BOARD)-$(NANOKVM_PRO_FIRMWARE_FILE)" *
 	@touch $@
 
-$(BUILDDIR)/nanokvm-pro-pikvm-stamp: $(BUILDDIR)/nanokvm-pro-prepare-stamp
+$(BUILDDIR)/nanokvm-pro-pikvm-stamp: $(BUILDDIR)/nanokvm-pro-prepare-stamp $(BUILDDIR)/pikvm-stamp
 	@cd $(BUILDDIR)/nanokvm-pro ; dpkg-deb -R nanokvm_pro_$(NANOKVM_PRO_VERSION)/pikvm_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb $(NANOKVM_PRO_PIKVM_PACKAGE_DIR)
 	@mkdir -p $(NANOKVM_PRO_PIKVM_PACKAGE_DIR)/usr/local/include/
 	@cd $(NANOKVM_PRO_PIKVM_PACKAGE_DIR) && mv usr/include/gpiod.h usr/local/include/
+	@if [ -e $(PIKVM_BUILD_DIR)/out ]; then \
+		cd $(NANOKVM_PRO_PIKVM_PACKAGE_DIR) && \
+		rm -rf etc/janus/ && \
+		rm -rf etc/sudoers.d/ && \
+		rm -rf usr/include/ && \
+		rm -f usr/bin/gpio* && \
+		rm -rf usr/lib/ && \
+		rm -rf usr/share/ && \
+		rm -rf usr/local/include/ && \
+		rm -rf usr/local/lib/ && \
+		rm -rf usr/local/share/ && \
+		rm -rf var/lib/ && \
+		rsync -avpPxH $(PIKVM_BUILD_DIR)/out/ ./ && \
+		echo $(NANOKVM_PRO_VERSION) > etc/kvmd/version ; \
+	fi
+	@[ "$(GIT_REF)" = "develop" ] || rm -rf $(PIKVM_BUILD_DIR)
 	@cd $(BUILDDIR)/nanokvm-pro ; rm -f nanokvm_pro_$(NANOKVM_PRO_VERSION)/pikvm_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb
 	@cd $(BUILDDIR)/package/ && dpkg-deb --build pikvm-$(NANOKVM_PRO_VERSION) pikvm_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb
 	@cp $(BUILDDIR)/package/pikvm_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb /output/
