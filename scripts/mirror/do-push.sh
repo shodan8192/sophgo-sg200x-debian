@@ -218,7 +218,7 @@ for f in */.git ; do
   elif echo $d | grep -q -E '^NanoKVM' ; then
     do_push_tags '[0-9]\.*'
   elif echo $d | grep -q -E '^nanokvm-skeleton$' ; then
-    do_push_tags 'v*'
+    do_push_tags 'v2.*'
   elif echo $d | grep -q -E '^nanomsg$' ; then
     do_push_tags '[0-9]\.*'
   elif echo $d | grep -q -E '^opencv$' ; then
