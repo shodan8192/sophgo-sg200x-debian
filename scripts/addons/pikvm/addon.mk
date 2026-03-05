@@ -22,7 +22,7 @@ $(BUILDDIR)/pikvm-prepare-stamp: $(PIKVM_DEPENDS)
 
 $(BUILDDIR)/pikvm-stamp: $(BUILDDIR)/pikvm-prepare-stamp
 	@echo "$(COLOUR_GREEN)Building pikvm for $(BOARD)$(END_COLOUR)"
-	@chroot /rootfs apt-get update || true
+	@#chroot /rootfs apt-get update || true
 	@chroot /rootfs mount proc -t proc /proc
 	@[ "$(findstring libgpiod,$(IMAGE_ADDITIONS))" = "" ] || chroot /rootfs bash -c 'dpkg -i /tmp/install/libgpiod3_$(LIBGPIOD_VERSION)-$(LIBGPIOD_BUILD)_$(DEB_ARCH).deb'
 	@[ "$(findstring libgpiod,$(IMAGE_ADDITIONS))" = "" ] || chroot /rootfs bash -c 'dpkg -i /tmp/install/libgpiod-dev_$(LIBGPIOD_VERSION)-$(LIBGPIOD_BUILD)_$(DEB_ARCH).deb'
