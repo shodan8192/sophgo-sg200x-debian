@@ -1,5 +1,7 @@
 ifneq ("$(findstring libgpiod,$(IMAGE_ADDITIONS))","")
 BSPFILTER += "libgpiod"
+DEV_PACKAGES += " autoconf-archive automake dh-python help2man doxygen graphviz"
+PACKAGES += " pkgconf"
 endif
 
 LIBGPIOD_VERSION = 2.2.1
@@ -30,7 +32,7 @@ $(BUILDDIR)/libgpiod-prepare-stamp:
 
 $(BUILDDIR)/libgpiod-stamp: $(BUILDDIR)/libgpiod-prepare-stamp
 	@echo "$(COLOUR_GREEN)Packaging libgpiod for $(BOARD)$(END_COLOUR)"
-	@chroot /rootfs apt-get update || true
+	@#chroot /rootfs apt-get update || true
 	@chroot /rootfs apt-get install -y debhelper autoconf-archive automake dh-python help2man pkgconf doxygen
 	@chroot /rootfs apt-get install -y graphviz python3-all-dev libpython3-all-dev python3-setuptools python3-venv pybuild-plugin-pyproject
 	@[ "$(findstring maixcam2-python3,$(IMAGE_ADDITIONS))" != "" ] || chroot /rootfs apt-get install -y python3-pip
