@@ -28,7 +28,7 @@ $(BUILDDIR)/libwebsockets-prepare-stamp:
 	@touch $@
 
 $(BUILDDIR)/libwebsockets-stamp: $(BUILDDIR)/libwebsockets-prepare-stamp
-	@chroot /rootfs apt-get update || true
+	@#chroot /rootfs apt-get update || true
 	@chroot /rootfs apt-get install -y cmake debhelper libcap-dev libev-dev libssl-dev libuv1-dev openssl zlib1g-dev
 	@chroot /rootfs bash -c 'cd /root/source-websockets/libwebsockets-$(LIBWEBSOCKETS_VERSION)/ && dpkg-buildpackage'
 	@rm -rf /rootfs/root/source-websockets/libwebsockets-$(LIBWEBSOCKETS_VERSION)/
