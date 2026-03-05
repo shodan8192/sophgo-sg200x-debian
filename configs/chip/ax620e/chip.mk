@@ -75,6 +75,7 @@ include $(wildcard /builder/addons/*/addon.mk)
 
 addon-targets = $(patsubst "%,$(BUILDDIR)/%-stamp,$(patsubst %",%,$(IMAGE_ADDITIONS)))
 _PACKAGES = $(patsubst "%,%,$(patsubst %",%,$(PACKAGES)))
+_DEV_PACKAGES = $(patsubst "%,%,$(patsubst %",%,$(DEV_PACKAGES)))
 
 COMMA := ,
 EMPTY :=
@@ -92,6 +93,7 @@ $(info $(blue)ION Size: $(ION_SIZE)M$(reset))
 $(info $(blue)Default Panel: $(PANEL_TUNING_DEFAULT)$(reset))
 $(info $(blue)Image Addons: $(IMAGE_ADDITIONS)$(reset))
 $(info $(blue)Packages: $(_PACKAGES)$(reset))
+$(info $(blue)Development Packages: $(_DEV_PACKAGES)$(reset))
 
 NPROCS := $(shell nproc)
 
@@ -629,7 +631,7 @@ $(BUILDDIR)/image-prepare-stamp:
 	@[ "X$(DEB_PUBKEY)" = "X" ] || gpg --recv-key --keyserver $(DEB_KEYSERVER) $(DEB_PUBKEY) || true
 	@[ "X$(DEB_PUBKEY)" = "X" ] || gpg --export $(DEB_PUBKEY) > /etc/apt/trusted.gpg.d/distro-archive-keyring.gpg
 	@curl -v -L $(USER_SITE_URL)/scpcom-packages.asc -o $(BUILDDIR)/public-key.asc
-	@mmdebstrap -v --architectures=$(DEB_ARCH) --include="$(_PACKAGES)" $(DEB_DISTRO) "/rootfs/" "deb $(DEB_URL)/ $(DEB_DISTRO) $(DEB_COMPONENTS)" "deb [signed-by=$(BUILDDIR)/public-key.asc] $(USER_SITE_URL)/deb stable $(CHIP_FAMILY) $(BOARD)-$(VARIANT)"
+	@mmdebstrap -v --architectures=$(DEB_ARCH) --include="$(_PACKAGES) $(_DEV_PACKAGES)" $(DEB_DISTRO) "/rootfs/" "deb $(DEB_URL)/ $(DEB_DISTRO) $(DEB_COMPONENTS)" "deb [signed-by=$(BUILDDIR)/public-key.asc] $(USER_SITE_URL)/deb stable $(CHIP_FAMILY) $(BOARD)-$(VARIANT)"
 	@touch $@
 
 $(BUILDDIR)/image-addons-stamp: $(BUILDDIR)/image-prepare-stamp $(FSBL_TARGETS) $(BUILDDIR)/linux-package-stamp $(BUILDDIR)/osdrv-package-stamp $(BUILDDIR)/middleware-package-stamp $(addon-targets)
@@ -703,7 +705,15 @@ MAIX_PY_VERSION ?= 4.12.4
 IMAGE_APP_VERSION ?= $(MAIX_PY_VERSION)
 endif
 
-$(BUILDDIR)/image-compile-stamp: $(BUILDDIR)/image-customize-stamp
+$(BUILDDIR)/image-dev-uninstall-stamp: $(BUILDDIR)/image-customize-stamp $(BUILDDIR)/python3-dev-uninstall-stamp
+	@echo "$(COLOUR_GREEN)Uninstalling dev packages for $(BOARD)$(END_COLOUR)"
+	@chroot /rootfs apt-get update || true
+	@[ "$(_DEV_PACKAGES)" = "" ] || chroot /rootfs apt-get remove --purge -y $(_DEV_PACKAGES)
+	@chroot /rootfs apt-get autoremove --purge -y
+	@chroot /rootfs apt-get clean
+	@touch $@
+
+$(BUILDDIR)/image-compile-stamp: $(BUILDDIR)/image-customize-stamp $(BUILDDIR)/image-dev-uninstall-stamp
 	@echo "$(COLOUR_GREEN)Compiling Image for $(BOARD)$(END_COLOUR)"
 	@[ "$(GIT_REF)" = "develop" ] || rm -rf $(BR_DIR)/dl
 	@[ "$(GIT_REF)" = "develop" ] || rm -rf $(BR_OUTPUT_DIR)/per-package
