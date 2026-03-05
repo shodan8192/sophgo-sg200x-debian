@@ -12,8 +12,9 @@ PARTITION_FILE=partition_sd.xml
 STORAGE_TYPE=emmc
 VARIANT?=kvm
 
-PACKAGES += " hostapd udhcpd wireless-regdb wpasupplicant"
-PACKAGES += " build-essential libasound2-dev libbsd-dev libcjson-dev libconfig-dev libdbus-1-dev libdrm-dev libevent-dev libjpeg-dev libjson-c5 libnice-dev libopus-dev libspeexdsp-dev libsrtp2-dev libsystemd-dev libwebsockets-dev libxkbcommon-dev nginx tesseract-ocr xz-utils"
+PACKAGES += " certbot dnsmasq dos2unix hostapd ipmitool udhcpd v4l-utils wireless-regdb wpasupplicant zstd"
+PACKAGES += " build-essential libasound2-dev libbsd-dev libcjson-dev libconfig-dev libdbus-1-dev libdrm-dev libevent-dev libjpeg-dev libjson-c5 libnice-dev libopus-dev libspeex-dev libspeexdsp-dev libsrtp2-dev libsystemd-dev libwebsockets-dev libxkbcommon-dev nginx tesseract-ocr xz-utils"
+DEV_PACKAGES += " autoconf autogen cmake debhelper git libfreetype-dev libjansson-dev libldap-dev libsasl2-dev libtool"
 ifeq ("$(DEB_DISTRO)","trixie")
 PACKAGES += " python3-aiofiles python3-aiohttp python3-evdev python3-mako python3-netifaces python3-passlib python3-pil python3-psutil python3-pyghmi python3-pygments python3-pyotp python3-ruamel.yaml python3-serial python3-setproctitle python3-systemd python3-xlib python3-yaml python-is-python3"
 PACKAGES += " python3-async-lru python3-dbus-next python3-zstandard"
@@ -33,9 +34,11 @@ IMAGE_ADDITIONS += "ethernet-builtin"
 #ifneq ("$(findstring kvm,$(VARIANT))","")
 #IMAGE_ADDITIONS += "nanokvm"
 ifneq ($(findstring "$(DEB_DISTRO)","jammy" "noble"),)
+IMAGE_ADDITIONS += "python3-dev"
 IMAGE_ADDITIONS += "libgpiod"
 else
 PACKAGES += " gpiod"
+DEV_PACKAGES += " libgpiod-dev"
 endif
 ifeq ($(NANOKVM_PRO_DEBS_FROM_SOURCE),y)
 IMAGE_ADDITIONS += "libconfig"
