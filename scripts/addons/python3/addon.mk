@@ -44,8 +44,8 @@ $(BUILDDIR)/python3-dev-install-stamp: $(BUILDDIR)/python3-install-stamp
 $(BUILDDIR)/python3-dev-uninstall-stamp: $(BUILDDIR)/image-customize-stamp
 	@echo "$(COLOUR_GREEN)Uninstalling python3 dev for $(BOARD)$(END_COLOUR)"
 	@chroot /rootfs mount proc -t proc /proc
-	@chroot /rootfs apt-get remove --purge -y python3-all-dev libpython3-all-dev pybuild-plugin-pyproject
-	@chroot /rootfs apt-get remove --purge -y python3-build python3-pip python3-setuptools python3-venv python3-wheel
+	@#chroot /rootfs apt-get remove --purge -y python3-all-dev libpython3-all-dev pybuild-plugin-pyproject
+	@#chroot /rootfs apt-get remove --purge -y python3-build python3-pip python3-setuptools python3-venv python3-wheel
 	@chroot /rootfs apt-get autoremove --purge -y
 	@umount /rootfs/proc || true
 	@touch $@
