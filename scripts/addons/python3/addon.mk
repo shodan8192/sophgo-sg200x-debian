@@ -1,6 +1,13 @@
 ifneq ("$(findstring python3,$(IMAGE_ADDITIONS))","")
 BSPFILTER += "python3"
 endif
+ifneq ("$(findstring python3-dev,$(IMAGE_ADDITIONS))","")
+BSPFILTER += "python3-dev"
+DEV_PACKAGES += " python3-all-dev libpython3-all-dev python3-setuptools python3-venv pybuild-plugin-pyproject"
+ifeq ("$(findstring maixcam2-python3,$(IMAGE_ADDITIONS))","")
+DEV_PACKAGES += " python3-pip"
+endif
+endif
 
 ifneq ("$(findstring maixcam2-python3,$(IMAGE_ADDITIONS))","")
 $(BUILDDIR)/python3-install-stamp: $(BUILDDIR)/maixcam2-python3-stamp
@@ -15,7 +22,8 @@ $(BUILDDIR)/python3-dev-install-stamp: $(BUILDDIR)/python3-install-stamp
 	@chroot /rootfs pip install build setuptools
 	@touch $@
 
-$(BUILDDIR)/python3-dev-uninstall-stamp:
+$(BUILDDIR)/python3-dev-uninstall-stamp: $(BUILDDIR)/image-customize-stamp
+	@echo "$(COLOUR_GREEN)Uninstalling python3 dev for $(BOARD)$(END_COLOUR)"
 	@touch $@
 
 else
@@ -33,7 +41,8 @@ $(BUILDDIR)/python3-dev-install-stamp: $(BUILDDIR)/python3-install-stamp
 	@umount /rootfs/proc || true
 	@touch $@
 
-$(BUILDDIR)/python3-dev-uninstall-stamp:
+$(BUILDDIR)/python3-dev-uninstall-stamp: $(BUILDDIR)/image-customize-stamp
+	@echo "$(COLOUR_GREEN)Uninstalling python3 dev for $(BOARD)$(END_COLOUR)"
 	@chroot /rootfs mount proc -t proc /proc
 	@chroot /rootfs apt-get remove --purge -y python3-all-dev libpython3-all-dev pybuild-plugin-pyproject
 	@chroot /rootfs apt-get remove --purge -y python3-build python3-pip python3-setuptools python3-venv python3-wheel
@@ -41,3 +50,7 @@ $(BUILDDIR)/python3-dev-uninstall-stamp:
 	@umount /rootfs/proc || true
 	@touch $@
 endif
+
+$(BUILDDIR)/python3-stamp: $(BUILDDIR)/python3-install-stamp
+
+$(BUILDDIR)/python3-dev-stamp: $(BUILDDIR)/python3-dev-install-stamp
