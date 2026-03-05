@@ -23,15 +23,18 @@ $(BUILDDIR)/libgpiod-prepare-stamp:
 		cd libgpiod-$(LIBGPIOD_VERSION)/ && \
 		tar xJf ../libgpiod_$(LIBGPIOD_VERSION)-$(LIBGPIOD_BUILD).debian.tar.xz && \
 		echo OK
+	@[ "$(findstring maixcam2-python3,$(IMAGE_ADDITIONS))" = "" ] || cd /rootfs/root/source-libgpiod/ && \
+		cd libgpiod-$(LIBGPIOD_VERSION)/ && \
+		sed -i /python3-pip/d debian/control
 	@touch $@
 
 $(BUILDDIR)/libgpiod-stamp: $(BUILDDIR)/libgpiod-prepare-stamp
 	@echo "$(COLOUR_GREEN)Packaging libgpiod for $(BOARD)$(END_COLOUR)"
 	@chroot /rootfs apt-get update || true
 	@chroot /rootfs apt-get install -y debhelper autoconf-archive automake dh-python help2man pkgconf doxygen
-	@chroot /rootfs apt-get install -y graphviz python3-all-dev libpython3-all-dev python3-pip python3-setuptools python3-venv pybuild-plugin-pyproject
+	@chroot /rootfs apt-get install -y graphviz python3-all-dev libpython3-all-dev python3-setuptools python3-venv pybuild-plugin-pyproject
+	@[ "$(findstring maixcam2-python3,$(IMAGE_ADDITIONS))" != "" ] || chroot /rootfs apt-get install -y python3-pip
 	@chroot /rootfs bash -c 'cd /root/source-libgpiod/libgpiod-$(LIBGPIOD_VERSION)/ && dpkg-buildpackage'
-	@[ "$(findstring maixcam2-python3,$(IMAGE_ADDITIONS))" = "" ] || chroot /rootfs apt-get remove --purge -y python3-pip
 	@rm -rf /rootfs/root/source-libgpiod/libgpiod-$(LIBGPIOD_VERSION)/
 	@cp -p /rootfs/root/source-libgpiod/gpiod_$(LIBGPIOD_VERSION)-$(LIBGPIOD_BUILD)_$(DEB_ARCH).deb /output/
 	@cp -p /rootfs/root/source-libgpiod/libgpiod3_$(LIBGPIOD_VERSION)-$(LIBGPIOD_BUILD)_$(DEB_ARCH).deb /output/
