@@ -34,7 +34,6 @@ IMAGE_ADDITIONS += "ethernet-builtin"
 #ifneq ("$(findstring kvm,$(VARIANT))","")
 #IMAGE_ADDITIONS += "nanokvm"
 ifneq ($(findstring "$(DEB_DISTRO)","jammy" "noble"),)
-IMAGE_ADDITIONS += "python3-dev"
 IMAGE_ADDITIONS += "libgpiod"
 else
 PACKAGES += " gpiod"
@@ -47,6 +46,7 @@ IMAGE_ADDITIONS += "libwebsockets"
 IMAGE_ADDITIONS += "opus"
 IMAGE_ADDITIONS += "ttyd"
 endif
+IMAGE_ADDITIONS += "python3-dev"
 IMAGE_ADDITIONS += "pikvm"
 IMAGE_ADDITIONS += "nanokvm-pro"
 #else
