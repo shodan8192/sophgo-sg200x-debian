@@ -708,8 +708,10 @@ endif
 $(BUILDDIR)/image-dev-uninstall-stamp: $(BUILDDIR)/image-customize-stamp $(BUILDDIR)/python3-dev-uninstall-stamp
 	@echo "$(COLOUR_GREEN)Uninstalling dev packages for $(BOARD)$(END_COLOUR)"
 	@chroot /rootfs apt-get update || true
+	@chroot /rootfs mount proc -t proc /proc
 	@[ "$(_DEV_PACKAGES)" = "" ] || chroot /rootfs apt-get remove --purge -y $(_DEV_PACKAGES)
 	@chroot /rootfs apt-get autoremove --purge -y
+	@umount /rootfs/proc || true
 	@chroot /rootfs apt-get clean
 	@touch $@
 
