@@ -1,5 +1,6 @@
 ifneq ("$(findstring libconfig,$(IMAGE_ADDITIONS))","")
 BSPFILTER += "libconfig"
+DEV_PACKAGES += " texinfo"
 endif
 
 LIBCONFIG_VERSION = 1.5
@@ -31,12 +32,12 @@ $(BUILDDIR)/libconfig-prepare-stamp:
 	@touch $@
 
 $(BUILDDIR)/libconfig-stamp: $(BUILDDIR)/libconfig-prepare-stamp
-	@chroot /rootfs apt-get update || true
+	@#chroot /rootfs apt-get update || true
 	@chroot /rootfs apt-get install -y debhelper texinfo
 	@chroot /rootfs bash -c 'cd /root/source-libconfig/libconfig-$(LIBCONFIG_VERSION)/ && dpkg-buildpackage'
 	@rm -rf /rootfs/root/source-libconfig/libconfig-$(LIBCONFIG_VERSION)/
 	@cp -p /rootfs/root/source-libconfig/libconfig9_$(LIBCONFIG_VERSION)-$(LIBCONFIG_BUILD)_$(DEB_ARCH).deb /output/
 	@mkdir -p /rootfs/tmp/install/
 	@cp -p /rootfs/root/source-libconfig/libconfig9_$(LIBCONFIG_VERSION)-$(LIBCONFIG_BUILD)_$(DEB_ARCH).deb /rootfs/tmp/install/
-	@#rm -rf /rootfs/root/source-libconfig/
+	@[ "$(GIT_REF)" = "develop" ] || rm -rf /rootfs/root/source-libconfig/
 	@touch $@

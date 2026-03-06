@@ -1,5 +1,6 @@
 ifneq ("$(findstring ttyd,$(IMAGE_ADDITIONS))","")
 BSPFILTER += "ttyd"
+DEV_PACKAGES += " libjson-c-dev"
 endif
 
 TTYD_VERSION = 1.6.3+20210924
@@ -25,12 +26,12 @@ $(BUILDDIR)/ttyd-prepare-stamp:
 	@touch $@
 
 $(BUILDDIR)/ttyd-stamp: $(BUILDDIR)/ttyd-prepare-stamp
-	@chroot /rootfs apt-get update || true
+	@#chroot /rootfs apt-get update || true
 	@chroot /rootfs apt-get install -y cmake debhelper libjson-c-dev libwebsockets-dev zlib1g-dev
 	@chroot /rootfs bash -c 'cd /root/source-ttyd/ttyd-$(TTYD_VERSION)/ && dpkg-buildpackage'
 	@rm -rf /rootfs/root/source-ttyd/ttyd-$(TTYD_VERSION)/
 	@cp -p /rootfs/root/source-ttyd/ttyd_$(TTYD_VERSION)-$(TTYD_BUILD)_$(DEB_ARCH).deb /output/
 	@mkdir -p /rootfs/tmp/install/
 	@cp -p /rootfs/root/source-ttyd/ttyd_$(TTYD_VERSION)-$(TTYD_BUILD)_$(DEB_ARCH).deb /rootfs/tmp/install/
-	@#rm -rf /rootfs/root/source-ttyd/
+	@[ "$(GIT_REF)" = "develop" ] || rm -rf /rootfs/root/source-ttyd/
 	@touch $@

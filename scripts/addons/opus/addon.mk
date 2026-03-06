@@ -1,5 +1,6 @@
 ifneq ("$(findstring opus,$(IMAGE_ADDITIONS))","")
 BSPFILTER += "opus"
+DEV_PACKAGES += " doxygen graphviz"
 endif
 
 OPUS_VERSION = 1.3.1
@@ -25,7 +26,7 @@ $(BUILDDIR)/opus-prepare-stamp:
 	@touch $@
 
 $(BUILDDIR)/opus-stamp: $(BUILDDIR)/opus-prepare-stamp
-	@chroot /rootfs apt-get update || true
+	@#chroot /rootfs apt-get update || true
 	@chroot /rootfs apt-get install -y debhelper doxygen graphviz
 	@chroot /rootfs bash -c 'cd /root/source-opus/opus-$(OPUS_VERSION)/ && dpkg-buildpackage'
 	@rm -rf /rootfs/root/source-opus/opus-$(OPUS_VERSION)/

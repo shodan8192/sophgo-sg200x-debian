@@ -1,5 +1,6 @@
 ifneq ("$(findstring libjpeg-turbo,$(IMAGE_ADDITIONS))","")
 BSPFILTER += "libjpeg-turbo"
+DEV_PACKAGES += " dh-autoreconf chrpath"
 endif
 
 LIBJPEG_TURBO_VERSION = 2.1.2
@@ -27,12 +28,12 @@ $(BUILDDIR)/libjpeg-turbo-prepare-stamp:
 	@touch $@
 
 $(BUILDDIR)/libjpeg-turbo-stamp: $(BUILDDIR)/libjpeg-turbo-prepare-stamp
-	@chroot /rootfs apt-get update || true
+	@#chroot /rootfs apt-get update || true
 	@chroot /rootfs apt-get install -y cmake debhelper dh-autoreconf chrpath
 	@chroot /rootfs bash -c 'cd /root/source-libjpeg-turbo/libjpeg-turbo-$(LIBJPEG_TURBO_VERSION)/ && dpkg-buildpackage'
 	@rm -rf /rootfs/root/source-libjpeg-turbo/libjpeg-turbo-$(LIBJPEG_TURBO_VERSION)/
 	@cp -p /rootfs/root/source-libjpeg-turbo/libjpeg-turbo8_$(LIBJPEG_TURBO_VERSION)-$(LIBJPEG_TURBO_BUILD)_$(DEB_ARCH).deb /output/
 	@mkdir -p /rootfs/tmp/install/
 	@cp -p /rootfs/root/source-libjpeg-turbo/libjpeg-turbo8_$(LIBJPEG_TURBO_VERSION)-$(LIBJPEG_TURBO_BUILD)_$(DEB_ARCH).deb /rootfs/tmp/install/
-	@#rm -rf /rootfs/root/source-libjpeg-turbo/
+	@[ "$(GIT_REF)" = "develop" ] || rm -rf /rootfs/root/source-libjpeg-turbo/
 	@touch $@

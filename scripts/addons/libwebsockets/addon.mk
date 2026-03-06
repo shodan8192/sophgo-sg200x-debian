@@ -28,12 +28,12 @@ $(BUILDDIR)/libwebsockets-prepare-stamp:
 	@touch $@
 
 $(BUILDDIR)/libwebsockets-stamp: $(BUILDDIR)/libwebsockets-prepare-stamp
-	@chroot /rootfs apt-get update || true
+	@#chroot /rootfs apt-get update || true
 	@chroot /rootfs apt-get install -y cmake debhelper libcap-dev libev-dev libssl-dev libuv1-dev openssl zlib1g-dev
 	@chroot /rootfs bash -c 'cd /root/source-websockets/libwebsockets-$(LIBWEBSOCKETS_VERSION)/ && dpkg-buildpackage'
 	@rm -rf /rootfs/root/source-websockets/libwebsockets-$(LIBWEBSOCKETS_VERSION)/
 	@cp -p /rootfs/root/source-websockets/libwebsockets16_$(LIBWEBSOCKETS_VERSION)-$(LIBWEBSOCKETS_BUILD)_$(DEB_ARCH).deb /output/
 	@mkdir -p /rootfs/tmp/install/
 	@cp -p /rootfs/root/source-websockets/libwebsockets16_$(LIBWEBSOCKETS_VERSION)-$(LIBWEBSOCKETS_BUILD)_$(DEB_ARCH).deb /rootfs/tmp/install/
-	@#rm -rf /rootfs/root/source-websockets/
+	@[ "$(GIT_REF)" = "develop" ] || rm -rf /rootfs/root/source-websockets/
 	@touch $@
