@@ -3,9 +3,12 @@ BSPFILTER += "python3"
 endif
 ifneq ("$(findstring python3-dev,$(IMAGE_ADDITIONS))","")
 BSPFILTER += "python3-dev"
-DEV_PACKAGES += " python3-all-dev libpython3-all-dev python3-setuptools python3-venv pybuild-plugin-pyproject"
-ifeq ("$(findstring maixcam2-python3,$(IMAGE_ADDITIONS))","")
+DEV_PACKAGES += " python3-all-dev libpython3-all-dev python3-venv pybuild-plugin-pyproject"
+ifneq ("$(findstring maixcam2-python3,$(IMAGE_ADDITIONS))","")
+DEV_PACKAGES += " python3-setuptools"
+else
 DEV_PACKAGES += " python3-pip"
+PACKAGES += " python3-setuptools"
 endif
 endif
 
