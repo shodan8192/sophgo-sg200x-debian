@@ -11,7 +11,7 @@ LIBGPIOD_BASE_URL = https://ports.ubuntu.com/ubuntu-ports/pool/universe/libg/lib
 
 LIBGPIOD_DL_DIR = $(BUILDDIR)/libgpiod
 
-$(BUILDDIR)/libgpiod-prepare-stamp:
+$(BUILDDIR)/libgpiod-prepare-stamp: $(BUILDDIR)/python3-dev-install-stamp
 	@echo "$(COLOUR_GREEN)Building libgpiod for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(LIBGPIOD_DL_DIR)
 	@cd $(LIBGPIOD_DL_DIR) && wget -N $(LIBGPIOD_BASE_URL)/libgpiod_$(LIBGPIOD_VERSION)-$(LIBGPIOD_BUILD).debian.tar.xz || wget -N $(USER_SITE_URL)/deb/pool/$(CHIP_FAMILY)/libgpiod_$(LIBGPIOD_VERSION)-$(LIBGPIOD_BUILD).debian.tar.xz
