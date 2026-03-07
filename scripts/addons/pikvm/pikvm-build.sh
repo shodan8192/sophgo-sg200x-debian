@@ -223,6 +223,16 @@ Maintainer: Sipeed <support@sipeed.com>
 Description: PiKVM package
 EOF
 
+cat <<EOF > out/DEBIAN/conffiles
+/etc/kvmd/ipmipasswd
+/etc/kvmd/meta.yaml
+/etc/kvmd/totp.secret
+/etc/kvmd/web.css
+/etc/kvmd/htpasswd
+/etc/kvmd/vncpasswd
+/etc/kvmd/override.yaml
+EOF
+
 dpkg-deb -b out ../kvmd_${KVMD_VERSION}_${DEB_ARCH}.deb
 [ -e /usr/bin/kvmd-bootconfig ] || dpkg -i ../kvmd_${KVMD_VERSION}_${DEB_ARCH}.deb
 
