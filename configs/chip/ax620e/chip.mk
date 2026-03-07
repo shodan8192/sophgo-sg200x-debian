@@ -726,9 +726,11 @@ $(BUILDDIR)/image-dev-uninstall-stamp: $(BUILDDIR)/image-customize-stamp $(BUILD
 		! echo $$d | grep -q -E '^libfreetype-dev$$|libspeex-dev$$|libxkbcommon-dev$$' || continue ; \
 		l=`echo $$d | sed s/'-dev$$'/''/g` ; \
 		chroot /rootfs dpkg -s $$d | grep -q '^Version:' || continue ; \
-		p=`chroot /rootfs dpkg -S $${l}.so.* 2>/dev/null | grep -v $$d | grep -m1 ':'arm64':' | cut -d ':' -f 1` ; \
+		p=`chroot /rootfs dpkg -S $${l}.so.* 2>/dev/null | grep -v $$d | grep -m1 ':'$(DEB_ARCH)':' | cut -d ':' -f 1` ; \
+		[ "$$p" != "" ] || l=`echo $$d | sed s/'-dev$$'/''/g | sed s/'[0-9]*$$'/''/g` ; \
+		[ "$$p" != "" ] || p=`chroot /rootfs dpkg -S $${l}.so.* 2>/dev/null | grep -v $$d | grep -m1 ':'$(DEB_ARCH)':' | cut -d ':' -f 1` ; \
 		[ "$$p" != "" ] || continue ; \
-		chroot /rootfs dpkg -S $${l}.so.* 2>/dev/null | grep -v $$d | grep ':'arm64':' | cut -d ':' -f 1 | uniq | while read p ; do \
+		chroot /rootfs dpkg -S $${l}.so.* 2>/dev/null | grep -v $$d | grep ':'$(DEB_ARCH)':' | cut -d ':' -f 1 | uniq | while read p ; do \
 			chroot /rootfs apt-get install -y $$p ; \
 		done && \
 		chroot /rootfs apt-get remove --purge -y $$d ; \
