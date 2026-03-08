@@ -46,6 +46,10 @@ fi
 
 
 if [ ! -e ustreamer-stamp ]; then
+  apt-get install -y libdrm-dev \
+    libasound2-dev libopus-dev libspeexdsp-dev libjpeg-dev \
+    libevent-dev libbsd-dev libgpiod-dev libsystemd-dev
+
   cd ustreamer
 
 bash -e ../ustreamer-build.sh
@@ -221,6 +225,16 @@ Version: ${KVMD_VERSION}
 Architecture: ${DEB_ARCH}
 Maintainer: Sipeed <support@sipeed.com>
 Description: PiKVM package
+EOF
+
+cat <<EOF > out/DEBIAN/conffiles
+/etc/kvmd/ipmipasswd
+/etc/kvmd/meta.yaml
+/etc/kvmd/totp.secret
+/etc/kvmd/web.css
+/etc/kvmd/htpasswd
+/etc/kvmd/vncpasswd
+/etc/kvmd/override.yaml
 EOF
 
 dpkg-deb -b out ../kvmd_${KVMD_VERSION}_${DEB_ARCH}.deb

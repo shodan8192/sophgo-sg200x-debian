@@ -721,7 +721,24 @@ $(BUILDDIR)/image-dev-uninstall-stamp: $(BUILDDIR)/image-customize-stamp $(BUILD
 	@echo "$(COLOUR_GREEN)Uninstalling dev packages for $(BOARD)$(END_COLOUR)"
 	@chroot /rootfs apt-get update || true
 	@chroot /rootfs mount proc -t proc /proc
-	@[ "$(_DEV_PACKAGES)" = "" ] || chroot /rootfs apt-get remove --purge -y $(_DEV_PACKAGES)
+	@for d in $(_PACKAGES) $(_DEV_PACKAGES) ; do \
+		echo $$d | grep -q -E '^lib.*-dev$$' || continue ; \
+		! echo $$d | grep -q -E '^libfreetype-dev$$|libspeex-dev$$|libxkbcommon-dev$$' || continue ; \
+		l=`echo $$d | sed s/'-dev$$'/''/g` ; \
+		chroot /rootfs dpkg -s $$d | grep -q '^Version:' || continue ; \
+		p=`chroot /rootfs dpkg -S $${l}.so.* 2>/dev/null | grep -v $$d | grep -m1 ':'$(DEB_ARCH)':' | cut -d ':' -f 1` ; \
+		[ "$$p" != "" ] || l=`echo $$d | sed s/'-dev$$'/''/g | sed s/'[0-9]*$$'/''/g` ; \
+		[ "$$p" != "" ] || p=`chroot /rootfs dpkg -S $${l}.so.* 2>/dev/null | grep -v $$d | grep -m1 ':'$(DEB_ARCH)':' | cut -d ':' -f 1` ; \
+		[ "$$p" != "" ] || continue ; \
+		chroot /rootfs dpkg -S $${l}.so.* 2>/dev/null | grep -v $$d | grep ':'$(DEB_ARCH)':' | cut -d ':' -f 1 | uniq | while read p ; do \
+			chroot /rootfs apt-get install -y $$p ; \
+		done && \
+		chroot /rootfs apt-get remove --purge -y $$d ; \
+	done
+	@for d in $(_DEV_PACKAGES) ; do \
+		chroot /rootfs dpkg -s $$d | grep -q '^Version:' || continue ; \
+		chroot /rootfs apt-get remove --purge -y $$d ; \
+	done
 	@chroot /rootfs apt-get autoremove --purge -y
 	@umount /rootfs/proc || true
 	@chroot /rootfs apt-get clean

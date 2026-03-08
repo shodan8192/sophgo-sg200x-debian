@@ -1,6 +1,6 @@
 ifneq ("$(findstring ttyd,$(IMAGE_ADDITIONS))","")
 BSPFILTER += "ttyd"
-DEV_PACKAGES += " libjson-c-dev"
+PACKAGES += " libjson-c-dev"
 endif
 
 TTYD_VERSION = 1.6.3+20210924

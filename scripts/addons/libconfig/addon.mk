@@ -37,6 +37,7 @@ $(BUILDDIR)/libconfig-stamp: $(BUILDDIR)/libconfig-prepare-stamp
 	@chroot /rootfs bash -c 'cd /root/source-libconfig/libconfig-$(LIBCONFIG_VERSION)/ && dpkg-buildpackage'
 	@rm -rf /rootfs/root/source-libconfig/libconfig-$(LIBCONFIG_VERSION)/
 	@cp -p /rootfs/root/source-libconfig/libconfig9_$(LIBCONFIG_VERSION)-$(LIBCONFIG_BUILD)_$(DEB_ARCH).deb /output/
+	@cp -p /rootfs/root/source-libconfig/libconfig-dev_$(LIBCONFIG_VERSION)-$(LIBCONFIG_BUILD)_$(DEB_ARCH).deb /output/
 	@mkdir -p /rootfs/tmp/install/
 	@cp -p /rootfs/root/source-libconfig/libconfig9_$(LIBCONFIG_VERSION)-$(LIBCONFIG_BUILD)_$(DEB_ARCH).deb /rootfs/tmp/install/
 	@[ "$(GIT_REF)" = "develop" ] || rm -rf /rootfs/root/source-libconfig/
