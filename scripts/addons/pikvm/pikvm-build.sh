@@ -46,6 +46,10 @@ fi
 
 
 if [ ! -e ustreamer-stamp ]; then
+  apt-get install -y libdrm-dev \
+    libasound2-dev libopus-dev libspeexdsp-dev libjpeg-dev \
+    libevent-dev libbsd-dev libgpiod-dev libsystemd-dev
+
   cd ustreamer
 
 bash -e ../ustreamer-build.sh
