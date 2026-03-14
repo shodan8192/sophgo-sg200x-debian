@@ -159,16 +159,14 @@ $(BUILDDIR)/nanokvm-pro-prepare-stamp: $(BUILDDIR)/golang-toolchain-stamp $(BUIL
 
 ifeq ($(NANOKVM_PRO_DEBS_FROM_SOURCE),y)
 $(BUILDDIR)/nanokvm-pro-debs-stamp: $(BUILDDIR)/libconfig-stamp $(BUILDDIR)/libjpeg-turbo-stamp $(BUILDDIR)/libwebsockets-stamp $(BUILDDIR)/opus-stamp $(BUILDDIR)/ttyd-stamp
-	@cp /output/libopus0_$(OPUS_VERSION)-$(OPUS_BUILD)_$(DEB_ARCH).deb $(BUILDDIR)/nanokvm-pro/nanokvm_pro_$(NANOKVM_PRO_VERSION)/
-	@cp /output/libopus-dev_$(OPUS_VERSION)-$(OPUS_BUILD)_$(DEB_ARCH).deb $(BUILDDIR)/nanokvm-pro/nanokvm_pro_$(NANOKVM_PRO_VERSION)/
 	@touch $@
 else
 $(BUILDDIR)/nanokvm-pro-debs-stamp: $(BUILDDIR)/nanokvm-pro-prepare-stamp
 	@cd $(BUILDDIR)/nanokvm-pro/nanokvm_pro_$(NANOKVM_PRO_VERSION) ; [ "$(findstring ubuntu,$(DEB_URL))" != "" ] || wget -N https://launchpadlibrarian.net/587202705/libjpeg-turbo8_2.1.2-0ubuntu1_arm64.deb || wget -N $(USER_SITE_URL)/deb/pool/$(CHIP_FAMILY)/libjpeg-turbo8_2.1.2-0ubuntu1_$(DEB_ARCH).deb
 	@cd $(BUILDDIR)/nanokvm-pro/nanokvm_pro_$(NANOKVM_PRO_VERSION) ; [ "$(DEB_DISTRO)" != "trixie" ] || wget -N https://launchpadlibrarian.net/470183065/libconfig9_1.5-0.4build1_arm64.deb || wget -N $(USER_SITE_URL)/deb/pool/$(CHIP_FAMILY)/libconfig9_1.5-0.4build1_$(DEB_ARCH).deb
 	@cd /output/ ; [ "$(DEB_DISTRO)" != "trixie" ] || wget -N https://launchpadlibrarian.net/470183062/libconfig-dev_1.5-0.4build1_arm64.deb || wget -N $(USER_SITE_URL)/deb/pool/$(CHIP_FAMILY)/libconfig-dev_1.5-0.4build1_$(DEB_ARCH).deb
-	@cd $(BUILDDIR)/nanokvm-pro/nanokvm_pro_$(NANOKVM_PRO_VERSION) ; wget -N https://launchpadlibrarian.net/592830919/libopus0_1.3.1-0.1build2_arm64.deb || wget -N $(USER_SITE_URL)/deb/pool/$(CHIP_FAMILY)/libopus0_1.3.1-0.1build2_$(DEB_ARCH).deb
-	@cd $(BUILDDIR)/nanokvm-pro/nanokvm_pro_$(NANOKVM_PRO_VERSION) ; wget -N https://launchpadlibrarian.net/592830918/libopus-dev_1.3.1-0.1build2_arm64.deb || wget -N $(USER_SITE_URL)/deb/pool/$(CHIP_FAMILY)/libopus-dev_1.3.1-0.1build2_$(DEB_ARCH).deb
+	@cd /output/ ; wget -N https://launchpadlibrarian.net/592830919/libopus0_1.3.1-0.1build2_arm64.deb || wget -N $(USER_SITE_URL)/deb/pool/$(CHIP_FAMILY)/libopus0_1.3.1-0.1build2_$(DEB_ARCH).deb
+	@cd /output/ ; wget -N https://launchpadlibrarian.net/592830918/libopus-dev_1.3.1-0.1build2_arm64.deb || wget -N $(USER_SITE_URL)/deb/pool/$(CHIP_FAMILY)/libopus-dev_1.3.1-0.1build2_$(DEB_ARCH).deb
 	@cd $(BUILDDIR)/nanokvm-pro/nanokvm_pro_$(NANOKVM_PRO_VERSION) ; [ "$(DEB_DISTRO)" = "jammy" ] || wget -N https://launchpadlibrarian.net/571748137/libwebsockets16_4.0.20-2ubuntu1_arm64.deb || wget -N $(USER_SITE_URL)/deb/pool/$(CHIP_FAMILY)/libwebsockets16_4.0.20-2ubuntu1_$(DEB_ARCH).deb
 	@cd $(BUILDDIR)/nanokvm-pro/nanokvm_pro_$(NANOKVM_PRO_VERSION) ; [ "$(findstring ubuntu,$(DEB_URL))" != "" ] || wget -N https://launchpadlibrarian.net/572052652/ttyd_1.6.3+20210924-1build1_arm64.deb || wget -N $(USER_SITE_URL)/deb/pool/$(CHIP_FAMILY)/ttyd_1.6.3+20210924-1build1_$(DEB_ARCH).deb
 	@touch $@
@@ -205,8 +203,8 @@ $(BUILDDIR)/nanokvm-pro-package-prepare-stamp: $(BUILDDIR)/nanokvm-pro-prepare-s
 	@if [ "X$(NANOKVM_PRO_TOOLCHAIN_URL)" != "X" ]; then \
 		cd $(NANOKVM_PRO_BUILD_DIR)/support/scripts && sed -i 's|https://developer.arm.com/-/media/Files/downloads/gnu|$(NANOKVM_PRO_TOOLCHAIN_URL)|g' config.ini ; \
 	fi
-	@cd $(NANOKVM_PRO_BUILD_DIR)/support/scripts && sed -i 's|curl -sL -o libopus0.deb ".libopus_url"|cp -p $(BUILDDIR)/nanokvm-pro/nanokvm_pro_$(NANOKVM_PRO_VERSION)/libopus0_1.3.1-0.1build2_$(DEB_ARCH).deb libopus0.deb|g' toolchain_setup.sh
-	@cd $(NANOKVM_PRO_BUILD_DIR)/support/scripts && sed -i 's|curl -sL -o libopus-dev.deb ".libopus_dev_url"|cp -p $(BUILDDIR)/nanokvm-pro/nanokvm_pro_$(NANOKVM_PRO_VERSION)/libopus-dev_1.3.1-0.1build2_$(DEB_ARCH).deb libopus-dev.deb|g' toolchain_setup.sh
+	@cd $(NANOKVM_PRO_BUILD_DIR)/support/scripts && sed -i 's|curl -sL -o libopus0.deb ".libopus_url"|cp /output/libopus0_1.3.1-0.1build2_$(DEB_ARCH).deb libopus0.deb|g' toolchain_setup.sh
+	@cd $(NANOKVM_PRO_BUILD_DIR)/support/scripts && sed -i 's|curl -sL -o libopus-dev.deb ".libopus_dev_url"|cp /output/libopus-dev_1.3.1-0.1build2_$(DEB_ARCH).deb libopus-dev.deb|g' toolchain_setup.sh
 	@sed -i s/'local arch="arm64"'/'local arch="$(GOLANG_TARGET_ARCH)"'/g $(NANOKVM_PRO_BUILD_DIR)/server/build.sh
 	@sed -i s/aarch64-none-linux-gnu/$(NANOKVM_PRO_TOOLCHAIN_TARGET)/g $(NANOKVM_PRO_BUILD_DIR)/server/build.sh
 	@sed -i s/aarch64-none-linux-gnu/$(NANOKVM_PRO_TOOLCHAIN_TARGET)/g $(NANOKVM_PRO_BUILD_DIR)/support/scripts/config.ini
