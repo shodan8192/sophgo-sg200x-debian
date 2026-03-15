@@ -146,10 +146,19 @@ $(info $(blue)Packages: $(_PACKAGES)$(reset))
 NPROCS := $(shell nproc)
 
 
+define update_dts_action
+	@if [ "X$(findstring lichee,$(BOARD))" = "Xlichee" ]; then \
+		sed -i 's|max-frequency = <50000000>;|max-frequency = <$(MMC_MAX_FREQUENCY)>;|g' ${1} ; \
+		[ $(MMC_MAX_FREQUENCY) -ge 50000000 ] || sed -i /'sd-uhs-ddr50;'/d  ${1} ; \
+		[ $(MMC_MAX_FREQUENCY) -ge 100000000 ] || sed -i /'sd-uhs-sdr104;'/d  ${1} ; \
+	fi
+endef
+
 define copy_dts_action
 	@$(foreach file, $(wildcard /configs/common/dts/$(CHIP)/*), cp $(file) ${1}/;)
 	@$(foreach file, $(wildcard /configs/common/dts/$(CHIP)_$(UBOOT_ARCH)/*), cp $(file) ${1}/;)
 	@$(foreach file, $(wildcard /configs/$(BOARD_CFG)/dts/*), cp $(file) ${1}/;)
+	@$(foreach file, $(wildcard /configs/$(BOARD_CFG)/dts/*.dts), $(call update_dts_action, ${1}/$(notdir $(file))))
 endef
 
 define copy_header_action
