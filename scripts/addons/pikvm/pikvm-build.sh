@@ -2,6 +2,8 @@
 usepip=true
 [ -e /usr/local/bin/python3 ] || usepip=false
 
+pkgmntr="Sipeed <support@sipeed.com>"
+
 apt-get update || true
 
 if [ $usepip = false ] ; then
@@ -25,20 +27,23 @@ if [ ! -e janus-gateway-stamp ]; then
 
 bash -e ../janus-gateway-build.sh
 
+. ../pikvm-packages/packages/janus-gateway-pikvm/PKGBUILD
+
 JANUS_GATEWAY_VERSION=$(cat package.json | grep '"version": ".*"' | cut -d ':' -f 2- | cut -d '"' -f 2)
+pkgver=${JANUS_GATEWAY_VERSION}
 
 mkdir out/DEBIAN
 
 cat <<EOF > out/DEBIAN/control 
-Package: janus-gateway-pikvm
-Version: ${JANUS_GATEWAY_VERSION}
+Package: $pkgname
+Version: $pkgver-$pkgrel
 Architecture: ${DEB_ARCH}
-Maintainer: Sipeed <support@sipeed.com>
-Description: PiKVM package
+Maintainer: $pkgmntr
+Description: $pkgdesc
 EOF
 
-dpkg-deb -b out ../janus-gateway-pikvm_${JANUS_GATEWAY_VERSION}_${DEB_ARCH}.deb
-[ -e /usr/include/janus/plugins/plugin.h ] || dpkg -i ../janus-gateway-pikvm_${JANUS_GATEWAY_VERSION}_${DEB_ARCH}.deb
+dpkg-deb -b out ../${pkgname}_${pkgver}-${pkgrel}_${DEB_ARCH}.deb
+[ -e /usr/include/janus/plugins/plugin.h ] || dpkg -i ../${pkgname}_${pkgver}-${pkgrel}_${DEB_ARCH}.deb
 
   cd ..
   touch janus-gateway-stamp
@@ -64,20 +69,23 @@ mv out/usr/share out/usr/local/
 rsync -avpPxH out/usr/bin/ out/usr/local/bin/
 rsync -avpPxH out/usr/lib/ out/usr/local/lib/
 
+. ../pikvm-packages/packages/ustreamer/PKGBUILD
+
 USTREAMER_VERSION=$(cat .bumpversion.cfg | grep '^current_version = ' | cut -d '=' -f 2- | tr -d ' ')
+pkgver=${USTREAMER_VERSION}
 
 mkdir out/DEBIAN
 
 cat <<EOF > out/DEBIAN/control 
-Package: ustreamer
-Version: ${USTREAMER_VERSION}
+Package: $pkgname
+Version: $pkgver-$pkgrel
 Architecture: ${DEB_ARCH}
-Maintainer: Sipeed <support@sipeed.com>
-Description: PiKVM package
+Maintainer: $pkgmntr
+Description: $pkgdesc
 EOF
 
-dpkg-deb -b out ../ustreamer_${USTREAMER_VERSION}_${DEB_ARCH}.deb
-[ -e /usr/bin/ustreamer ] || dpkg -i ../ustreamer_${USTREAMER_VERSION}_${DEB_ARCH}.deb
+dpkg-deb -b out ../${pkgname}_${pkgver}-${pkgrel}_${DEB_ARCH}.deb
+[ -e /usr/bin/ustreamer ] || dpkg -i ../${pkgname}_${pkgver}-${pkgrel}_${DEB_ARCH}.deb
 
   cd ..
   touch ustreamer-stamp
@@ -215,16 +223,20 @@ done
 mv out/usr/local/bin/kvmd* out/usr/bin/
 rsync -avpPxH out/usr/local/lib/ out/usr/lib/
 
+. ../pikvm-packages/packages/kvmd/PKGBUILD
+
+pkgname=kvmd
 KVMD_VERSION=$(cat .bumpversion.cfg | grep '^current_version = ' | cut -d '=' -f 2- | tr -d ' ')
+pkgver=${KVMD_VERSION}
 
 mkdir out/DEBIAN
 
 cat <<EOF > out/DEBIAN/control 
-Package: kvmd
-Version: ${KVMD_VERSION}
+Package: $pkgname
+Version: $pkgver-$pkgrel
 Architecture: ${DEB_ARCH}
-Maintainer: Sipeed <support@sipeed.com>
-Description: PiKVM package
+Maintainer: $pkgmntr
+Description: $pkgdesc
 EOF
 
 cat <<EOF > out/DEBIAN/conffiles
@@ -237,8 +249,8 @@ cat <<EOF > out/DEBIAN/conffiles
 /etc/kvmd/override.yaml
 EOF
 
-dpkg-deb -b out ../kvmd_${KVMD_VERSION}_${DEB_ARCH}.deb
-[ -e /usr/bin/kvmd-bootconfig ] || dpkg -i ../kvmd_${KVMD_VERSION}_${DEB_ARCH}.deb
+dpkg-deb -b out ../${pkgname}_${pkgver}-${pkgrel}_${DEB_ARCH}.deb
+[ -e /usr/bin/kvmd-bootconfig ] || dpkg -i ../${pkgname}_${pkgver}-${pkgrel}_${DEB_ARCH}.deb
 
   cd ..
   touch kvmd-stamp
@@ -251,20 +263,23 @@ if [ ! -e kvmd-webterm-stamp ]; then
 
 bash -e ../../../kvmd-webterm-build.sh
 
+. ./PKGBUILD
+
 KVMD_WEBTERM_VERSION=$(grep '^pkgver=' PKGBUILD | cut -d '=' -f 2)
+pkgver=${KVMD_WEBTERM_VERSION}
 
 mkdir out/DEBIAN
 
 cat <<EOF > out/DEBIAN/control 
-Package: kvmd-webterm
-Version: ${KVMD_WEBTERM_VERSION}
+Package: $pkgname
+Version: $pkgver-$pkgrel
 Architecture: ${DEB_ARCH}
-Maintainer: Sipeed <support@sipeed.com>
-Description: PiKVM package
+Maintainer: $pkgmntr
+Description: $pkgdesc
 EOF
 
-dpkg-deb -b out ../kvmd-webterm_${KVMD_WEBTERM_VERSION}_${DEB_ARCH}.deb
-[ -e /usr/share/kvmd/extras/webterm/manifest.yaml ] || dpkg -i ../kvmd-webterm_${KVMD_WEBTERM_VERSION}_${DEB_ARCH}.deb
+dpkg-deb -b out ../${pkgname}_${pkgver}-${pkgrel}_${DEB_ARCH}.deb
+[ -e /usr/share/kvmd/extras/webterm/manifest.yaml ] || dpkg -i ../${pkgname}_${pkgver}-${pkgrel}_${DEB_ARCH}.deb
 
   cd ../..
   cd ..
