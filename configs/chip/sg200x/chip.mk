@@ -147,10 +147,10 @@ NPROCS := $(shell nproc)
 
 
 define update_dts_action
-	@if [ "X$(findstring lichee,$(BOARD))" = "Xlichee" ]; then \
+	if [ "X$(findstring lichee,$(BOARD))" = "Xlichee" ]; then \
 		sed -i 's|max-frequency = <50000000>;|max-frequency = <$(MMC_MAX_FREQUENCY)>;|g' ${1} ; \
-		[ $(MMC_MAX_FREQUENCY) -ge 50000000 ] || sed -i /'sd-uhs-ddr50;'/d  ${1} ; \
-		[ $(MMC_MAX_FREQUENCY) -ge 100000000 ] || sed -i /'sd-uhs-sdr104;'/d  ${1} ; \
+		[ $(MMC_MAX_FREQUENCY) -ge 50000000 ] || sed -i /'sd-uhs-ddr50;'/d ${1} ; \
+		[ $(MMC_MAX_FREQUENCY) -ge 100000000 ] || sed -i /'sd-uhs-sdr104;'/d ${1} ; \
 	fi
 endef
 
@@ -158,7 +158,7 @@ define copy_dts_action
 	@$(foreach file, $(wildcard /configs/common/dts/$(CHIP)/*), cp $(file) ${1}/;)
 	@$(foreach file, $(wildcard /configs/common/dts/$(CHIP)_$(UBOOT_ARCH)/*), cp $(file) ${1}/;)
 	@$(foreach file, $(wildcard /configs/$(BOARD_CFG)/dts/*), cp $(file) ${1}/;)
-	@$(foreach file, $(wildcard /configs/$(BOARD_CFG)/dts/*.dts), $(call update_dts_action, ${1}/$(notdir $(file))))
+	@$(foreach file, $(wildcard /configs/$(BOARD_CFG)/dts/*.dts), $(call update_dts_action,${1}/$(notdir $(file)));)
 endef
 
 define copy_header_action
@@ -221,7 +221,7 @@ $(BUILDDIR)/linux-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp
 	@$(foreach file, $(wildcard /configs/chip/$(CHIP_CFG)/patches/linux/*.patch), cd $(BUILDDIR)/kernel && git apply --ignore-whitespace $(file);)
 	@$(foreach file, $(wildcard /configs/$(BOARD_CFG)/patches/linux/*.patch), cd $(BUILDDIR)/kernel && git apply --ignore-whitespace $(file);)
 	@cp /configs/$(BOARD_CFG)/linux/defconfig $(BUILDDIR)/kernel/arch/$(KERNEL_ARCH)/configs/${BOARD}_defconfig
-	$(call copy_dts_action, $(BUILDDIR)/kernel/arch/$(KERNEL_ARCH)/boot/dts/$(CHIP_VENDOR))
+	$(call copy_dts_action,$(BUILDDIR)/kernel/arch/$(KERNEL_ARCH)/boot/dts/$(CHIP_VENDOR))
 	@cp -p $(BUILDDIR)/$(BOARD)-$(VARIANT)/cvi_board_memmap.h $(BUILDDIR)/kernel/arch/$(KERNEL_ARCH)/boot/dts/$(CHIP_VENDOR)/cvi_board_memmap.h
 	@touch $@
 
@@ -589,7 +589,7 @@ $(BUILDDIR)/uboot-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp
 	@$(foreach file, $(wildcard /configs/common/patches/u-boot/*.patch), cd $(BUILDDIR)/u-boot && git apply --ignore-whitespace $(file);)
 	@$(foreach file, $(wildcard /configs/chip/$(CHIP_CFG)/patches/u-boot/*.patch), cd $(BUILDDIR)/u-boot && git apply --ignore-whitespace $(file);)
 	@$(foreach file, $(wildcard /configs/$(BOARD_CFG)/patches/u-boot/*.patch), cd $(BUILDDIR)/u-boot && git apply --ignore-whitespace $(file);)
-	$(call copy_dts_action, $(BUILDDIR)/u-boot/arch/$(UBOOT_ARCH)/dts)
+	$(call copy_dts_action,$(BUILDDIR)/u-boot/arch/$(UBOOT_ARCH)/dts)
 	@cp /configs/$(BOARD_CFG)/u-boot/cvitek.h $(BUILDDIR)/u-boot/include/cvitek.h
 	@cp /configs/$(BOARD_CFG)/u-boot/cvi_board_init.c $(BUILDDIR)/u-boot/board/$(CHIP_VENDOR)/cvi_board_init.c
 	@cp -p $(BUILDDIR)/$(BOARD)-$(VARIANT)/cvi_board_memmap.h $(BUILDDIR)/u-boot/include/cvi_board_memmap.h
