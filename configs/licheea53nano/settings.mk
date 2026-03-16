@@ -19,6 +19,7 @@ STORAGE_TYPE=sd
 VARIANT?=e
 
 PACKAGES += " hostapd udhcpd wireless-regdb wpasupplicant"
+PACKAGES += " python3-numpy python3-pil"
 
 IMAGE_ADDITIONS += "sensor-config"
 IMAGE_ADDITIONS += "device-key"
@@ -31,6 +32,7 @@ else
 IMAGE_ADDITIONS += "maixapp"
 IMAGE_ADDITIONS += "tpusdk"
 endif
+IMAGE_ADDITIONS += "python3-textual"
 IMAGE_ADDITIONS += "usb-device"
 IMAGE_ADDITIONS += "zram-config"
 IMAGE_ADDITIONS += "wifi-builtin"
