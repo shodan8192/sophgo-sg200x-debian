@@ -129,7 +129,7 @@ git_clone -b main https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/nanokvm-pro-web-modu
 git_clone -b nanokvmpro https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/kvmd
 git_clone -b nanokvmpro https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/janus-gateway
 git_clone -b nanokvmpro https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/ustreamer
-git clone -b nanokvmpro https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/pikvm-packages
+git_clone -b nanokvmpro https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/pikvm-packages
 
 git_clone -b main https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/duo-pinmux
 git_clone -b main https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/ax620e-bsp-build
