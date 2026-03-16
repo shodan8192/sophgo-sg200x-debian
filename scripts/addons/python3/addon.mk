@@ -13,11 +13,15 @@ endif
 endif
 
 ifneq ("$(findstring maixcam2-python3,$(IMAGE_ADDITIONS))","")
-$(BUILDDIR)/python3-install-stamp: $(BUILDDIR)/maixcam2-python3-stamp
+$(BUILDDIR)/python3-install-stamp: $(BUILDDIR)/image-configure-stamp $(BUILDDIR)/maixcam2-python3-stamp
 	@echo "$(COLOUR_GREEN)Installing python3 for $(BOARD)$(END_COLOUR)"
 	@chroot /rootfs mount proc -t proc /proc
 	@chroot /rootfs bash -c 'apt install --allow-downgrades -y -f /tmp/install/$(MAIXCAM2_PYTHON3_PACKAGE_NAME)_$(MAIXCAM2_PYTHON3_VERSION)*_$(DEB_ARCH).deb'
 	@umount /rootfs/proc || true
+	@touch $@
+
+$(BUILDDIR)/python3-pip-install-stamp: $(BUILDDIR)/python3-install-stamp
+	@echo "$(COLOUR_GREEN)Installing python3 pip for $(BOARD)$(END_COLOUR)"
 	@touch $@
 
 $(BUILDDIR)/python3-dev-install-stamp: $(BUILDDIR)/python3-install-stamp
@@ -30,10 +34,16 @@ $(BUILDDIR)/python3-dev-uninstall-stamp: $(BUILDDIR)/image-customize-stamp
 	@touch $@
 
 else
-$(BUILDDIR)/python3-install-stamp:
+$(BUILDDIR)/python3-install-stamp: $(BUILDDIR)/image-configure-stamp
 	@echo "$(COLOUR_GREEN)Installing python3 for $(BOARD)$(END_COLOUR)"
 	@chroot /rootfs apt-get update || true
 	@chroot /rootfs apt-get install -y python3-minimal
+	@touch $@
+
+$(BUILDDIR)/python3-pip-install-stamp: $(BUILDDIR)/python3-install-stamp
+	@echo "$(COLOUR_GREEN)Installing python3 pip for $(BOARD)$(END_COLOUR)"
+	@chroot /rootfs apt-get update || true
+	@chroot /rootfs apt-get install -y --no-install-recommends python3-pip
 	@touch $@
 
 $(BUILDDIR)/python3-dev-install-stamp: $(BUILDDIR)/python3-install-stamp
