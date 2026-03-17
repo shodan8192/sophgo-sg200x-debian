@@ -4,7 +4,7 @@ PACKAGES += " python3-markdown-it python3-mdit-py-plugins python3-platformdirs p
 PACKAGES += " python3-linkify-it python3-uc-micro"
 endif
 
-PYTHON3_TEXTUAL_VERSION = 0.76.0
+PYTHON3_TEXTUAL_VERSION = 2.1.2
 PYTHON3_TEXTUAL_BUILD = 1
 
 $(BUILDDIR)/python3-textual-stamp: $(BUILDDIR)/python3-pip-install-stamp
