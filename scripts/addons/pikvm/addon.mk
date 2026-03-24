@@ -2,7 +2,7 @@ ifneq ("$(findstring pikvm,$(IMAGE_ADDITIONS))","")
 BSPFILTER += "pikvm"
 endif
 
-PIKVM_DEPENDS = $(BUILDDIR)/python3-dev-install-stamp
+PIKVM_DEPENDS = $(BUILDDIR)/nanokvm-pro-package-prepare-stamp $(BUILDDIR)/python3-dev-install-stamp
 
 ifneq ("$(findstring libgpiod,$(IMAGE_ADDITIONS))","")
 PIKVM_DEPENDS += $(BUILDDIR)/libgpiod-stamp
@@ -15,15 +15,19 @@ $(BUILDDIR)/pikvm-prepare-stamp: $(PIKVM_DEPENDS)
 	@mkdir -p $(PIKVM_BUILD_DIR)/
 	@cd $(PIKVM_BUILD_DIR)/ && git clone -b nanokvmpro $(GIT_USER_URL)/pikvm-packages
 	@cd $(PIKVM_BUILD_DIR)/ && git clone -b nanokvmpro $(GIT_USER_URL)/janus-gateway
-	@cd $(PIKVM_BUILD_DIR)/ && git clone -b nanokvmpro $(GIT_USER_URL)/ustreamer
+	@cd $(PIKVM_BUILD_DIR)/ && git clone -b kvm_vision $(GIT_USER_URL)/ustreamer
 	@cd $(PIKVM_BUILD_DIR)/ && git clone -b nanokvmpro $(GIT_USER_URL)/kvmd
 	@cp -a addons/pikvm/*-build.sh $(PIKVM_BUILD_DIR)/
 	@touch $@
 
-$(BUILDDIR)/pikvm-stamp: $(BUILDDIR)/pikvm-prepare-stamp
+$(BUILDDIR)/pikvm-stamp: $(BUILDDIR)/middleware-package-stamp $(BUILDDIR)/pikvm-prepare-stamp
 	@echo "$(COLOUR_GREEN)Building pikvm for $(BOARD)$(END_COLOUR)"
 	@#chroot /rootfs apt-get update || true
 	@chroot /rootfs mount proc -t proc /proc
+	@mkdir -pv /rootfs/kvmapp/server/dl_lib/
+	@rsync -avpPxH $(NANOKVM_PRO_PACKAGE_DIR)/kvmapp/server/dl_lib/ /rootfs/kvmapp/server/dl_lib/
+	@cp /output/$(CHIP_VENDOR)-middleware-$(BOARD)_*.deb /rootfs/tmp/install/
+	@chroot /rootfs bash -c 'dpkg -i /tmp/install/$(CHIP_VENDOR)-middleware-$(BOARD)_*.deb'
 	@[ "$(findstring libgpiod,$(IMAGE_ADDITIONS))" = "" ] || chroot /rootfs bash -c 'dpkg -i /tmp/install/libgpiod3_$(LIBGPIOD_VERSION)-$(LIBGPIOD_BUILD)_$(DEB_ARCH).deb'
 	@[ "$(findstring libgpiod,$(IMAGE_ADDITIONS))" = "" ] || chroot /rootfs bash -c 'dpkg -i /tmp/install/libgpiod-dev_$(LIBGPIOD_VERSION)-$(LIBGPIOD_BUILD)_$(DEB_ARCH).deb'
 	@[ "$(findstring libgpiod,$(IMAGE_ADDITIONS))" = "" ] || chroot /rootfs bash -c 'dpkg -i /tmp/install/gpiod_$(LIBGPIOD_VERSION)-$(LIBGPIOD_BUILD)_$(DEB_ARCH).deb'
