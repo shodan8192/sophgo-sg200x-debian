@@ -277,6 +277,9 @@ $(BUILDDIR)/nanokvm-pro-pikvm-stamp: $(BUILDDIR)/nanokvm-pro-prepare-stamp $(BUI
 	@mkdir -p $(NANOKVM_PRO_PIKVM_PACKAGE_DIR)/usr/local/include/
 	@cd $(NANOKVM_PRO_PIKVM_PACKAGE_DIR) && [ ! -e usr/include/gpiod.h ] || mv usr/include/gpiod.h usr/local/include/
 	@if [ -e $(PIKVM_BUILD_DIR)/out ]; then \
+		[ "$(DEB_DISTRO)" != "jammy" ] || cd $(PIKVM_BUILD_DIR) && \
+			rm -f out/usr/bin/ustreamer* && \
+			rm -f out/usr/local/bin/ustreamer ; \
 		cd $(NANOKVM_PRO_PIKVM_PACKAGE_DIR) && \
 		mkdir -p etc/kvmd/depends && \
 		mkdir -p etc/kvmd.backup && \
