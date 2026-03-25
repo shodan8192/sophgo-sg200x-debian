@@ -145,6 +145,11 @@ for f in */.git ; do
       do_pull_push $x $u $s
     done
     git checkout $b
+  elif echo $d | grep -q -E '^ustreamer$' ; then
+    for x in nanokvmpro kvm_vision ; do
+      do_pull_push $x $u $s
+    done
+    git checkout $b
   elif echo $d | grep -q -E '^berkeley-testfloat-3$' ; then
     for x in master qemu ; do
       do_pull_push $x $u $s
