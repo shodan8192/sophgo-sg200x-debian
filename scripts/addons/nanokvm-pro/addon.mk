@@ -282,9 +282,13 @@ $(BUILDDIR)/nanokvm-pro-pikvm-stamp: $(BUILDDIR)/nanokvm-pro-prepare-stamp $(BUI
 	@cd $(NANOKVM_PRO_PIKVM_PACKAGE_DIR) && [ ! -e usr/include/gpiod.h ] || mv usr/include/gpiod.h usr/local/include/
 	@if [ -e $(PIKVM_BUILD_DIR)/out ]; then \
 		[ "$(DEB_DISTRO)" != "jammy" ] || cd $(PIKVM_BUILD_DIR) && \
-			rm -f out/usr/bin/ustreamer* && \
-			rm -f out/usr/local/bin/ustreamer ; \
+			rm -f out/usr/bin/ustreamer ; \
 		cd $(NANOKVM_PRO_PIKVM_PACKAGE_DIR) && \
+		if [ -e usr/bin/ustreamer-ax ]; then \
+			cp -p usr/bin/ustreamer-ax usr/bin/ustreamer ; \
+		else \
+			cp -p usr/bin/ustreamer usr/bin/ustreamer-ax ; \
+		fi && \
 		mkdir -p etc/kvmd/depends && \
 		mkdir -p etc/kvmd.backup && \
 		mv etc/kvmd/depends etc/kvmd.backup/ && \
@@ -296,6 +300,8 @@ $(BUILDDIR)/nanokvm-pro-pikvm-stamp: $(BUILDDIR)/nanokvm-pro-prepare-stamp $(BUI
 		rm -f usr/bin/janus* && \
 		rm -f usr/bin/kvmd* && \
 		rm -f usr/bin/nanokvm* && \
+		rm -f usr/bin/ustreamer-dump && \
+		rm -f usr/bin/ustreamer-v4p && \
 		rm -f usr/bin/vcgen* && \
 		rm -rf usr/lib/ && \
 		rm -rf usr/share/ && \
@@ -305,6 +311,8 @@ $(BUILDDIR)/nanokvm-pro-pikvm-stamp: $(BUILDDIR)/nanokvm-pro-prepare-stamp $(BUI
 		rm -rf var/lib/ && \
 		mv etc/kvmd.backup etc/kvmd && \
 		rsync -avpPxH $(PIKVM_BUILD_DIR)/out/ ./ && \
+		rm -f usr/local/bin/ustreamer* && \
+		rsync -avpPxH usr/bin/ustreamer* usr/local/bin/ && \
 		echo $(NANOKVM_PRO_VERSION) > etc/kvmd/version ; \
 	fi
 	@[ "$(GIT_REF)" = "develop" ] || rm -rf $(PIKVM_BUILD_DIR)
