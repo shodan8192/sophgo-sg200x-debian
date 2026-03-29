@@ -721,6 +721,10 @@ $(BUILDDIR)/image-dev-uninstall-stamp: $(BUILDDIR)/image-customize-stamp $(BUILD
 	@echo "$(COLOUR_GREEN)Uninstalling dev packages for $(BOARD)$(END_COLOUR)"
 	@chroot /rootfs apt-get update || true
 	@chroot /rootfs mount proc -t proc /proc
+	@for p in libwebsockets-evlib-uv ; do \
+		chroot /rootfs dpkg -s $$p | grep -q '^Version:' || continue ; \
+		chroot /rootfs apt-get install -y $$p ; \
+	done
 	@for d in $(_PACKAGES) $(_DEV_PACKAGES) ; do \
 		echo $$d | grep -q -E '^lib.*-dev$$' || continue ; \
 		! echo $$d | grep -q -E '^libfreetype-dev$$|libspeex-dev$$|libxkbcommon-dev$$' || continue ; \
