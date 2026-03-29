@@ -25,6 +25,7 @@ $(BUILDDIR)/opus-prepare-stamp:
 		echo OK
 	@touch $@
 
+ifeq ($(NANOKVM_PRO_DEBS_FROM_SOURCE),y)
 $(BUILDDIR)/opus-stamp: $(BUILDDIR)/opus-prepare-stamp
 	@#chroot /rootfs apt-get update || true
 	@chroot /rootfs apt-get install -y debhelper doxygen graphviz
@@ -36,3 +37,9 @@ $(BUILDDIR)/opus-stamp: $(BUILDDIR)/opus-prepare-stamp
 	@#cp -p /rootfs/root/source-opus/libopus0_$(OPUS_VERSION)-$(OPUS_BUILD)_$(DEB_ARCH).deb /rootfs/tmp/install/
 	@#rm -rf /rootfs/root/source-opus/
 	@touch $@
+else
+$(BUILDDIR)/opus-stamp:
+	@cd /output/ ; wget -N https://launchpadlibrarian.net/592830919/libopus0_$(OPUS_VERSION)-$(OPUS_BUILD)_$(DEB_ARCH).deb || wget -N $(USER_SITE_URL)/deb/pool/$(CHIP_FAMILY)/libopus0_$(OPUS_VERSION)-$(OPUS_BUILD)_$(DEB_ARCH).deb
+	@cd /output/ ; wget -N https://launchpadlibrarian.net/592830918/libopus-dev_$(OPUS_VERSION)-$(OPUS_BUILD)_$(DEB_ARCH).deb || wget -N $(USER_SITE_URL)/deb/pool/$(CHIP_FAMILY)/libopus-dev_$(OPUS_VERSION)-$(OPUS_BUILD)_$(DEB_ARCH).deb
+	@touch $@
+endif

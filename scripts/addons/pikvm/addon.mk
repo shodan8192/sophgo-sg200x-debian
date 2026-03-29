@@ -2,6 +2,11 @@ ifneq ("$(findstring pikvm,$(IMAGE_ADDITIONS))","")
 BSPFILTER += "pikvm"
 endif
 
+PIKVM_PACKAGES_GIT_REF = 553371497964648913dfbd3bf6c472f829a197ce
+PIKVM_JANUS_GATEWAY_GIT_REF = c1435cf670d422648edab7dd5f188f09f9df7fd5
+PIKVM_USTREAMER_GIT_REF = 415d271687a0c4a1395ee4bf60b8910c65b518e1
+PIKVM_KVMD_GIT_REF = 8cc43887b430c5a982093afe3d14bd8b602c5fc2
+
 PIKVM_DEPENDS = $(BUILDDIR)/nanokvm-pro-package-prepare-stamp $(BUILDDIR)/python3-dev-install-stamp
 
 ifneq ("$(findstring libgpiod,$(IMAGE_ADDITIONS))","")
@@ -17,6 +22,10 @@ $(BUILDDIR)/pikvm-prepare-stamp: $(PIKVM_DEPENDS)
 	@cd $(PIKVM_BUILD_DIR)/ && git clone -b nanokvmpro $(GIT_USER_URL)/janus-gateway
 	@cd $(PIKVM_BUILD_DIR)/ && git clone -b kvm_vision $(GIT_USER_URL)/ustreamer
 	@cd $(PIKVM_BUILD_DIR)/ && git clone -b nanokvmpro $(GIT_USER_URL)/kvmd
+	@cd $(PIKVM_BUILD_DIR)/pikvm-packages/ && git checkout $(PIKVM_PACKAGES_GIT_REF)
+	@cd $(PIKVM_BUILD_DIR)/janus-gateway/ && git checkout $(PIKVM_JANUS_GATEWAY_GIT_REF)
+	@cd $(PIKVM_BUILD_DIR)/ustreamer/ && git checkout $(PIKVM_USTREAMER_GIT_REF)
+	@cd $(PIKVM_BUILD_DIR)/kvmd/ && git checkout $(PIKVM_KVMD_GIT_REF)
 	@cp -a addons/pikvm/*-build.sh $(PIKVM_BUILD_DIR)/
 	@touch $@
 
