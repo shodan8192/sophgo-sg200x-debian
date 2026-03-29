@@ -25,6 +25,8 @@ IMAGE_ADDITIONS += "maixcam2-python3"
 endif
 ifneq ("$(findstring ubuntu,$(DEB_URL))","")
 PACKAGES += " ttyd"
+else
+IMAGE_ADDITIONS += "ttyd"
 endif
 
 #IMAGE_ADDITIONS += "sensor-config"
@@ -40,13 +42,7 @@ else
 PACKAGES += " gpiod"
 DEV_PACKAGES += " libgpiod-dev"
 endif
-ifeq ($(NANOKVM_PRO_DEBS_FROM_SOURCE),y)
-IMAGE_ADDITIONS += "libconfig"
-IMAGE_ADDITIONS += "libjpeg-turbo"
-IMAGE_ADDITIONS += "libwebsockets"
 IMAGE_ADDITIONS += "opus"
-IMAGE_ADDITIONS += "ttyd"
-endif
 IMAGE_ADDITIONS += "python3-dev"
 IMAGE_ADDITIONS += "pikvm"
 IMAGE_ADDITIONS += "nanokvm-pro"
