@@ -146,7 +146,7 @@ for f in */.git ; do
     done
     git checkout $b
   elif echo $d | grep -q -E '^ustreamer$' ; then
-    for x in nanokvmpro kvm_vision ; do
+    for x in nanokvmpro kvm_vision ax_video ; do
       do_pull_push $x $u $s
     done
     git checkout $b
