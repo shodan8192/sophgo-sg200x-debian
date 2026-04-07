@@ -4,7 +4,7 @@ endif
 
 PIKVM_PACKAGES_GIT_REF = d660118d169e96075c33fb7ab90e0bc492c4064e
 PIKVM_JANUS_GATEWAY_GIT_REF = c1435cf670d422648edab7dd5f188f09f9df7fd5
-PIKVM_USTREAMER_GIT_REF = acb82b95c70a0b2078a2a268a88990d40d3fb019
+PIKVM_USTREAMER_GIT_REF = e96dc4d7550aea506855e61ee3cd897dba719565
 PIKVM_KVMD_GIT_REF = 8cc43887b430c5a982093afe3d14bd8b602c5fc2
 
 PIKVM_DEPENDS = $(BUILDDIR)/nanokvm-pro-package-prepare-stamp $(BUILDDIR)/python3-dev-install-stamp
@@ -20,7 +20,7 @@ $(BUILDDIR)/pikvm-prepare-stamp: $(PIKVM_DEPENDS)
 	@mkdir -p $(PIKVM_BUILD_DIR)/
 	@cd $(PIKVM_BUILD_DIR)/ && git clone -b nanokvmpro $(GIT_USER_URL)/pikvm-packages
 	@cd $(PIKVM_BUILD_DIR)/ && git clone -b nanokvmpro $(GIT_USER_URL)/janus-gateway
-	@cd $(PIKVM_BUILD_DIR)/ && git clone -b kvm_vision $(GIT_USER_URL)/ustreamer
+	@cd $(PIKVM_BUILD_DIR)/ && git clone -b ax_video $(GIT_USER_URL)/ustreamer
 	@cd $(PIKVM_BUILD_DIR)/ && git clone -b nanokvmpro $(GIT_USER_URL)/kvmd
 	@cd $(PIKVM_BUILD_DIR)/pikvm-packages/ && git checkout $(PIKVM_PACKAGES_GIT_REF)
 	@cd $(PIKVM_BUILD_DIR)/janus-gateway/ && git checkout $(PIKVM_JANUS_GATEWAY_GIT_REF)
@@ -34,7 +34,8 @@ $(BUILDDIR)/pikvm-stamp: $(BUILDDIR)/middleware-package-stamp $(BUILDDIR)/pikvm-
 	@#chroot /rootfs apt-get update || true
 	@chroot /rootfs mount proc -t proc /proc
 	@mkdir -pv /rootfs/kvmapp/server/dl_lib/
-	@rsync -avpPxH $(NANOKVM_PRO_PACKAGE_DIR)/kvmapp/server/dl_lib/ /rootfs/kvmapp/server/dl_lib/
+	@#rsync -avpPxH $(NANOKVM_PRO_PACKAGE_DIR)/kvmapp/server/dl_lib/ /rootfs/kvmapp/server/dl_lib/
+	@rsync -avpPxH $(BUILDDIR)/bsp/axerabin/$(CHIP)/rootfs/opt/include/ /rootfs/opt/include/
 	@cp /output/$(CHIP_VENDOR)-middleware-$(BOARD)_*.deb /rootfs/tmp/install/
 	@chroot /rootfs bash -c 'dpkg -i /tmp/install/$(CHIP_VENDOR)-middleware-$(BOARD)_*.deb'
 	@[ "$(findstring libgpiod,$(IMAGE_ADDITIONS))" = "" ] || chroot /rootfs bash -c 'dpkg -i /tmp/install/libgpiod3_$(LIBGPIOD_VERSION)-$(LIBGPIOD_BUILD)_$(DEB_ARCH).deb'
