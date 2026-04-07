@@ -717,18 +717,15 @@ MAIX_PY_VERSION ?= 4.12.4
 IMAGE_APP_VERSION ?= $(MAIX_PY_VERSION)
 endif
 
-$(BUILDDIR)/image-dev-uninstall-stamp: $(BUILDDIR)/image-customize-stamp $(BUILDDIR)/python3-dev-uninstall-stamp
-	@echo "$(COLOUR_GREEN)Uninstalling dev packages for $(BOARD)$(END_COLOUR)"
+$(BUILDDIR)/image-dev-list-stamp: $(BUILDDIR)/image-customize-stamp $(BUILDDIR)/python3-dev-uninstall-stamp
+	@echo "$(COLOUR_GREEN)Listing dev packages for $(BOARD)$(END_COLOUR)"
 	@chroot /rootfs apt-get update || true
-	@chroot /rootfs mount proc -t proc /proc
 	@for p in libwebsockets-evlib-uv ; do \
 		chroot /rootfs dpkg -s $$p | grep -q '^Version:' || continue ; \
-		chroot /rootfs apt-get install -y $$p ; \
 		echo $$p >> $(BUILDDIR)/image-libs-$(BOARD) ; \
 	done
 	@for d in $(_PACKAGES) $(_DEV_PACKAGES) ; do \
 		echo $$d | grep -q -E '^lib.*-dev$$' || continue ; \
-		! echo $$d | grep -q -E '^libfreetype-dev$$|libspeex-dev$$|libxkbcommon-dev$$' || continue ; \
 		l=`echo $$d | sed s/'-dev$$'/''/g` ; \
 		chroot /rootfs dpkg -s $$d | grep -q '^Version:' || continue ; \
 		p=`chroot /rootfs dpkg -S $${l}.so.* 2>/dev/null | grep -v $$d | grep -m1 ':'$(DEB_ARCH)':' | cut -d ':' -f 1` ; \
@@ -736,17 +733,23 @@ $(BUILDDIR)/image-dev-uninstall-stamp: $(BUILDDIR)/image-customize-stamp $(BUILD
 		[ "$$p" != "" ] || p=`chroot /rootfs dpkg -S $${l}.so.* 2>/dev/null | grep -v $$d | grep -m1 ':'$(DEB_ARCH)':' | cut -d ':' -f 1` ; \
 		[ "$$p" != "" ] || continue ; \
 		chroot /rootfs dpkg -S $${l}.so.* 2>/dev/null | grep -v $$d | grep ':'$(DEB_ARCH)':' | cut -d ':' -f 1 | uniq | while read p ; do \
-			chroot /rootfs apt-get install -y $$p ; \
 			echo $$p >> $(BUILDDIR)/image-libs-$(BOARD) ; \
 		done && \
-		chroot /rootfs apt-get remove --purge -y $$d ; \
 		echo $$d >> $(BUILDDIR)/image-dev-$(BOARD) ; \
 	done
 	@for d in $(_DEV_PACKAGES) ; do \
 		chroot /rootfs dpkg -s $$d | grep -q '^Version:' || continue ; \
-		chroot /rootfs apt-get remove --purge -y $$d ; \
 		echo $$d >> $(BUILDDIR)/image-dev-$(BOARD) ; \
 	done
+	@touch $@
+
+$(BUILDDIR)/image-dev-uninstall-stamp: $(BUILDDIR)/image-dev-list-stamp
+	@echo "$(COLOUR_GREEN)Uninstalling dev packages for $(BOARD)$(END_COLOUR)"
+	@$(eval IMAGE_LIBS_DEPENDS=$(shell cat $(BUILDDIR)/image-libs-$(BOARD) | sort | uniq | tr '\n' ' '))
+	@$(eval IMAGE_DEV_DEPENDS=$(shell cat $(BUILDDIR)/image-dev-$(BOARD) | sort | uniq | tr '\n' ' '))
+	@chroot /rootfs mount proc -t proc /proc
+	@chroot /rootfs apt-get install -y $(IMAGE_LIBS_DEPENDS)
+	@chroot /rootfs apt-get remove --purge -y $(IMAGE_DEV_DEPENDS)
 	@chroot /rootfs apt-get autoremove --purge -y
 	@umount /rootfs/proc || true
 	@chroot /rootfs apt-get clean
