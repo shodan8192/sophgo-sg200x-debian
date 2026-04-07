@@ -740,10 +740,12 @@ $(BUILDDIR)/image-dev-uninstall-stamp: $(BUILDDIR)/image-customize-stamp $(BUILD
 			echo $$p >> $(BUILDDIR)/image-libs-$(BOARD) ; \
 		done && \
 		chroot /rootfs apt-get remove --purge -y $$d ; \
+		echo $$d >> $(BUILDDIR)/image-dev-$(BOARD) ; \
 	done
 	@for d in $(_DEV_PACKAGES) ; do \
 		chroot /rootfs dpkg -s $$d | grep -q '^Version:' || continue ; \
 		chroot /rootfs apt-get remove --purge -y $$d ; \
+		echo $$d >> $(BUILDDIR)/image-dev-$(BOARD) ; \
 	done
 	@chroot /rootfs apt-get autoremove --purge -y
 	@umount /rootfs/proc || true
@@ -775,7 +777,32 @@ $(BUILDDIR)/image-libs-package-stamp: $(BUILDDIR)/image-dev-uninstall-stamp
 	@cp /output/image-libs-$(BOARD)-$(VARIANT)*.deb /rootfs/tmp/install/
 	@touch $@
 
-$(BUILDDIR)/image-compile-stamp: $(BUILDDIR)/image-customize-stamp $(BUILDDIR)/image-libs-package-stamp
+$(BUILDDIR)/image-dev-package-stamp: $(BUILDDIR)/image-dev-uninstall-stamp $(BUILDDIR)/image-libs-package-stamp
+	@echo "$(COLOUR_GREEN)Packaging image-dev-$(CHIP_FAMILY) for $(BOARD)$(END_COLOUR)"
+	@$(eval IMAGE_DEV_PACKAGE_DIR=$(BUILDDIR)/package/image-dev-$(BOARD)-$(VARIANT)-$(BSPVERSION))
+	@$(eval IMAGE_DEV_DEPENDS=$(shell cat $(BUILDDIR)/image-dev-$(BOARD) | sort | uniq | tr '\n' ' '))
+	@$(eval _IMAGE_DEV_DEPENDS = $(subst $(SPACE),$(COMMA)$(SPACE),$(sort $(IMAGE_DEV_DEPENDS))))
+	@mkdir -p $(IMAGE_DEV_PACKAGE_DIR)
+	@cp -r /builder/deb/board-support-sg200x/* $(IMAGE_DEV_PACKAGE_DIR)/
+	@mkdir -pv $(IMAGE_DEV_PACKAGE_DIR)/usr/share/doc/image-dev-$(BOARD)-$(VARIANT)/
+	@echo "meta package" > $(IMAGE_DEV_PACKAGE_DIR)/usr/share/doc/image-dev-$(BOARD)-$(VARIANT)/README
+	@sed -i 's/Architecture: riscv64/Architecture: $(DEB_ARCH)/' $(IMAGE_DEV_PACKAGE_DIR)/DEBIAN/control
+	@sed -i 's/Version: 1.0.0-1/Version: $(BSPVERSION)/' $(IMAGE_DEV_PACKAGE_DIR)/DEBIAN/control
+	@sed -i 's/Package: board-support-sg200x/Package: image-dev-$(BOARD)-$(VARIANT)/' $(IMAGE_DEV_PACKAGE_DIR)/DEBIAN/control
+	@sed -i 's/Depends: .*/Depends: $(_IMAGE_DEV_DEPENDS)/' $(IMAGE_DEV_PACKAGE_DIR)/DEBIAN/control
+	@sed -i '/Recommends: .*/d' $(IMAGE_DEV_PACKAGE_DIR)/DEBIAN/control
+	@sed -i 's/CVITEK/$(CHIP_VENDOR)/' $(IMAGE_DEV_PACKAGE_DIR)/DEBIAN/control
+	@sed -i 's/CV18xx and SG200X/$(CHIP)/' $(IMAGE_DEV_PACKAGE_DIR)/DEBIAN/control
+	@sed -i 's/cv181x/$(CHIP)/' $(IMAGE_DEV_PACKAGE_DIR)/DEBIAN/control
+	@sed -i 's/Board support/Image development/' $(IMAGE_DEV_PACKAGE_DIR)/DEBIAN/control
+	@rm -f $(IMAGE_DEV_PACKAGE_DIR)/DEBIAN/postinst
+	@cd $(BUILDDIR)/package/ && dpkg-deb --build image-dev-$(BOARD)-$(VARIANT)-$(BSPVERSION) image-dev-$(BOARD)-$(VARIANT)_$(BSPVERSION)_$(DEB_ARCH).deb
+	@cp $(BUILDDIR)/package/image-dev-$(BOARD)-$(VARIANT)_$(BSPVERSION)_$(DEB_ARCH).deb /output/
+	@#mkdir -p /rootfs/tmp/install/
+	@#cp /output/image-dev-$(BOARD)-$(VARIANT)*.deb /rootfs/tmp/install/
+	@touch $@
+
+$(BUILDDIR)/image-compile-stamp: $(BUILDDIR)/image-customize-stamp $(BUILDDIR)/image-dev-package-stamp
 	@echo "$(COLOUR_GREEN)Compiling Image for $(BOARD)$(END_COLOUR)"
 	@[ "$(GIT_REF)" = "develop" ] || rm -rf $(BR_DIR)/dl
 	@[ "$(GIT_REF)" = "develop" ] || rm -rf $(BR_OUTPUT_DIR)/per-package
