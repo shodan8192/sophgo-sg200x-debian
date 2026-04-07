@@ -36,6 +36,7 @@ $(BUILDDIR)/pikvm-stamp: $(BUILDDIR)/middleware-package-stamp $(BUILDDIR)/pikvm-
 	@mkdir -pv /rootfs/kvmapp/server/dl_lib/
 	@#rsync -avpPxH $(NANOKVM_PRO_PACKAGE_DIR)/kvmapp/server/dl_lib/ /rootfs/kvmapp/server/dl_lib/
 	@rsync -avpPxH $(BUILDDIR)/bsp/axerabin/$(CHIP)/rootfs/opt/include/ /rootfs/opt/include/
+	@mkdir -p /rootfs/tmp/install/
 	@cp /output/$(CHIP_VENDOR)-middleware-$(BOARD)_*.deb /rootfs/tmp/install/
 	@chroot /rootfs bash -c 'dpkg -i /tmp/install/$(CHIP_VENDOR)-middleware-$(BOARD)_*.deb'
 	@[ "$(findstring libgpiod,$(IMAGE_ADDITIONS))" = "" ] || chroot /rootfs bash -c 'dpkg -i /tmp/install/libgpiod3_$(LIBGPIOD_VERSION)-$(LIBGPIOD_BUILD)_$(DEB_ARCH).deb'
