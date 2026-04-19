@@ -4,7 +4,7 @@ endif
 
 PIKVM_PACKAGES_GIT_REF = d660118d169e96075c33fb7ab90e0bc492c4064e
 PIKVM_JANUS_GATEWAY_GIT_REF = c1435cf670d422648edab7dd5f188f09f9df7fd5
-PIKVM_USTREAMER_GIT_REF = 95d950ff91e06c090fc7c155c9b3e74b88eb812e
+PIKVM_USTREAMER_GIT_REF = 5c79715997445d11c46cce4493a21bbf9082a18f
 PIKVM_KVMD_GIT_REF = 8cc43887b430c5a982093afe3d14bd8b602c5fc2
 
 PIKVM_DEPENDS = $(BUILDDIR)/nanokvm-pro-package-prepare-stamp $(BUILDDIR)/python3-dev-install-stamp
@@ -46,8 +46,8 @@ $(BUILDDIR)/pikvm-stamp: $(BUILDDIR)/middleware-package-stamp $(BUILDDIR)/pikvm-
 	@chroot /rootfs apt-get install -y libgpiod-dev
 	@chroot /rootfs bash -c 'cd /root/pikvm/ && DEB_ARCH=$(DEB_ARCH) bash -e pikvm-build.sh'
 	@umount /rootfs/proc || true
-	@rm -rf /rootfs/root/pikvm/janus-gateway/
-	@rm -rf /rootfs/root/pikvm/ustreamer/
-	@rm -rf /rootfs/root/pikvm/kvmd/
-	@rm -rf /rootfs/root/pikvm/pikvm-packages/
+	@rm -rf $(PIKVM_BUILD_DIR)/janus-gateway/
+	@rm -rf $(PIKVM_BUILD_DIR)/ustreamer/*/build $(PIKVM_BUILD_DIR)/ustreamer/out
+	@rm -rf $(PIKVM_BUILD_DIR)/kvmd/
+	@#rm -rf $(PIKVM_BUILD_DIR)/pikvm-packages/
 	@touch $@
