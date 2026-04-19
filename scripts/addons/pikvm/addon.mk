@@ -46,8 +46,8 @@ $(BUILDDIR)/pikvm-stamp: $(BUILDDIR)/middleware-package-stamp $(BUILDDIR)/pikvm-
 	@chroot /rootfs apt-get install -y libgpiod-dev
 	@chroot /rootfs bash -c 'cd /root/pikvm/ && DEB_ARCH=$(DEB_ARCH) bash -e pikvm-build.sh'
 	@umount /rootfs/proc || true
-	@rm -rf /rootfs/root/pikvm/janus-gateway/
-	@rm -rf /rootfs/root/pikvm/ustreamer/
-	@rm -rf /rootfs/root/pikvm/kvmd/
-	@rm -rf /rootfs/root/pikvm/pikvm-packages/
+	@rm -rf $(PIKVM_BUILD_DIR)/janus-gateway/
+	@rm -rf $(PIKVM_BUILD_DIR)/ustreamer/*/build $(PIKVM_BUILD_DIR)/ustreamer/out
+	@rm -rf $(PIKVM_BUILD_DIR)/kvmd/
+	@#rm -rf $(PIKVM_BUILD_DIR)/pikvm-packages/
 	@touch $@
