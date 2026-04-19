@@ -207,6 +207,7 @@ $(BUILDDIR)/nanokvm-pro-package-prepare-stamp: $(BUILDDIR)/nanokvm-pro-prepare-s
 	@touch $@
 
 $(BUILDDIR)/nanokvm-pro-package-stamp: $(BUILDDIR)/nanokvm-pro-package-prepare-stamp
+	@$(eval NKRELEASE=$(shell cd $(NANOKVM_PRO_BUILD_DIR) && git log -1 --format="%at" | xargs -I{} date -d @{} +-%Y%m%d-${KERNELREV}))
 	@cd $(NANOKVM_PRO_BUILD_DIR)/support/scripts ; ./toolchain_setup.sh
 	@cd $(NANOKVM_PRO_BUILD_DIR)/server/ ; $(NANOKVM_PRO_GO_ENV) ./build.sh
 	@cd $(NANOKVM_PRO_BUILD_DIR)/web/ ; $(HOST_PNPM) install -r --offline
@@ -215,6 +216,7 @@ $(BUILDDIR)/nanokvm-pro-package-stamp: $(BUILDDIR)/nanokvm-pro-package-prepare-s
 	@rm -rf $(NANOKVM_PRO_PACKAGE_DIR)/kvmapp/server/web/
 	@mkdir $(NANOKVM_PRO_PACKAGE_DIR)/kvmapp/server/web/
 	@cp -r $(NANOKVM_PRO_BUILD_DIR)/web/dist/* $(NANOKVM_PRO_PACKAGE_DIR)/kvmapp/server/web/
+	@sed -i 's/^Version: .*/Version: $(NANOKVM_PRO_VERSION)$(NKRELEASE)/' $(NANOKVM_PRO_PACKAGE_DIR)/DEBIAN/control
 	@cd $(BUILDDIR)/nanokvm-pro ; rm -f nanokvm_pro_$(NANOKVM_PRO_VERSION)/nanokvmpro_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb
 	@cd $(BUILDDIR)/package/ && dpkg-deb --build nanokvmpro-$(NANOKVM_PRO_VERSION) nanokvmpro_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb
 	@cp $(BUILDDIR)/package/nanokvmpro_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb /output/
@@ -223,12 +225,14 @@ $(BUILDDIR)/nanokvm-pro-package-stamp: $(BUILDDIR)/nanokvm-pro-package-prepare-s
 	@touch $@
 
 $(BUILDDIR)/nanokvm-pro-kvmcomm-stamp: $(BUILDDIR)/nanokvm-pro-prepare-stamp
+	@$(eval BSPRELEASE=$(shell cd $(BUILDDIR)/bsp && git log -1 --format="%at" | xargs -I{} date -d @{} +-%Y%m%d-${KERNELREV}))
 	@cd $(BUILDDIR)/nanokvm-pro ; dpkg-deb -R nanokvm_pro_$(NANOKVM_PRO_VERSION)/kvmcomm_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb $(NANOKVM_PRO_KVMCOMM_PACKAGE_DIR)
 	@for f in $(NANOKVM_PRO_KVMCOMM_MODULES) ; do \
 		cp -p $(BSP_INSTALL_DIR)/ko/$$f $(NANOKVM_PRO_KVMCOMM_PACKAGE_DIR)/kvmcomm/ko/ ; \
 	done
 	@sed -i 's|https://cdn.sipeed.com/nanokvm|$(NANOKVM_PRO_ARCH_URL)|g' $(NANOKVM_PRO_KVMCOMM_PACKAGE_DIR)/kvmcomm/scripts/firmware_update.sh
 	@sed -i 's|https://cdn.sipeed.com/nanokvm|$(NANOKVM_PRO_ARCH_URL)|g' $(NANOKVM_PRO_KVMCOMM_PACKAGE_DIR)/kvmcomm/scripts/reset_to_default.sh
+	@sed -i 's/^Version: .*/Version: $(NANOKVM_PRO_VERSION)$(BSPRELEASE)/' $(NANOKVM_PRO_KVMCOMM_PACKAGE_DIR)/DEBIAN/control
 	@cd $(BUILDDIR)/nanokvm-pro ; rm -f nanokvm_pro_$(NANOKVM_PRO_VERSION)/kvmcomm_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb
 	@cd $(BUILDDIR)/package/ && dpkg-deb --build kvmcomm-$(NANOKVM_PRO_VERSION) kvmcomm_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb
 	@cp $(BUILDDIR)/package/kvmcomm_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb /output/
@@ -261,6 +265,7 @@ $(BUILDDIR)/nanokvm-pro-firmware-stamp: $(BUILDDIR)/aic8800-firmware-stamp $(BUI
 	@touch $@
 
 $(BUILDDIR)/nanokvm-pro-pikvm-stamp: $(BUILDDIR)/nanokvm-pro-prepare-stamp $(BUILDDIR)/pikvm-stamp
+	@$(eval USRELEASE=$(shell cd $(PIKVM_BUILD_DIR)/ustreamer && git log -1 --format="%at" | xargs -I{} date -d @{} +-%Y%m%d-${KERNELREV}))
 	@cd $(BUILDDIR)/nanokvm-pro ; dpkg-deb -R nanokvm_pro_$(NANOKVM_PRO_VERSION)/pikvm_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb $(NANOKVM_PRO_PIKVM_PACKAGE_DIR)
 	@mkdir -p $(NANOKVM_PRO_PIKVM_PACKAGE_DIR)/usr/local/include/
 	@cd $(NANOKVM_PRO_PIKVM_PACKAGE_DIR) && [ ! -e usr/include/gpiod.h ] || mv usr/include/gpiod.h usr/local/include/
@@ -299,6 +304,7 @@ $(BUILDDIR)/nanokvm-pro-pikvm-stamp: $(BUILDDIR)/nanokvm-pro-prepare-stamp $(BUI
 		rsync -avpPxH usr/bin/ustreamer* usr/local/bin/ && \
 		echo $(NANOKVM_PRO_VERSION) > etc/kvmd/version ; \
 	fi
+	@sed -i 's/^Version: .*/Version: $(NANOKVM_PRO_VERSION)$(USRELEASE)/' $(NANOKVM_PRO_PIKVM_PACKAGE_DIR)/DEBIAN/control
 	@[ "$(GIT_REF)" = "develop" ] || rm -rf $(PIKVM_BUILD_DIR)
 	@cd $(BUILDDIR)/nanokvm-pro ; rm -f nanokvm_pro_$(NANOKVM_PRO_VERSION)/pikvm_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb
 	@cd $(BUILDDIR)/package/ && dpkg-deb --build pikvm-$(NANOKVM_PRO_VERSION) pikvm_$(NANOKVM_PRO_VERSION)_$(DEB_ARCH).deb
