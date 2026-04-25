@@ -364,7 +364,7 @@ $(BUILDDIR)/middleware-prepare-clone-stamp:
 
 $(BUILDDIR)/middleware-prepare-checkout-root-stamp: $(BUILDDIR)/middleware-prepare-clone-stamp
 	@echo "$(COLOUR_GREEN)Checking out Middleware for $(BOARD)$(END_COLOUR)"
-	@cd $(BUILDDIR)/middleware && git checkout 8a46b21
+	@cd $(BUILDDIR)/middleware && git checkout 8ac31dd
 	@cd $(BUILDDIR)/middleware && git submodule set-url 3rdparty/ffmpeg/ffmpeg $(GIT_USER_URL)/FFmpeg
 	@cd $(BUILDDIR)/middleware && git submodule set-url 3rdparty/flatbuffers/flatbuffers $(GIT_USER_URL)/flatbuffers
 	@cd $(BUILDDIR)/middleware && git submodule set-url 3rdparty/glog/glog $(GIT_USER_URL)/glog
