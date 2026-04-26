@@ -136,7 +136,7 @@ for f in */.git ; do
     done
     git checkout $b
   elif echo $d | grep -q -E '^tdl_sdk$' ; then
-    for x in licheervnano-cvisdk licheervnano-v1.x licheervnano-v2.x ; do
+    for x in licheervnano-cvisdk licheervnano-v1.x licheervnano-v2.x licheervnano-master v0 v1 v2 master ; do
       do_pull_push $x $u $s
     done
     git checkout $b
@@ -245,6 +245,9 @@ for f in */.git ; do
     do_push_tags '2022*'
   elif echo $d | grep -q -E '^sqlite$' ; then
     do_push_tags 'version-3\.*'
+  elif echo $d | grep -q -E '^tdl_sdk' ; then
+    do_push_tags 'v1\.*'
+    do_push_tags 'v2\.*'
   elif echo $d | grep -q -E '^u-boot$' ; then
     do_push_tags 'v20*'
   elif echo $d | grep -q -E '^ustreamer$' ; then
