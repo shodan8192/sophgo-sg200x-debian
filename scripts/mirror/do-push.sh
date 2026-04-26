@@ -135,6 +135,11 @@ for f in */.git ; do
       do_pull_push $x $u $s
     done
     git checkout $b
+  elif echo $d | grep -q -E '^tdl_sdk$' ; then
+    for x in licheervnano-cvisdk licheervnano-v1.x licheervnano-v2.x ; do
+      do_pull_push $x $u $s
+    done
+    git checkout $b
   elif echo $d | grep -q -E '^json-c$' ; then
     for x in 3rd cvi ; do
       do_pull_push $x $u $s
