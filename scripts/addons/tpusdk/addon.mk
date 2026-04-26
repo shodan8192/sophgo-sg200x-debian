@@ -62,6 +62,8 @@ $(BUILDDIR)/tpusdk-prepare-checkout-stamp: $(BUILDDIR)/tpusdk-prepare-clone-stam
 	@cd $(BUILDDIR)/tpusdk && sed -i 's|GIT_REPOSITORY https://github.com/google/googletest|GIT_REPOSITORY $(GIT_USER_URL)/googletest|g' tdl_sdk/cmake/thirdparty.cmake
 	@cd $(BUILDDIR)/tpusdk && sed -i 's|GIT_REPOSITORY https://github.com/nothings/stb|GIT_REPOSITORY $(GIT_USER_URL)/stb|g' tdl_sdk/cmake/thirdparty.cmake
 	@cd $(BUILDDIR)/tpusdk && sed -i 's|GIT_REPOSITORY https://gitlab.com/libeigen/eigen|GIT_REPOSITORY $(GIT_USER_URL)/eigen|g' tdl_sdk/cmake/thirdparty.cmake
+	@cd $(BUILDDIR)/tpusdk && sed -i 's|GIT_REPOSITORY https://github.com/scpcom/kissfft|GIT_REPOSITORY $(GIT_USER_URL)/kissfft|g' tdl_sdk/cmake/thirdparty.cmake
+	@cd $(BUILDDIR)/tpusdk && sed -i 's|GIT_REPOSITORY https://github.com/scpcom/kaldi-native-fbank|GIT_REPOSITORY $(GIT_USER_URL)/kaldi-native-fbank|g' tdl_sdk/cmake/thirdparty.cmake
 	@touch $@
 
 $(BUILDDIR)/tpusdk-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $(BUILDDIR)/tpusdk-prepare-checkout-stamp $(BUILDDIR)/middleware-compile-stamp
