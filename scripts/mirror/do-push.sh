@@ -195,6 +195,8 @@ for f in */.git ; do
     do_push_tags '[0-9]\.*'
   elif echo $d | grep -q -E '^capstone$' ; then
     do_push_tags '5.0*'
+  elif echo $d | grep -q -E '^curl' ; then
+    do_push_tags 'curl-8_2*'
   elif echo $d | grep -q -E '^dtc$' ; then
     do_push_tags 'v[0-9]\.*'
   elif echo $d | grep -q -E '^edk2$' ; then
@@ -212,6 +214,10 @@ for f in */.git ; do
     do_push_tags 'IPMITOOL_1*'
   elif echo $d | grep -q -E '^janus-gateway$' ; then
     do_push_tags 'v1.*'
+  elif echo $d | grep -q -E '^kaldi-native-fbank$' ; then
+    do_push_tags 'v1.21*'
+  elif echo $d | grep -q -E '^kissfft$' ; then
+    do_push_tags '131*'
   elif echo $d | grep -q -E '^kvmd$' ; then
     do_push_tags 'v4.1??'
     do_push_tags 'nanokvm_pro_1.*'
