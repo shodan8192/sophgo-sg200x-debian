@@ -135,6 +135,11 @@ for f in */.git ; do
       do_pull_push $x $u $s
     done
     git checkout $b
+  elif echo $d | grep -q -E '^tdl_sdk$' ; then
+    for x in licheervnano-cvisdk licheervnano-v1.x licheervnano-v2.x licheervnano-master v0 v1 v2 master ; do
+      do_pull_push $x $u $s
+    done
+    git checkout $b
   elif echo $d | grep -q -E '^json-c$' ; then
     for x in 3rd cvi ; do
       do_pull_push $x $u $s
@@ -190,6 +195,8 @@ for f in */.git ; do
     do_push_tags '[0-9]\.*'
   elif echo $d | grep -q -E '^capstone$' ; then
     do_push_tags '5.0*'
+  elif echo $d | grep -q -E '^curl' ; then
+    do_push_tags 'curl-8_2*'
   elif echo $d | grep -q -E '^dtc$' ; then
     do_push_tags 'v[0-9]\.*'
   elif echo $d | grep -q -E '^edk2$' ; then
@@ -207,6 +214,10 @@ for f in */.git ; do
     do_push_tags 'IPMITOOL_1*'
   elif echo $d | grep -q -E '^janus-gateway$' ; then
     do_push_tags 'v1.*'
+  elif echo $d | grep -q -E '^kaldi-native-fbank$' ; then
+    do_push_tags 'v1.21*'
+  elif echo $d | grep -q -E '^kissfft$' ; then
+    do_push_tags '131*'
   elif echo $d | grep -q -E '^kvmd$' ; then
     do_push_tags 'v4.1??'
     do_push_tags 'nanokvm_pro_1.*'
@@ -240,6 +251,9 @@ for f in */.git ; do
     do_push_tags '2022*'
   elif echo $d | grep -q -E '^sqlite$' ; then
     do_push_tags 'version-3\.*'
+  elif echo $d | grep -q -E '^tdl_sdk' ; then
+    do_push_tags 'v1\.*'
+    do_push_tags 'v2\.*'
   elif echo $d | grep -q -E '^u-boot$' ; then
     do_push_tags 'v20*'
   elif echo $d | grep -q -E '^ustreamer$' ; then
