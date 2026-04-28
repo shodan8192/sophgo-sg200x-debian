@@ -116,7 +116,7 @@ for f in */.git ; do
     done
     git checkout $b
   elif echo $d | grep -q -E '^opencv$' ; then
-    for x in 3rd 4.x ; do
+    for x in 3rd 3rd-4.5 4.x ; do
       do_pull_push $x $u $s
     done
     git checkout $b
