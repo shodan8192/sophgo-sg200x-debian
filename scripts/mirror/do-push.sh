@@ -95,6 +95,11 @@ for f in */.git ; do
       do_pull_push $x $u $s
     done
     git checkout $b
+  elif echo $d | grep -q -E '^cvi_rtsp$' ; then
+    for x in licheervnano-cvisdk cv18xx-v4.2.x master ; do
+      do_pull_push $x $u $s
+    done
+    git checkout $b
   elif echo $d | grep -q -E '^fsbl$' ; then
     for x in licheervnano-cvisdk licheervnano ; do
       do_pull_push $x $u $s
