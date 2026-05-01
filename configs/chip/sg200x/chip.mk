@@ -390,6 +390,12 @@ $(BUILDDIR)/middleware-prepare-checkout-root-stamp: $(BUILDDIR)/middleware-prepa
 	@cd $(BUILDDIR)/middleware && git submodule update --init --depth=1
 	@touch $@
 
+$(BUILDDIR)/middleware-prepare-checkout-opencv-stamp: $(BUILDDIR)/middleware-prepare-checkout-root-stamp
+	@echo "$(COLOUR_GREEN)Checking out Middleware opencv for $(BOARD)$(END_COLOUR)"
+	@cd $(BUILDDIR)/middleware/3rdparty/opencv4.5/opencv && sed -i 's|https://github.com/opencv/ade/archive|$(GIT_RELEASES_URL)/opencv/ade/archive|g' modules/gapi/cmake/DownloadADE.cmake
+	@cd $(BUILDDIR)/middleware/3rdparty/opencv4.5/opencv && sed -i 's|https://github.com/scpcom/ade/archive|$(GIT_RELEASES_URL)/scpcom/ade/archive|g' modules/gapi/cmake/DownloadADE.cmake
+	@touch $@
+
 $(BUILDDIR)/middleware-prepare-checkout-openssl-stamp: $(BUILDDIR)/middleware-prepare-checkout-root-stamp
 	@echo "$(COLOUR_GREEN)Checking out Middleware openssl for $(BOARD)$(END_COLOUR)"
 	@cd $(BUILDDIR)/middleware/3rdparty/openssl/openssl && git submodule set-url boringssl $(GIT_USER_URL)/boringssl
@@ -406,7 +412,7 @@ $(BUILDDIR)/middleware-prepare-checkout-media-server-stamp: $(BUILDDIR)/middlewa
 	@cd $(BUILDDIR)/middleware/sample/test_mmf/media_server-1.0.x && git submodule update --init --depth=1
 	@touch $@
 
-$(BUILDDIR)/middleware-prepare-checkout-stamp: $(BUILDDIR)/middleware-prepare-checkout-media-server-stamp $(BUILDDIR)/middleware-prepare-checkout-openssl-stamp
+$(BUILDDIR)/middleware-prepare-checkout-stamp: $(BUILDDIR)/middleware-prepare-checkout-media-server-stamp $(BUILDDIR)/middleware-prepare-checkout-opencv-stamp $(BUILDDIR)/middleware-prepare-checkout-openssl-stamp
 	@touch $@
 
 $(BUILDDIR)/middleware-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $(BUILDDIR)/middleware-prepare-checkout-stamp $(BUILDDIR)/osdrv-compile-stamp
