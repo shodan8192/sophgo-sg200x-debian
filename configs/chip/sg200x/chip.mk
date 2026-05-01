@@ -474,7 +474,7 @@ $(BUILDDIR)/buildroot-prepare-clone-dl-stamp: $(BUILDDIR)/buildroot-prepare-clon
 
 $(BUILDDIR)/buildroot-prepare-checkout-dl-stamp: $(BUILDDIR)/buildroot-prepare-clone-dl-stamp
 	@echo "$(COLOUR_GREEN)Checking out Buildroot dl for $(BOARD)$(END_COLOUR)"
-	@cd $(BR_DIR)/dl && git checkout 724b9c7
+	@cd $(BR_DIR)/dl && git checkout 40b4440
 	@cd $(BR_DIR)/dl && [ "$(GIT_REF)" = "develop" ] || rm -rf .git
 	@touch $@
 
