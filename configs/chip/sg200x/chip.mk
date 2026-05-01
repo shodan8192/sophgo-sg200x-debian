@@ -93,6 +93,8 @@ BUILDROOT_ENV = CROSS_COMPILE_KERNEL=$(patsubst "%",%,$(SDK_CROSS_COMPILE_PREFIX
 CROSS_COMPILE_SDK=$(patsubst "%",%,$(SDK_CROSS_COMPILE_PREFIX)) \
 TARGET_OUTPUT_DIR=$(BR_OUTPUT_DIR)
 
+TOOLCHAIN_URL_ARM ?= $(shell echo $(TOOLCHAIN_URL) | sed 's|/arm/.*|/arm/gnu|g' | sed 's|/linaro|/arm/gnu|g')
+
 FSBL_MAKE_OPTS = $(UBOOT_MAKE_OPTS) \
 CHIP_ARCH=$(CHIP) \
 BOOT_CPU=$(BOOT_CPU) \
@@ -518,6 +520,8 @@ $(BUILDDIR)/buildroot-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-s
 	@cd $(BR_DIR) && sed -i 's|https://github.com/sipeed|$(GIT_USER_URL)|g' package/nanokvm-server/nanokvm-server.mk
 	@cd $(BR_DIR) && sed -i 's|https://github.com/kmxz|$(GIT_USER_URL)|g' package/overlayfs-tools/overlayfs-tools.mk
 	@cd $(BR_DIR) && sed -i 's|https://github.com/wlhe|$(GIT_USER_URL)|g' package/uvc-gadget/uvc-gadget.mk
+	@cd $(BR_DIR) && [ "X$(TOOLCHAIN_URL_ARM)" = "X" ] || sed -i 's|https://developer.arm.com/-/media/Files/downloads/gnu|$(TOOLCHAIN_URL_ARM)|g' toolchain/toolchain-external/toolchain-external-arm-aarch64/toolchain-external-arm-aarch64.mk
+	@cd $(BR_DIR) && [ "X$(TOOLCHAIN_URL_ARM)" = "X" ] || sed -i 's|https://developer.arm.com/-/media/Files/downloads/gnu|$(TOOLCHAIN_URL_ARM)|g' toolchain/toolchain-external/toolchain-external-arm-arm/toolchain-external-arm-arm.mk
 	@cp /configs/common/buildroot/$(ARCH)_defconfig $(BR_DIR)/configs/$(BR_DEFCONFIG)
 	@echo 'BR2_TOOLCHAIN_EXTERNAL_PATH="'$(SDK_CROSS_COMPILE_PATH)'"' >> $(BR_DIR)/configs/$(BR_DEFCONFIG)
 	@if [ "X$(findstring kvm,$(VARIANT))$(findstring maixapp,$(IMAGE_ADDITIONS))" = "X" ]; then \
