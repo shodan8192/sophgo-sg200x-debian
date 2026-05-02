@@ -147,6 +147,8 @@ $(info $(blue)Packages: $(_PACKAGES)$(reset))
 
 NPROCS := $(shell nproc)
 
+$(info $(blue)Host Procs: $(NPROCS)$(reset))
+
 
 define update_dts_action
 	if [ "X$(findstring lichee,$(BOARD))" = "Xlichee" ]; then \
