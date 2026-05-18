@@ -266,6 +266,10 @@ for f in */.git ; do
   elif echo $d | grep -q -E '^tdl_sdk' ; then
     do_push_tags 'v1\.*'
     do_push_tags 'v2\.*'
+  elif echo $d | grep -q -E '^tinyalsa' ; then
+    do_push_tags 'v1\.*'
+    do_push_tags '1\.1\.*'
+    do_push_tags 'v2\.*'
   elif echo $d | grep -q -E '^u-boot$' ; then
     do_push_tags 'v20*'
   elif echo $d | grep -q -E '^ustreamer$' ; then
