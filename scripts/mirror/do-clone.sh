@@ -128,6 +128,8 @@ git_clone -b main https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/nanokvm-web-modules
 git_clone -b main https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/nanokvm-pro-server-vendor
 git_clone -b main https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/nanokvm-pro-web-modules
 
+git_clone -b master https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/tinyalsa
+
 git_clone -b nanokvmpro https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/kvmd
 git_clone -b nanokvmpro https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/janus-gateway
 git_clone -b nanokvmpro https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/ustreamer
