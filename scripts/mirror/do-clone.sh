@@ -78,6 +78,7 @@ git_subclone 3rdparty/json-c/json-c https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/js
 git_subclone 3rdparty/miniz/miniz https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/miniz -b 3rd
 git_subclone 3rdparty/zlib/zlib https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/zlib -b 3rd
 git_subclone 3rdparty/opencv/opencv https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/opencv -b 3rd
+git_subclone 3rdparty/opencv4.5/ade https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/ade -b 3rd-4.5
 #git_subclone 3rdparty/flatbuffers/flatbuffers https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/flatbuffers -b licheervnano-cvisdk
 git_subclone 3rdparty/nanomsg/nanomsg https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/nanomsg -b 3rd
 git_subclone 3rdparty/uv/uv https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/libuv -b 3rd
@@ -86,6 +87,7 @@ git_subclone 3rdparty/libwebsockets/libwebsockets https://$GIT_SOURCE_HOST/$GIT_
 git_subclone 3rdparty/sqlite/sqlite https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/sqlite -b 3rd
 git_subclone 3rdparty/glog/glog https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/glog -b 3rd
 git_subclone 3rdparty/ffmpeg/ffmpeg https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/FFmpeg -b 3rd
+git_subclone 3rdparty/curl/curl https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/curl -b 3rd
 #git_clone -b maixcdk https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/ireader media_server-1.0.x
 git_subclone media-server https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/ireader-media-server -b maixcdk
 git_subclone avcodec https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/ireader-avcodec -b maixcdk
@@ -126,6 +128,8 @@ git_clone -b main https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/nanokvm-web-modules
 git_clone -b main https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/nanokvm-pro-server-vendor
 git_clone -b main https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/nanokvm-pro-web-modules
 
+git_clone -b master https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/tinyalsa
+
 git_clone -b nanokvmpro https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/kvmd
 git_clone -b nanokvmpro https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/janus-gateway
 git_clone -b nanokvmpro https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/ustreamer
@@ -143,6 +147,8 @@ git_clone -b master https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/tpudemo-sg200x tpu
 git_clone -b master https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/uvc-gadget uvc-gadget
 
 git_clone -b develop https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/json json
+git_clone -b cvi https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/kissfft kissfft
+git_clone -b cvi https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/kaldi-native-fbank kaldi-native-fbank
 
 git_clone -b master https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/ipmitool ipmitool
 git_clone -b master https://$GIT_SOURCE_HOST/$GIT_SOURCE_USER/rtc-tools rtc-tools

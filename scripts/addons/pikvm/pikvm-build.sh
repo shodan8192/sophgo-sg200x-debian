@@ -299,8 +299,4 @@ rsync -avpPxH kvmd/out/ out/
 rsync -avpPxH pikvm-packages/packages/kvmd-webterm/out/ out/
 rm -rf out/DEBIAN/
 
-# todo: build ustreamer with axvideo support
-rm -f out/usr/bin/ustreamer*
-rm -f out/usr/local/bin/ustreamer*
-
 echo OK

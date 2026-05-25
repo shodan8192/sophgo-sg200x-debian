@@ -43,7 +43,9 @@ $(BUILDDIR)/python3-install-stamp: $(BUILDDIR)/image-configure-stamp
 $(BUILDDIR)/python3-pip-install-stamp: $(BUILDDIR)/python3-install-stamp
 	@echo "$(COLOUR_GREEN)Installing python3 pip for $(BOARD)$(END_COLOUR)"
 	@chroot /rootfs apt-get update || true
+	@chroot /rootfs mount proc -t proc /proc
 	@chroot /rootfs apt-get install -y --no-install-recommends python3-pip
+	@umount /rootfs/proc || true
 	@touch $@
 
 $(BUILDDIR)/python3-dev-install-stamp: $(BUILDDIR)/python3-install-stamp

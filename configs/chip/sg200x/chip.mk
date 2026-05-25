@@ -93,6 +93,8 @@ BUILDROOT_ENV = CROSS_COMPILE_KERNEL=$(patsubst "%",%,$(SDK_CROSS_COMPILE_PREFIX
 CROSS_COMPILE_SDK=$(patsubst "%",%,$(SDK_CROSS_COMPILE_PREFIX)) \
 TARGET_OUTPUT_DIR=$(BR_OUTPUT_DIR)
 
+TOOLCHAIN_URL_ARM ?= $(shell echo $(TOOLCHAIN_URL) | sed 's|/arm/.*|/arm/gnu|g' | sed 's|/linaro|/arm/gnu|g')
+
 FSBL_MAKE_OPTS = $(UBOOT_MAKE_OPTS) \
 CHIP_ARCH=$(CHIP) \
 BOOT_CPU=$(BOOT_CPU) \
@@ -144,6 +146,8 @@ $(info $(blue)Image Addons: $(IMAGE_ADDITIONS)$(reset))
 $(info $(blue)Packages: $(_PACKAGES)$(reset))
 
 NPROCS := $(shell nproc)
+
+$(info $(blue)Host Procs: $(NPROCS)$(reset))
 
 
 define update_dts_action
@@ -364,7 +368,8 @@ $(BUILDDIR)/middleware-prepare-clone-stamp:
 
 $(BUILDDIR)/middleware-prepare-checkout-root-stamp: $(BUILDDIR)/middleware-prepare-clone-stamp
 	@echo "$(COLOUR_GREEN)Checking out Middleware for $(BOARD)$(END_COLOUR)"
-	@cd $(BUILDDIR)/middleware && git checkout 8a46b21
+	@cd $(BUILDDIR)/middleware && git checkout 7195be7
+	@cd $(BUILDDIR)/middleware && git submodule set-url 3rdparty/curl/curl $(GIT_USER_URL)/curl
 	@cd $(BUILDDIR)/middleware && git submodule set-url 3rdparty/ffmpeg/ffmpeg $(GIT_USER_URL)/FFmpeg
 	@cd $(BUILDDIR)/middleware && git submodule set-url 3rdparty/flatbuffers/flatbuffers $(GIT_USER_URL)/flatbuffers
 	@cd $(BUILDDIR)/middleware && git submodule set-url 3rdparty/glog/glog $(GIT_USER_URL)/glog
@@ -374,6 +379,7 @@ $(BUILDDIR)/middleware-prepare-checkout-root-stamp: $(BUILDDIR)/middleware-prepa
 	@cd $(BUILDDIR)/middleware && git submodule set-url 3rdparty/miniz/miniz $(GIT_USER_URL)/miniz
 	@cd $(BUILDDIR)/middleware && git submodule set-url 3rdparty/nanomsg/nanomsg $(GIT_USER_URL)/nanomsg
 	@cd $(BUILDDIR)/middleware && git submodule set-url 3rdparty/opencv/opencv $(GIT_USER_URL)/opencv
+	@cd $(BUILDDIR)/middleware && git submodule set-url 3rdparty/opencv4.5/opencv $(GIT_USER_URL)/opencv
 	@cd $(BUILDDIR)/middleware && git submodule set-url 3rdparty/openssl/openssl $(GIT_USER_URL)/openssl
 	@cd $(BUILDDIR)/middleware && git submodule set-url 3rdparty/sqlite/sqlite $(GIT_USER_URL)/sqlite
 	@cd $(BUILDDIR)/middleware && git submodule set-url 3rdparty/uv/uv $(GIT_USER_URL)/libuv
@@ -384,6 +390,12 @@ $(BUILDDIR)/middleware-prepare-checkout-root-stamp: $(BUILDDIR)/middleware-prepa
 	@cd $(BUILDDIR)/middleware && git submodule set-url sample/kvm_stream $(GIT_USER_URL)/streameye
 	@cd $(BUILDDIR)/middleware && git submodule set-url sample/test_mmf/media_server-1.0.x $(GIT_USER_URL)/ireader
 	@cd $(BUILDDIR)/middleware && git submodule update --init --depth=1
+	@touch $@
+
+$(BUILDDIR)/middleware-prepare-checkout-opencv-stamp: $(BUILDDIR)/middleware-prepare-checkout-root-stamp
+	@echo "$(COLOUR_GREEN)Checking out Middleware opencv for $(BOARD)$(END_COLOUR)"
+	@cd $(BUILDDIR)/middleware/3rdparty/opencv4.5/opencv && sed -i 's|https://github.com/opencv/ade/archive|$(GIT_RELEASES_URL)/opencv/ade/archive|g' modules/gapi/cmake/DownloadADE.cmake
+	@cd $(BUILDDIR)/middleware/3rdparty/opencv4.5/opencv && sed -i 's|https://github.com/scpcom/ade/archive|$(GIT_RELEASES_URL)/scpcom/ade/archive|g' modules/gapi/cmake/DownloadADE.cmake
 	@touch $@
 
 $(BUILDDIR)/middleware-prepare-checkout-openssl-stamp: $(BUILDDIR)/middleware-prepare-checkout-root-stamp
@@ -402,7 +414,7 @@ $(BUILDDIR)/middleware-prepare-checkout-media-server-stamp: $(BUILDDIR)/middlewa
 	@cd $(BUILDDIR)/middleware/sample/test_mmf/media_server-1.0.x && git submodule update --init --depth=1
 	@touch $@
 
-$(BUILDDIR)/middleware-prepare-checkout-stamp: $(BUILDDIR)/middleware-prepare-checkout-media-server-stamp $(BUILDDIR)/middleware-prepare-checkout-openssl-stamp
+$(BUILDDIR)/middleware-prepare-checkout-stamp: $(BUILDDIR)/middleware-prepare-checkout-media-server-stamp $(BUILDDIR)/middleware-prepare-checkout-opencv-stamp $(BUILDDIR)/middleware-prepare-checkout-openssl-stamp
 	@touch $@
 
 $(BUILDDIR)/middleware-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $(BUILDDIR)/middleware-prepare-checkout-stamp $(BUILDDIR)/osdrv-compile-stamp
@@ -472,7 +484,7 @@ $(BUILDDIR)/buildroot-prepare-clone-dl-stamp: $(BUILDDIR)/buildroot-prepare-clon
 
 $(BUILDDIR)/buildroot-prepare-checkout-dl-stamp: $(BUILDDIR)/buildroot-prepare-clone-dl-stamp
 	@echo "$(COLOUR_GREEN)Checking out Buildroot dl for $(BOARD)$(END_COLOUR)"
-	@cd $(BR_DIR)/dl && git checkout 724b9c7
+	@cd $(BR_DIR)/dl && git checkout 40b4440
 	@cd $(BR_DIR)/dl && [ "$(GIT_REF)" = "develop" ] || rm -rf .git
 	@touch $@
 
@@ -489,7 +501,7 @@ $(BUILDDIR)/buildroot-prepare-checkout-pinmux-stamp: $(BUILDDIR)/buildroot-prepa
 
 $(BUILDDIR)/buildroot-prepare-checkout-stamp: $(BUILDDIR)/buildroot-prepare-checkout-dl-stamp $(BUILDDIR)/buildroot-prepare-checkout-pinmux-stamp
 	@echo "$(COLOUR_GREEN)Checking out Buildroot for $(BOARD)$(END_COLOUR)"
-	@cd $(BR_DIR) && git checkout 8abd662
+	@cd $(BR_DIR) && git checkout 390f294
 	@touch $@
 
 $(BUILDDIR)/buildroot-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-stamp $(BUILDDIR)/buildroot-prepare-checkout-stamp $(BUILDDIR)/middleware-compile-stamp
@@ -516,6 +528,8 @@ $(BUILDDIR)/buildroot-prepare-patch-stamp: $(BUILDDIR)/toolchain-prepare-patch-s
 	@cd $(BR_DIR) && sed -i 's|https://github.com/sipeed|$(GIT_USER_URL)|g' package/nanokvm-server/nanokvm-server.mk
 	@cd $(BR_DIR) && sed -i 's|https://github.com/kmxz|$(GIT_USER_URL)|g' package/overlayfs-tools/overlayfs-tools.mk
 	@cd $(BR_DIR) && sed -i 's|https://github.com/wlhe|$(GIT_USER_URL)|g' package/uvc-gadget/uvc-gadget.mk
+	@cd $(BR_DIR) && [ "X$(TOOLCHAIN_URL_ARM)" = "X" ] || sed -i 's|https://developer.arm.com/-/media/Files/downloads/gnu|$(TOOLCHAIN_URL_ARM)|g' toolchain/toolchain-external/toolchain-external-arm-aarch64/toolchain-external-arm-aarch64.mk
+	@cd $(BR_DIR) && [ "X$(TOOLCHAIN_URL_ARM)" = "X" ] || sed -i 's|https://developer.arm.com/-/media/Files/downloads/gnu|$(TOOLCHAIN_URL_ARM)|g' toolchain/toolchain-external/toolchain-external-arm-arm/toolchain-external-arm-arm.mk
 	@cp /configs/common/buildroot/$(ARCH)_defconfig $(BR_DIR)/configs/$(BR_DEFCONFIG)
 	@echo 'BR2_TOOLCHAIN_EXTERNAL_PATH="'$(SDK_CROSS_COMPILE_PATH)'"' >> $(BR_DIR)/configs/$(BR_DEFCONFIG)
 	@if [ "X$(findstring kvm,$(VARIANT))$(findstring maixapp,$(IMAGE_ADDITIONS))" = "X" ]; then \
