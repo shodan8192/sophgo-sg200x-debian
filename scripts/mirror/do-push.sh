@@ -135,6 +135,11 @@ for f in */.git ; do
       do_pull_push $x $u $s
     done
     git checkout $b
+  elif echo $d | grep -q -E '^openssl$' ; then
+    for x in 3rd OpenSSL_1_1_1-stable openssl-3.0 ; do
+      do_pull_push $x $u $s
+    done
+    git checkout $b
   elif echo $d | grep -q -E '^osdrv$' ; then
     for x in licheervnano-cvisdk licheervnano ; do
       do_pull_push $x $u $s
@@ -255,6 +260,7 @@ for f in */.git ; do
     do_push_tags 'v*'
   elif echo $d | grep -q -E '^openssl$' ; then
     do_push_tags 'OpenSSL_1_1_*'
+    do_push_tags 'openssl-3.0\.*'
   elif echo $d | grep -q -E '^overlayfs-tools$' ; then
     do_push_tags 'v20*'
   elif echo $d | grep -q -E '^riscv-gnu-toolchain$' ; then
