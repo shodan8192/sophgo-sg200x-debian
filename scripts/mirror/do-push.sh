@@ -238,6 +238,12 @@ for f in */.git ; do
   elif echo $d | grep -q -E '^kvmd$' ; then
     do_push_tags 'v4.1??'
     do_push_tags 'nanokvm_pro_1.*'
+  elif echo $d | grep -q -E '^libdatachannel$' ; then
+    do_push_tags 'v0.2?.*'
+  elif echo $d | grep -q -E '^libjuice$' ; then
+    do_push_tags 'v1.7.*'
+  elif echo $d | grep -q -E '^libsrtp$' ; then
+    do_push_tags 'v2.7.*'
   elif echo $d | grep -q -E '^libslirp$' ; then
     do_push_tags 'v4.*'
   elif echo $d | grep -q -E '^libwebsockets$' ; then
@@ -263,6 +269,8 @@ for f in */.git ; do
     do_push_tags 'openssl-3.0\.*'
   elif echo $d | grep -q -E '^overlayfs-tools$' ; then
     do_push_tags 'v20*'
+  elif echo $d | grep -q -E '^plog$' ; then
+    do_push_tags '1\.1\.*'
   elif echo $d | grep -q -E '^riscv-gnu-toolchain$' ; then
     do_push_tags 'riscv*-10.?.*'
   elif echo $d | grep -q -E '^rtc-tools' ; then
@@ -278,6 +286,8 @@ for f in */.git ; do
     do_push_tags 'v2\.*'
   elif echo $d | grep -q -E '^u-boot$' ; then
     do_push_tags 'v20*'
+  elif echo $d | grep -q -E '^usrsctp' ; then
+    do_push_tags 'v0\.9\.*'
   elif echo $d | grep -q -E '^ustreamer$' ; then
     do_push_tags 'v6.*'
   elif echo $d | grep -q -E '^uv$' ; then
@@ -286,6 +296,8 @@ for f in */.git ; do
     do_push_tags 'v*'
   elif echo $d | grep -q -E '^zram-config$' ; then
     do_push_tags 'v*'
+  elif echo $d | grep -q -E '^zxing-cpp$' ; then
+    do_push_tags 'v2\.?\.*'
   fi
 
   cd - > /dev/null
